@@ -57,19 +57,19 @@ def mayorReveal(players):
 def votingVerdict(players):
     guiltyVotes = 0
     innocentVotes = 0
-    for x in range(0, len(players)):  
-        if  players[x].vote == 'g':
-            print(players[x].name + " has voted Guilty")
-            if players[x].role == 'Mayor' and players[x].revealed == True:
-                guiltyVotes = guiltyVotes + 3
-            else: guiltyVotes = guiltyVotes + 1
-        if  players[x].vote == 'i':
-            print(players[x].name + " has voted Innocent")
-            if players[x].role == 'Mayor' and players[x].revealed == True:
-                innocentVotes = innocentVotes + 3
-            else: innocentVotes = innocentVotes + 1
-        if  players[x].vote == 'a':
-            print(players[x].name + " has abstained from voting")
+    for x in players:  
+        if  x.vote == 'g':
+            print(x.name + " has voted Guilty")
+            if x.role == 'Mayor' and x.revealed == True:
+                guiltyVotes += 3
+            else: guiltyVotes += 1
+        if  x.vote == 'i':
+            print(x.name + " has voted Innocent")
+            if x.role == 'Mayor' and x.revealed == True:
+                innocentVotes += 3
+            else: innocentVotes += 1
+        if  x.vote == 'a':
+            print(x.name + " has abstained from voting")
     print("\n" + str(guiltyVotes) + " Guilty votes to " + str(innocentVotes) + " Innocent votes")
     if guiltyVotes > innocentVotes:
         return True
@@ -80,7 +80,6 @@ def updateOnLynching(players, votedPlayer):
     killPlayer(players, votedPlayer, 'lynch')
     
     ##Jester
-    jester = findPlayerByRole("Jester", players)
-    if jester != -1 and jester == votedPlayer:
-            print('The Jester, ' + players[jester].name + ", will get his revenge from the grave!")
+    if players[votedPlayer].role == "Jester":
+            print('The Jester, ' + players[votedPlayer].name + ", will get his revenge from the grave!")
     return players

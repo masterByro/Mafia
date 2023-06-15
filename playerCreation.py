@@ -43,8 +43,8 @@ def getExecutionerTarget():
         for x in makePlayers:
             if x.alive == True and x.role != "Murderer" and x.role != "Framer" and x.role != "Executioner" and x.role != "Serial Killer":
                 townies.append(x)
-        if (len(townies) == 0):
-            x.role = 'Jester'
+            if (len(townies) == 0):
+                x.role = 'Jester'
         else:
             random.shuffle(townies)
-            x.executionerTarget = townies[0].name
+            executioner.executionerTarget = townies[0].name

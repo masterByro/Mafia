@@ -20,20 +20,6 @@ def isValidInput(userInput, players, playerIndex):
             return True
     return False
 
-    ## Jailkeeper - jail someone, ask question, can kill afterwards
-    ## Escort - Blocks role (will be killed by serial killer)
-    ## Murderer - Choose to kill someone each night Knows their partner
-    ## Doctor - Choose to heal someone. Can't twice in a row
-    ## Framer - choose to frame someone each night, adds blood
-    
-    ## Detective - Detects blood every night (on doctor, murderer, framed person)
-    
-    ## Medium - Can speak to the dead (find role of dead) 
-    
-    ## Mayor - Votes count twice as much, no night role
-    ## Regular town member - no role
-    ## Executioner - Must kill a specific member
-    
 def getTarget(players, role):
     player = findPlayerByRoleObj(role, players)
     if player is not None:
@@ -184,3 +170,9 @@ def countAlivePlayers(players):
         if player.alive == True:
             count += 1
     return count
+
+def gameOverText(players):
+    print("Thanks for playing")
+    for x in players:
+        deadText = "Alive" if x.alive == True else "Dead"
+        print(x.name + "  :  " + x.role + "  :  " + deadText)
