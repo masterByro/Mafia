@@ -8,7 +8,8 @@ class Player:
         self.targetInfo = '' ##info about previous round target
         
         self.vote = ''
-        self.revealed = False
+        self.revealed = False ##Mayor
+        
         self.executionerTarget = ''
         self.executionerWin = False
         
