@@ -1,10 +1,9 @@
 import os
 from playerCreation import autoCreatePlayers, createPlayers
 from roleDescriptions import getActionDescription, getRoleDescription
-from roleUtils import calculateResults, countAlivePlayers, isValidInput, mafiaInfo, checkForWin
+from roleUtils import calculateResults, countAlivePlayers, gameOverText, isValidInput, mafiaInfo, checkForWin
 from votingUtils import updateOnLynching, votingPlayer, votingRound, votingVerdict
 
-global players
 
 def main():
     print("MAFIA")
@@ -13,6 +12,7 @@ def main():
     ##players = createPlayers()
     players = autoCreatePlayers()
     
+    global dayInt
     dayInt = 1
     deaths = []
     
@@ -22,26 +22,23 @@ def main():
             print(players[x].name + " was tragically murdered last night!")
         if len(deaths) == 0 and dayInt > 1: print("Nobody was murdered last night")
         if checkForWin(players):
+            gameOverText(players)
             break
         
         input("Press Enter to begin the Day:")
-        players = day(players, dayInt)
+        players = day(players)
         if checkForWin(players):
+            gameOverText(players)
             break
         
         input("Press Enter to begin the Night:")
         os.system('cls||clear')
-        players, deadChat = night(players, dayInt, deadChat)
+        players, deadChat = night(players, deadChat)
         players, deaths = calculateResults(players)
         
         dayInt += 1
         
-    print("Thanks for playing")
-    for x in players:
-        deadText = "Alive" if x.alive == True else "Dead"
-        print(x.name + "  :  " + x.role + "  :  " + deadText)
-        
-def day(players, dayInt):
+def day(players):
     errorText = ''
     failedVotes = 0 if countAlivePlayers(players) > 2 else 3
     while (failedVotes < 3):
@@ -67,7 +64,7 @@ def day(players, dayInt):
     if failedVotes >= 3: print("Lynching is no longer an option. Night is now falling.")
     return players
               
-def night(players, dayInt, deadChat):
+def night(players, deadChat):
     for x in range(0, len(players)):
         print("Night: " + str(dayInt))
         input("Hand the game over to player " + players[x].name + "\nPress Enter when you are ready, " + players[x].name + " \n")
