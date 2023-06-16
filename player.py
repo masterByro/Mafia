@@ -13,6 +13,9 @@ class Player:
         self.executionerTarget = ''
         self.executionerWin = False
         
+        self.hasMine = True
+        self.hasBullet = True
+        
     def reset(self):
         self.roundInput = ''
         self.targetInfo = ''
