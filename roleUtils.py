@@ -34,7 +34,7 @@ def getTarget(players, role):
         roundInput = player.roundInput
         if roundInput != '' and roundInput != 'landmine':
             target = findPlayerByName(roundInput, players)
-            print(player.name + ' ' + player.role + " --> " + players[target].name + ' ' + players[target].role)
+            ##print(player.name + ' ' + player.role + " --> " + players[target].name + ' ' + players[target].role)
             return target
     return -1
             
@@ -45,7 +45,7 @@ def calculateResults(players):
     ##if jailKeeperTarget != -1:
         ##players[jailKeeperTarget].roundInput = ''
             ##add Jailkeeper stuff
-            
+    
     ##Jester 
     jester = findPlayerByRole("Jester", players) 
     if jester != -1:
@@ -77,7 +77,13 @@ def calculateResults(players):
                 death = [escort, ' was horifically stabbed to death while out visiting last night!']
                 deaths.append(death)
      
-    
+    ##Doctor Self Heal
+    doctorImmune = False
+    doctor = findPlayerByRole("Doctor", players)  
+    doctorTarget = getTarget(players, "Doctor")
+    if doctorTarget != -1 and doctorTarget == doctor:
+        doctorImmune = True
+                            
     ##Serial Killer    
     sKTarget = getTarget(players, "Serial Killer")
     if sKTarget != -1:
@@ -107,23 +113,26 @@ def calculateResults(players):
                 
     ##Framer      
     framerTarget = getTarget(players, "Framer")
-    players, deaths, killed = visitVet(players, deaths, "Doctor", doctorTarget)
-    if killed == True:
-        framerTarget = -1
+    if framerTarget != -1:
+        players, deaths, killed = visitVet(players, deaths, "Framer", doctorTarget)
+        if killed == True:
+            framerTarget = -1
         
     ##Detective
     detective = findPlayerByRole("Detective", players)
     detectiveTarget = getTarget(players, "Detective")
     if detectiveTarget != -1:
-        players, deaths, killed = visitVet(players, deaths, "Doctor", doctorTarget)
+        players, deaths, killed = visitVet(players, deaths, "Detective", doctorTarget)
         if killed == False: 
-            if players[detectiveTarget].role == "Doctor" or players[detectiveTarget].role == "Mafioso" or detectiveTarget == framerTarget or detectiveTarget in deaths: 
+            if players[detectiveTarget].role == "Doctor" or players[detectiveTarget].role == "Mafioso" or detectiveTarget == framerTarget or players[detectiveTarget].role == "Serial Killer" or detectiveTarget in deaths: 
                 targetFeedback = ", had blood on them last night"
             else: targetFeedback =  ", did NOT have blood on them last night"
             players[detective].targetInfo =  "Your target, " +  players[detectiveTarget].name + targetFeedback
         elif detective != -1:
             players[detective].targetInfo = "You either did not select anyone to investigate last night, or were blocked" 
     
+    if doctorImmune == True:
+        deaths = [row for row in deaths if row[0] != doctor]
     ##Add Deaths
     for x in deaths:
         killPlayer(players, x[0], 'night')
@@ -163,29 +172,27 @@ def findPlayerByNameObj(name, players):
         if player.name.lower() == name.lower():
             return player
     sys.exit()
+
+def checkAlive(players):
+    aliveRoles = []
+    for player in players:
+        if player.alive: aliveRoles.append(player.role)
+    return aliveRoles
     
 def checkForWin(players):
     ##If townys all dead, mafia all dead, executioner gets target (end of day)
-    mafioso = findPlayerByRoleObj("Mafioso", players)
-    serialK = findPlayerByRoleObj("Serial Killer", players)
-    if mafioso is not None and mafioso.alive == False and serialK is not None and serialK.alive == False:
-        print("Congratulations! The Townfolk have defeated all the threats to their town!")
+    printMsg = ''
+    evil = ['Mafioso', 'Framer', 'Serial Killer']
+    aliveRoles = checkAlive(players)
+    if "Serial Killer" in aliveRoles and len(aliveRoles) == 1: 
+        print("The Serial Killer has won!")
         return True
-    townyAlive = False
-    for x in players:
-        if x.alive == True and x.role != "Mafioso" and x.role != "Framer":
-            townyAlive = True
-    if townyAlive == False:
+    if "Mafioso" in aliveRoles and len(aliveRoles) == 1 or "Framer" in aliveRoles and len(aliveRoles) == 2: 
         print("The Mafia have defeated all the Townfolk!")
         return True
-    anyAlive = False
-    if serialK is not None and serialK.alive == True:
-        for x in players:
-            if x.alive == True and x.role != "Serial Killer":
-                anyAlive = True
-        if anyAlive == False:
-            print("The Serial Killer has won!")
-            return True
+    if all(item not in aliveRoles for item in evil):
+        print("Congratulations! The Townfolk have defeated all the threats to their town!")
+        return True
     return False
 
 def mafiaInfo(players):

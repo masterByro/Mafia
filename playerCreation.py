@@ -23,19 +23,21 @@ def createPlayers():
     return makePlayers     
 
 def autoCreatePlayers():
-    names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h','i','j', 'k', 'l']
+    ##names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h','i','j', 'k', 'l']
+    ##roles = ['Veteran', 'Mafioso', 'Framer']
+    
+    names = ['byron', 'hayley', 'tristen', 'rhiannon', 'jordan', 'mary', 'james', 'gayan','gihara','jadelyn', 'prigg']
 
-    roles = ['Mafioso', 'Serial Killer', 'Jester']
     
-    ##roles = makeRoles(numOfPlayers)
+    numOfPlayers = len(names)
+    roles = makeRoles(numOfPlayers)
     
-    numOfPlayers = len(roles)
     random.shuffle(roles)
     for x in range(0, numOfPlayers):
         p = Player()
         p.role = roles[x]
         p.name = str(names[x])
-        print(p.name  + "  :  " + p.role)
+        ##print(p.name  + "  :  " + p.role)
         makePlayers.append(p)
         
     getExecutionerTarget()
@@ -92,8 +94,8 @@ def getExecutionerTarget():
         for x in makePlayers:
             if x.alive == True and x.role != "Mafioso" and x.role != "Framer" and x.role != "Executioner" and x.role != "Serial Killer" and x.role != "Mayor":
                 townies.append(x)
-            if (len(townies) == 0):
-                x.role = 'Jester'
+        if (len(townies) == 0):
+            executioner.role = 'Jester'
         else:
             random.shuffle(townies)
             executioner.executionerTarget = townies[0].name

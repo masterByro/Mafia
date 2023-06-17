@@ -16,6 +16,7 @@ def getRoleDescription(role):
     if role == 'Mayor': return 'The Mayor' + townsFolk + 'The Mayor can reveal his role to the group before a round of voting begins. His vote will be worth 3 points from then on.'
     if role == 'Serial Killer': return 'The Serial Killer wins the game by being the last person alive. They can achieve this by killing. And lots of it!'
     if role == 'Veteran': return 'The Veteran' + townsFolk + "The Veteran has 1 bullet and 1 landmine. They can choose to shoot one player per game, or plant a landmine for the night. If it doesn't explode, they can use it again."
+    if role == 'GodFather': return 'The GodFather' + mafia + "The GodFather takes over the the murdering if the Mafioso dies."
     return 'oops no role Description, program brokey'
         
 def getActionDescription(role, player):
@@ -36,8 +37,8 @@ def veteranPrint(veteran):
     message = 'You currently have ' + numBullet + ' bullet and ' + numMine + ' landMine.\n'
     action = ''
     if numBullet == '0' and numMine == '0': action = 'Press Enter to Continue the night'
-    elif  numBullet == '0': action = "Type 'landmine' to place down a landmine to protect yourself tonight." + leaveBlank
+    elif  numBullet == '0': action = "Type LANDMINE to place down a landmine to protect yourself tonight." + leaveBlank
     elif  numMine == '0': action = 'Who would you like to bring justice to?' + leaveBlank
-    else: action = "Type 'landmine' to place down a landmine to protect yourself tonight, or type who you would like to bring justice to." + leaveBlank
+    else: action = "Type LANDMINE to place down a landmine to protect yourself tonight, or type who you would like to bring justice to." + leaveBlank
     return message + action
     

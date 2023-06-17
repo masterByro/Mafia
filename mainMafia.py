@@ -45,8 +45,8 @@ def day(players):
         os.system('cls||clear')
         print("Day: " + str(dayInt))
         print("You may openly discuss with the group")
-        print("You can also openly vote to place a Player on Trial for lynching. If over half the Players agree, type 'Vote' below")
-        textInput = input("Otherwise, type skip to move to nightfall" + errorText + "\n")
+        print("You can also openly vote to place a Player on Trial for lynching. If over half the Players agree, type VOTE below")
+        textInput = input("Otherwise, type SKIP to move to nightfall" + errorText + "\n")
         textInput = textInput.lower()
         if textInput == 'skip': return players
         if textInput == 'vote':
@@ -73,7 +73,8 @@ def night(players, deadChat):
         
         while(valdiatedInput == False):
             os.system('cls||clear')
-            print("Night: " + str(dayInt) + "\nPlayer: " + players[x].name + "\nRole: " + players[x].role + "\nDescription: " + getRoleDescription(players[x].role))
+            print("Night: " + str(dayInt) + "\nPlayer: " + players[x].name + "\nRole: " + players[x].role)
+                  ##+ "\nDescription: " + getRoleDescription(players[x].role))
             
             if players[x].role == "Medium" or players[x].alive == False and players[x].revenge != True:
                 if players[x].alive == False:
