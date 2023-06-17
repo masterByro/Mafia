@@ -13,6 +13,8 @@ class Player:
         self.executionerTarget = ''
         self.executionerWin = False
         
+        self.revenge = False ##Jester
+        
         self.hasMine = True
         self.hasBullet = True
         

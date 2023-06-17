@@ -75,7 +75,7 @@ def night(players, deadChat):
             os.system('cls||clear')
             print("Night: " + str(dayInt) + "\nPlayer: " + players[x].name + "\nRole: " + players[x].role + "\nDescription: " + getRoleDescription(players[x].role))
             
-            if players[x].role == "Medium" or players[x].alive == False:
+            if players[x].role == "Medium" or players[x].alive == False and players[x].revenge != True:
                 if players[x].alive == False:
                     print("You are dead, but you can still talk to the Medium or other dead people")
                 print(deadChat)
@@ -83,10 +83,10 @@ def night(players, deadChat):
                 if textInput != '': deadChat = deadChat + "\n[" + players[x].name + "] - " + textInput
                 valdiatedInput = True
                 
-            elif players[x].role == "Towny" or  players[x].role == "Mayor" or players[x].role == "Executioner" or players[x].role == "Jester":
+            elif players[x].role == "Towny" or  players[x].role == "Mayor" or players[x].role == "Executioner" or (players[x].role == "Jester" and players[x].revenge == False):
                 if  players[x].role == "Executioner":
                     if  players[x].executionerWin == False: print("Your target to get lynched is " + players[x].executionerTarget)
-                    else: print("Your have won the game! Feel free to help whichever side you'd like")
+                    else: print("You have won the game! Feel free to help whichever side you'd like")
                 input("\nType anything below and Enter (typing stuff helps hide your role from others): \n")
                 valdiatedInput = True
                 

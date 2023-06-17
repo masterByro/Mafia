@@ -6,6 +6,7 @@ def isValidInput(userInput, players, playerIndex):
     if player.role == 'Veteran':
         if userInput == 'landmine': return player.hasMine
         if player.hasBullet == False: return False
+        
     for target in players:
         if target.name.lower() == userInput and target.alive == True:
             if target == player:
@@ -21,6 +22,9 @@ def isValidInput(userInput, players, playerIndex):
                 if player.role == 'Doctor': return False
             if player.role == 'Mafioso' or player.role == 'Framer':
                 if target.role == 'Mafioso' or target.role == 'Framer': return False
+            if player.role == 'Jester':
+                if target.vote == 'g': return True
+                else: return False
             return True
     return False
 
@@ -37,11 +41,21 @@ def getTarget(players, role):
 def calculateResults(players):
     deaths = []
     ##Jailkeeper
-    jailKeeperTarget = getTarget(players, "Jailkeeper")
-    if jailKeeperTarget != -1:
-        players[jailKeeperTarget].roundInput = ''
+    ##jailKeeperTarget = getTarget(players, "Jailkeeper")
+    ##if jailKeeperTarget != -1:
+        ##players[jailKeeperTarget].roundInput = ''
             ##add Jailkeeper stuff
-     
+            
+    ##Jester 
+    jester = findPlayerByRole("Jester", players) 
+    if jester != -1:
+        players[jester].revenge = False
+    jesterTarget = getTarget(players, "Jester")
+    if jesterTarget != -1:
+        death = [jesterTarget, ' is dead! The Jester gets their revenge from the grave!']
+        players[jesterTarget].roundInput = ''
+        deaths.append(death)
+        
     ##Veteran     
     veteran = findPlayerByRole("Veteran", players) 
     vetTarget = getTarget(players, "Veteran")
