@@ -81,5 +81,6 @@ def updateOnLynching(players, votedPlayer):
     
     ##Jester
     if players[votedPlayer].role == "Jester":
+            players[votedPlayer].revenge = True
             print('The Jester, ' + players[votedPlayer].name + ", will get his revenge from the grave!")
     return players

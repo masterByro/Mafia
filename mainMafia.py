@@ -19,7 +19,7 @@ def main():
     while(True):
         print("=== Day " + str(dayInt) + " ===")
         for x in deaths:
-            print(players[x].name + " was tragically murdered last night!")
+            print(players[x[0]].name + x[1])
         if len(deaths) == 0 and dayInt > 1: print("Nobody was murdered last night")
         if checkForWin(players):
             gameOverText(players)
@@ -45,10 +45,10 @@ def day(players):
         os.system('cls||clear')
         print("Day: " + str(dayInt))
         print("You may openly discuss with the group")
-        print("You can also openly vote to place a Player on Trial for lynching. If over half the Players agree, type 'Vote' below")
-        textInput = input("Otherwise, type skip to move to nightfall" + errorText + "\n")
+        print("You can also openly vote to place a Player on Trial for lynching. If over half the Players agree, type VOTE below")
+        textInput = input("Otherwise, type SKIP to move to nightfall" + errorText + "\n")
         textInput = textInput.lower()
-        if textInput == 'skip': return
+        if textInput == 'skip': return players
         if textInput == 'vote':
             votedPlayer = votingPlayer(players)
             players = votingRound(players, votedPlayer)
@@ -73,9 +73,10 @@ def night(players, deadChat):
         
         while(valdiatedInput == False):
             os.system('cls||clear')
-            print("Night: " + str(dayInt) + "\nPlayer: " + players[x].name + "\nRole: " + players[x].role + "\nDescription: " + getRoleDescription(players[x].role))
+            print("Night: " + str(dayInt) + "\nPlayer: " + players[x].name + "\nRole: " + players[x].role)
+                  ##+ "\nDescription: " + getRoleDescription(players[x].role))
             
-            if players[x].role == "Medium" or players[x].alive == False:
+            if players[x].role == "Medium" or players[x].alive == False and players[x].revenge != True:
                 if players[x].alive == False:
                     print("You are dead, but you can still talk to the Medium or other dead people")
                 print(deadChat)
@@ -83,21 +84,21 @@ def night(players, deadChat):
                 if textInput != '': deadChat = deadChat + "\n[" + players[x].name + "] - " + textInput
                 valdiatedInput = True
                 
-            elif players[x].role == "Towny" or  players[x].role == "Mayor" or players[x].role == "Executioner" or players[x].role == "Jester":
+            elif players[x].role == "Towny" or  players[x].role == "Mayor" or players[x].role == "Executioner" or (players[x].role == "Jester" and players[x].revenge == False):
                 if  players[x].role == "Executioner":
                     if  players[x].executionerWin == False: print("Your target to get lynched is " + players[x].executionerTarget)
-                    else: print("Your have won the game! Feel free to help whichever side you'd like")
+                    else: print("You have won the game! Feel free to help whichever side you'd like")
                 input("\nType anything below and Enter (typing stuff helps hide your role from others): \n")
                 valdiatedInput = True
                 
             else:
-                if players[x].role == "Murderer" or  players[x].role == "Framer":
+                if players[x].role == "Mafioso" or  players[x].role == "Framer":
                     print(mafiaInfo(players))
                 if  players[x].role == "Detective" and players[x].targetInfo != '':
                     print(players[x].targetInfo)
-                textInput = input("\n" + getActionDescription(players[x].role) + errorMessage + "\n").lower()
+                textInput = input("\n" + getActionDescription(players[x].role, players[x]) + errorMessage + "\n").lower()
                 if isValidInput(textInput, players, x):
-                    valdiatedInput = True
+                    valdiatedInput = True   
                     players[x].roundInput = textInput
                     players[x].targetInfo = ''
                 else:
