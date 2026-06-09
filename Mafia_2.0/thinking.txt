@@ -1,0 +1,12 @@
+users in discord opt in with a command
+have admin commands
+!start, !end
+users get assigned roles
+every user has their own room for chat commands
+mafia has room, medium has dead chat
+main chat, where votes are displayed 
+at night, users use their role with command then target name
+success/retry message
+user can write notes/murder message
+end of night, run through user selections to find outcome
+check for winning condition
