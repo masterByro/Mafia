@@ -3,12 +3,17 @@ class Player:
         self.id = member.id
         self.member = member
         self.name = member.display_name
+        self.number = 0
 
         self.role = None
         self.alive = True
 
-        # per-round
+        # vote
         self.vote = None
+        self.votedFor = None
+        self.decision = None
+
+        # action
         self.round_action = None
 
         # special roles

@@ -2,8 +2,9 @@ class GameState:
     def __init__(self):
         self.running = False
         self.is_day = True
-        self.day_number = 0
+        self.day_number = 1
         self.can_vote = True
+        self.canDecide = False
 
         self.town_channel_id = None
         # player_id -> Player object

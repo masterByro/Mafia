@@ -13,6 +13,15 @@ def setup_players(guild, game):
     roles = makeRoles(len(game.players))
     for player, role in zip(game.players.values(), roles):
         player.role = role
+    
+    #Add integer
+    ordered_players = sorted(
+        game.players.values(),
+        key=lambda p: p.name.lower()
+    )
+    for i, player in enumerate(ordered_players, start=1):
+        player.number = i
+    
     getExecutionerTarget(game.players)
 
 def makeRoles(numOfPlayers):
@@ -118,7 +127,7 @@ async def sendStarterInfo(guild, players):
         # Mafia teammates
         if player.role in ["Mafioso", "Framer"]:
             teammates = [
-                f"{m.member.display_name} : {m.role}"
+                f"{m.name} : {m.role}"
                 for m in mafia_members
             ]
 
@@ -129,7 +138,7 @@ async def sendStarterInfo(guild, players):
 
         # Executioner target
         if player.role == "Executioner" and player.executioner_target is not None:
-                message += f"**Your target is:** {player.executioner_target.display_name}\n\n"
+                message += f"**Your target is:** {player.executioner_target.name}\n\n"
 
         # Commands template
         message += (

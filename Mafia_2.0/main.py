@@ -1,13 +1,16 @@
-import random
 import discord
 from discord.ext import commands
 import logging
 from dotenv import load_dotenv
 import os
 
+from channelStuff import setup_channels
 from dayNight import day
 from gamestate import GameState
-from playerCreation import makeRoles, sendStarterInfo, setup_players
+from playerCreation import sendStarterInfo, setup_players
+from debug import debugPlayers
+from utils import getPlayerList
+from voting import castDecision, clear_vote, decideEnd, on_vote, sendVote
 
 load_dotenv()
 
@@ -51,70 +54,22 @@ async def on_ready():
 
 @bot.command()
 async def start(ctx):
-    if ctx.author.id != BYRO_ID:
-        return
+    if ctx.author.id != BYRO_ID: return
 
     guild = ctx.guild
-    byron = guild.get_member(BYRO_ID)
-    
     setup_players(guild, game)
-
-    town_channel = await guild.create_text_channel(
-        name="courtyard",
-        overwrites={
-            guild.default_role: discord.PermissionOverwrite(
-                view_channel=True,
-                send_messages=False
-            ),
-            guild.me: discord.PermissionOverwrite(
-                view_channel=True,
-                send_messages=True,
-                read_message_history=True
-            )
-        }
-    )
-    game.town_channel_id = town_channel.id
-
-    category = await guild.create_category("Mafia Players")
-
-    ## Channel creation and permission setup
-    for player in game.players.values():
-        channel_name = player.name.lower().replace(" ", "-")
-
-        overwrites = {
-            guild.default_role: discord.PermissionOverwrite(view_channel=False),
-            player.member: discord.PermissionOverwrite(
-                view_channel=True,
-                send_messages=True,
-                read_message_history=True
-            ),
-            byron: discord.PermissionOverwrite(
-                view_channel=True,
-                send_messages=True,
-                read_message_history=True
-            )
-        }
-
-        channel = await guild.create_text_channel(
-                name=channel_name,
-                overwrites=overwrites,
-                category=category
-            )
-        game.player_channels[player.id] = channel.id
-
+    await setup_channels(guild, game, BYRO_ID)
     await sendStarterInfo(guild, game.players)
-    channel = guild.get_channel(game.town_channel_id)
     game.running = True
     await ctx.send("Game started!")
-    await day(game)
+    await day(guild, game)
 
 
 @bot.command()
 async def end(ctx):
+    if ctx.author.id != BYRO_ID: return
     global game
-    if ctx.author.id != BYRO_ID:
-        return
-    
+
     guild = ctx.guild
     for channel_id in game.player_channels.values():
         channel = guild.get_channel(channel_id)
@@ -123,10 +78,15 @@ async def end(ctx):
     category = discord.utils.get(guild.categories, name="Mafia Players")
     if category:
         await category.delete()
+
+
+    #Delete Courtyard
+    if game.town_channel_id is not None:
+        channel = ctx.guild.get_channel(game.town_channel_id)
+        if channel: await channel.delete()
+
     game = GameState()
     await ctx.send("Game ended!")
-
-player_count = 0
 
 @bot.command()
 async def n(ctx):
@@ -136,6 +96,56 @@ async def n(ctx):
         game.can_vote = True
         await ctx.send(f"Day {game.day_number} has begun!")
 
-player_count = 0
+@bot.command()
+async def vote(ctx, number: int):
+    feedback, voted_for = await sendVote(game, ctx, number)
+    await ctx.send(feedback)
+    if (voted_for):
+        await on_vote(ctx, game)
+    
+@bot.command()
+async def decide(ctx):
+    if ctx.author.id != BYRO_ID: return
+    
+    game.canDecide = True
+    channel = ctx.guild.get_channel(game.town_channel_id)
+    if channel:
+        await channel.send(f"Place your decision: Is {player.votedFor.name} guilty or innocent?") # type: ignore
+    
+@bot.command()
+async def guilty(ctx):
+    response = await castDecision(game, ctx, "guilty")
+    await ctx.send(response)
 
+@bot.command()
+async def innocent(ctx):
+    response = await castDecision(game, ctx, "innocent")
+    await ctx.send(response)
+
+@bot.command()
+async def decideend(ctx):
+    if ctx.author.id != BYRO_ID: return
+    
+    await decideEnd(ctx, game)
+    
+    channel = ctx.guild.get_channel(game.town_channel_id)
+    await channel.send(f"Place your decision: Is {player.votedFor.name} guilty or innocent?") # type: ignore
+    
+@bot.command()
+async def voteclear(ctx):
+    player = game.players.get(ctx.author.id)
+    clear_vote(player)
+
+@bot.command()
+async def list(ctx):
+    await ctx.send(getPlayerList(game))
+
+
+@bot.command()
+async def debugplayers(ctx):
+    if ctx.author.id != BYRO_ID: return
+    message = await debugPlayers(game)
+    await ctx.send(message)
+
+player_count = 0
 bot.run(token,log_handler=handler, log_level=logging.DEBUG) # type: ignore
