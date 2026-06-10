@@ -1,28 +1,24 @@
 class Player:
     def __init__(self, member):
-        self.member = member
         self.id = member.id
+        self.member = member
         self.name = member.display_name
-        self.role = ''
-        self.roundInput = ''
-        self.alive = True
-    
-        self.targetInfo = '' ##info about previous round target
-        
-        self.vote_target_id = None
-        self.revealed = False ##Mayor
-        
-        self.executioner_target = None
-        self.executionerWin = False
-        
-        self.revenge = False ##Jester
-        
-        self.hasMine = True
-        self.hasBullet = True
-        
-    def reset(self):
-        self.roundInput = ''
-        self.targetInfo = ''
 
-    def is_mafia(self):
-        return self.role in ['Mafioso', 'Framer']
+        self.role = None
+        self.alive = True
+
+        # per-round
+        self.vote = None
+        self.round_action = None
+
+        # special roles
+        self.executioner_target = None
+        self.revealed = False
+
+        # utility items
+        self.has_mine = True
+        self.has_bullet = True
+
+    def reset_round(self):
+        self.vote = None
+        self.round_action = None

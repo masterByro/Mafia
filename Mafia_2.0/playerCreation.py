@@ -1,8 +1,19 @@
 import random
 from roleDescriptions import getRoleDescription
+from player import Player
 import discord
 ##roles = ['Doctor','Framer', 'Mafioso', 'Escort', 'Detective', 'Medium', 'Towny', 'Executioner', 'Mayor', 'Serial Killer', 'Veteran', 'Jester']
 ##names = ['byron', 'hayley', 'tristen', 'rhiannon', 'jordan', 'mary', 'james', 'gayan','gihara','jadelyn', 'prigg']
+
+def setup_players(guild, game):
+    for member in guild.members:
+        if not member.bot:
+            game.players[member.id] = Player(member)
+
+    roles = makeRoles(len(game.players))
+    for player, role in zip(game.players.values(), roles):
+        player.role = role
+    getExecutionerTarget(game.players)
 
 def makeRoles(numOfPlayers):
     ## 11: 2 mafia, 2 chaos, 2 extra, 5 basic
