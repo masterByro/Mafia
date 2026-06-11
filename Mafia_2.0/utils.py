@@ -20,10 +20,12 @@ async def setAction(game, ctx, number: int):
 
     player = game.players.get(ctx.author.id)
     if player is None: return "You are not part of the game.", False
-    if not player.alive: return "Dead players cannot perform actions.", False
+
+    if player.role == "Jester" and player.alive: return "Jester can only seek revenge once lynched", False
+    if not player.alive and not player.role == "Jester": return "Dead players cannot perform actions.", False
 
     # Roles with no night action
-    if player.role in ["Towny", "Executioner", "Jester", "Mayor"]:
+    if player.role in ["Towny", "Executioner", "Mayor"]:
         return f"The {player.role} has no night action.", False
 
     if player.role == "Veteran":
@@ -32,15 +34,11 @@ async def setAction(game, ctx, number: int):
                 player.roundInput = "alert"
                 return "You will be on alert tonight.", True
             return "You have already been on alert three times.", False
-
         else:
-            return "Bro can you read? Either type 1 to go on alert, or don't type at all", False
+            return "Bro can you read? Either type 1 to be on alert, or don't type at all", False
 
     # Find target by player number
-    target = next(
-        (p for p in game.players.values() if p.number == number),
-        None
-    )
+    target = next((p for p in game.players.values() if p.number == number),None)
 
     if target is None: return "Invalid player number.", False
 
@@ -55,36 +53,32 @@ async def setAction(game, ctx, number: int):
             "Detective",
             "Serial Killer",
             "Veteran",
+            "Jester"
         ]:
             return f"The {player.role} cannot target themselves.", False
 
     # Cannot target same person twice in a row
     if player.lastTarget == target.id:
         if player.role in ["Doctor", "Escort"]:
-            return (
-                f"The {player.role} cannot target the same player two nights in a row.",
-                False,
-            )
+            return (f"The {player.role} cannot target the same player two nights in a row.",False,)
 
     # Mafia cannot target mafia
     if player.role in ["Mafioso", "Framer"]:
         if target.role in ["Mafioso", "Framer"]:
             return "You cannot target a fellow Mafia member.", False
 
+    #Jester can only kill guilty voters the night after lynch
+    if player.role == "Jester":
+        if len(player.guiltyVoters) == 0: return "You can no longer seek revenge", False
+        if target.id not in player.guiltyVoters: return "You can only target players who voted guilty against you", False
+
     # Success
     player.roundInput = target.id
 
-    return (
-        f"You will target {target.name} tonight.",
-        True,
-    )
+    return (f"You will target {target.name} tonight.", True)
 
 def get_target(game, role):
-    actor = next(
-        (p for p in game.players.values()
-         if p.role == role and p.alive),
-        None
-    )
+    actor = next((p for p in game.players.values()if p.role == role),None)
 
     if actor is None: return None, None
     if actor.roundInput is None: return actor, None
@@ -109,14 +103,15 @@ def checkWin(game):
     alive_town = [p for p in alive_players if not isMafia(p) and p.role != "Serial Killer"]
     alive_sk = [p for p in alive_players if p.role == "Serial Killer"]
 
-    if len(alive_players) == 1 and alive_sk:
-        return True, "The Serial Killer has won!"
+    #TODO: UNCOMMENT
+    # if len(alive_players) == 1 and alive_sk:
+    #     return True, "The Serial Killer has won!"
 
-    if len(alive_mafia) > 0 and len(alive_mafia) >= len(alive_town) and not alive_sk:
-        return True, "The Mafia have defeated the Townfolk!"
+    # if len(alive_mafia) > 0 and len(alive_mafia) >= len(alive_town) and not alive_sk:
+    #     return True, "The Mafia have defeated the Townfolk!"
 
-    if not alive_mafia and not alive_sk:
-        return True, "The Townfolk have defeated all threats!"
+    # if not alive_mafia and not alive_sk:
+    #     return True, "The Townfolk have defeated all threats!"
 
     return False, None
 
@@ -136,7 +131,6 @@ async def kill(ctx, game, player, reason):
     if dead_role: await player.member.add_roles(dead_role)
 
     channel = ctx.guild.get_channel(game.town_channel_id)
-    await channel.send(reason)
     await channel.send(f"{reason}. Their role was: {player.role}")
     await isGameOver(ctx.guild, game)
 

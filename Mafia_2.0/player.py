@@ -17,12 +17,12 @@ class Player:
         self.roundInput = None
         self.lastTarget = None
 
-
-        # special roles
+        # role specific
         self.executioner_target = None #Executioner target id
         self.revealed = False #Mayor revealed or not
         self.targetInfo = '' #Detective info
         self.alerts = 3 #Veteran bullets
+        self.guiltyVoters = [] #Jester
 
     def reset_round(self):
         self.vote = None

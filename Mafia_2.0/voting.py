@@ -10,7 +10,7 @@ async def sendVote(game, ctx, number):
     # find target by number
     target = next((p for p in game.players.values() if p.number == number), None)
     if target is None: return "Invalid player number.", None
-    if target.id == voter.id: return "You cannot vote for yourself.", None
+    #if target.id == voter.id: return "You cannot vote for yourself.", None TODO: UNCOMMENT
     if not target.alive: return "You cannot vote for a dead player.", None
 
     # success
@@ -98,6 +98,7 @@ async def decideEnd(ctx, game):
     lines = ["**🧾 Trial Results**\n"]
 
     accused = getVotedForPlayer(game)
+    guilty_voters = []
 
     for p in ordered:
         if accused and p.id == accused.id: continue
@@ -109,6 +110,7 @@ async def decideEnd(ctx, game):
             lines.append(f"{p.name} voted {p.decision.upper()}")
             if p.decision == "guilty":
                 guilty += 1
+                guilty_voters.append(p.id)
             elif p.decision == "innocent":
                 innocent += 1
 
@@ -119,10 +121,13 @@ async def decideEnd(ctx, game):
         return
 
     if guilty > innocent:
-        await channel.send(
-                f"⚖️ The castlefolk have voted to lynch {accused.name}.\n" # type: ignore
-                f"Any last words?"
-            )
+        if accused.role == "Jester":
+            accused.guiltyVoters = guilty_voters
+            await channel.send(f"You FOOLS! {accused.name} is the Jester! He will seek revenge...")
+
+        else:
+            await channel.send(f"⚖️ The castlefolk have voted to lynch {accused.name}.\n"f"Any last words?")
+
         await kill(ctx, game, accused, f"{accused.name} was lynched")
   
     else:

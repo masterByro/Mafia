@@ -70,7 +70,7 @@ def makeRoles(numOfPlayers):
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return ['Mafioso', 'Framer', 'Medium']
+    return ['Jester', 'Mafioso', 'Veteran']
     return roles
 
 def getExecutionerTarget(players):
@@ -109,32 +109,25 @@ def getExecutionerTarget(players):
     executioner.executioner_target = target
     
 async def sendStarterInfo(guild, players):
+    #Mafia blob
     mafia_members = []
-    print(players)
+    mafia_members = [p for p in players.values() if isMafia(p)]
+    mafia_teammate_text = ""
+    if mafia_members:
+        mafia_teammate_text = "**Mafia Team:**\n" + "\n".join(f"{m.name} : {m.role}" for m in mafia_members) + "\n\n"
 
-    # send messages
+# send messages
     for player in players.values():
-        print('hmm')
-        print(player.name)
-        mafia_members = [p for p in players.values() if isMafia(p)]
-        mafia_teammates = [f"{m.name} : {m.role}" for m in mafia_members if m.id != player.id]
-        mafia_teammate_text = ""
-        if mafia_members:
-            mafia_teammate_text = "**Mafia Team:**\n" + "\n".join(f"{m.name} : {m.role}" for m in mafia_members) + "\n\n"
-
         channel_name = player.name.lower().replace(" ", "-")
         channel = discord.utils.get(guild.text_channels, name=channel_name)
-
-        if channel is None:
-            continue
+        if channel is None: continue
 
         message = f"**Your role is {player.role}**\n\n"
         message += getRoleDescription(player.role)
         message += "\n\n"
 
         # Mafia teammates
-        if isMafia(player):
-            message += mafia_teammate_text
+        if isMafia(player): message += mafia_teammate_text
 
         # Executioner target
         if player.role == "Executioner" and player.executioner_target is not None:
@@ -143,11 +136,8 @@ async def sendStarterInfo(guild, players):
         # Commands template
         message += (
             "**Commands**\n"
-            "*(Work in progress)*\n\n"
-            "!help - Show role information\n"
-            "!role - Show your role\n"
-            "!action <player> - Perform your night action\n"
-            "!vote <player> - Vote during the day\n"
+            "!vote <player number> - Vote during the day\n"
+            "Once a player has been voted, !guilty, !innocent or abstain from casting a decision"
+            "!action <player number> - Perform your night action\n"
         )
-        print(f"Sending starter info to {player.name} in channel {channel_name}")
         await channel.send(message)

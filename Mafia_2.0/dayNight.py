@@ -1,24 +1,27 @@
-from utils import checkWin, isGameOver, get_target, getPlayerList, is_blocked, update_dead_chat_visibility, update_mafia_chat_visibility
-   
+from utils import isGameOver, get_target, getPlayerList, is_blocked, update_dead_chat_visibility, update_mafia_chat_visibility
+from roleDescriptions import sendNightInfo
+
 async def day(guild, game):
     channel = guild.get_channel(game.town_channel_id)
-
+    nightMessage = ''
     if game.day_number > 1:
-        deaths = calculateResults(game)
-        await update_dead_chat_visibility(guild, game)
-        await update_mafia_chat_visibility(guild, game)
+        nightMessage = calculateResults(game)
         await isGameOver(guild, game)
        
-        for player in game.players.values():
-            player.lastTarget = player.roundInput
-            player.roundInput = None
-            player.vote = None
-            player.decision = None
+        if game.running:
+            await update_dead_chat_visibility(guild, game)
+            await update_mafia_chat_visibility(guild, game)
+            for player in game.players.values():
+                player.lastTarget = player.roundInput
+                player.roundInput = None
+                player.vote = None
+                player.decision = None
 
     if game.running:
         game.can_vote = True
         await channel.send(getPlayerList(game))
         await channel.send("The town awakens on Day " + str(game.day_number))
+        await channel.send(nightMessage)
         await channel.send("You may openly discuss with the group")
         await channel.send("You can also openly vote to place a Player on Trial for lynching")
 
@@ -29,6 +32,8 @@ async def night(guild, game):
     await channel.send(getPlayerList(game))
     await channel.send("The town desscends into darkness on Night " + str(game.day_number))
     await channel.send("You can now perform your night action")
+    await sendNightInfo(guild, game)
+
 
 
 
@@ -63,7 +68,6 @@ def calculateResults(game):
         else:   
             healed.add(target.id)
 
-  #TODO Revisit this..
     jester, target = get_target(game, "Jester")
     if jester and target:
         if target.role == "Veteran" and veteranGuard:
@@ -118,5 +122,13 @@ def calculateResults(game):
     for victim_id, _ in deaths:
         game.players[victim_id].alive = False
 
+    if not deaths:
+        return "🌙 **Night Results**\nNo one died last night."
 
-    return deaths
+    lines = ["☠️ **Night Results** ☠️\n"]
+
+    for victim_id, msg in deaths:
+        victim = game.players[victim_id]
+        lines.append(f"**{victim.name}** {msg}")
+
+    return "\n".join(lines)
