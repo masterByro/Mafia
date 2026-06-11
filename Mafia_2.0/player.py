@@ -14,16 +14,17 @@ class Player:
         self.decision = None
 
         # action
-        self.round_action = None
+        self.roundInput = None
+        self.lastTarget = None
+
 
         # special roles
-        self.executioner_target = None
-        self.revealed = False
-
-        # utility items
-        self.has_mine = True
-        self.has_bullet = True
+        self.executioner_target = None #Executioner target id
+        self.revealed = False #Mayor revealed or not
+        self.targetInfo = '' #Detective info
+        self.has_mine = True #Veteran landmine
+        self.has_bullet = True #Veteran bullet
 
     def reset_round(self):
         self.vote = None
-        self.round_action = None
+        self.roundInput = None

@@ -66,6 +66,8 @@ def makeRoles(numOfPlayers):
             i += 1
         else: roles.append('Towny')
 
+    random.shuffle(roles)
+    return ['Mafioso', 'Escort', 'Medium']
     return roles
 
 def getExecutionerTarget(players):

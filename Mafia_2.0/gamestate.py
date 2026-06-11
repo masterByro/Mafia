@@ -7,6 +7,8 @@ class GameState:
         self.canDecide = False
 
         self.town_channel_id = None
+        self.dead_role_id = None
+        
         # player_id -> Player object
         self.players = {}
 

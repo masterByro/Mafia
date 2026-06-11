@@ -1,4 +1,5 @@
-from utils import checkWin
+
+from utils import checkWin, getVotedForPlayer, kill
 async def sendVote(game, ctx, number):
     if not game.can_vote: return "You cannot vote right now.", None
 
@@ -72,7 +73,7 @@ def tally_votes(game):
 
 async def castDecision(game, ctx, choice):
     player = game.players.get(ctx.author.id)
-
+    if game.canDecide == False: return "You cannot cast a decision right now."
     if player is None: return "You are not part of the game."
     if not player.alive: return "Dead players cannot vote."
     if player.votedFor: return "You cannot vote on yourself."
@@ -96,7 +97,11 @@ async def decideEnd(ctx, game):
     ordered = sorted(game.players.values(), key=lambda p: p.number)
     lines = ["**🧾 Trial Results**\n"]
 
+    accused = getVotedForPlayer(game)
+
     for p in ordered:
+        if accused and p.id == accused.id: continue
+
         # abstained (never voted or cleared vote)
         if p.decision is None:
             lines.append(f"{p.name} abstained")
@@ -109,7 +114,6 @@ async def decideEnd(ctx, game):
 
     await channel.send("\n".join(lines))
 
-    accused = next((p for p in game.players.values() if getattr(p, "votedFor", False)), None)
     if accused is None: 
         await channel.send("Game is cooked. Should be an accused player at this point.")
         return
@@ -119,12 +123,8 @@ async def decideEnd(ctx, game):
                 f"⚖️ The castlefolk have voted to lynch {accused.name}.\n" # type: ignore
                 f"Any last words?"
             )
-        accused.alive = False
-        await channel.send(
-                f"{accused.name}'s role was: {accused.role}"
-            )
-        if not checkWin(game):
-            game.isDay = False
+        await kill(ctx, game, accused, f"{accused.name} was lynched")
+  
     else:
         game.can_vote = True
         await channel.send(
