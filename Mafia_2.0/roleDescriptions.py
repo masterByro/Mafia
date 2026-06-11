@@ -15,7 +15,7 @@ def getRoleDescription(role):
     if role == 'Jester': return 'The Jester wins the game by getting lynched, simple as that'
     if role == 'Mayor': return 'The Mayor' + townsFolk + 'The Mayor can reveal his role to the group before a round of voting begins. His vote will be worth 3 points from then on.'
     if role == 'Serial Killer': return 'The Serial Killer wins the game by being the last person alive. They can achieve this by killing. And lots of it!'
-    if role == 'Veteran': return 'The Veteran' + townsFolk + "The Veteran has 1 bullet and 1 landmine. They can choose to shoot one player per game, or plant a landmine for the night. If it doesn't explode, they can use it again."
+    if role == 'Veteran': return 'The Veteran' + townsFolk + "The Veteran can go on alert at night three times. You will kill any visitors on those nights"
     if role == 'GodFather': return 'The GodFather' + mafia + "The GodFather takes over the the murdering if the Mafioso dies."
     return 'oops no role Description, program brokey'
         
@@ -32,13 +32,9 @@ def getActionDescription(role, player):
     return 'oops no action Description, program brokey'
         
 def veteranPrint(veteran):
-    numBullet = '1' if veteran.hasBullet else '0'
-    numMine = '1' if veteran.hasMine else '0'
-    message = 'You currently have ' + numBullet + ' bullet and ' + numMine + ' landMine.\n'
-    action = ''
-    if numBullet == '0' and numMine == '0': action = 'Press Enter to Continue the night'
-    elif  numBullet == '0': action = "Type LANDMINE to place down a landmine to protect yourself tonight." + leaveBlank
-    elif  numMine == '0': action = 'Who would you like to bring justice to?' + leaveBlank
-    else: action = "Type LANDMINE to place down a landmine to protect yourself tonight, or type who you would like to bring justice to." + leaveBlank
-    return message + action
+    alerts = str(3 - veteran.alerts)
+    message = 'You have used ' + alerts + ' alerts.'
+    if veteran.alerts > 0:
+        message+= "Type 1 to go on alert tonight"
+    return message
     

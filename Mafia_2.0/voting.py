@@ -1,5 +1,5 @@
 
-from utils import checkWin, getVotedForPlayer, kill
+from utils import getVotedForPlayer, kill
 async def sendVote(game, ctx, number):
     if not game.can_vote: return "You cannot vote right now.", None
 

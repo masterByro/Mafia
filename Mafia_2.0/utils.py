@@ -29,15 +29,14 @@ async def setAction(game, ctx, number: int):
 
     # Veteran special actions //TODO
     if player.role == "Veteran":
-        if number == 0:
-            if player.hasMine:
-                player.roundInput = "landmine"
-                return "You will place a landmine tonight.", True
+        if number == 1:
+            if player.alerts > 0:
+                player.roundInput = "alert"
+                return "You will be on alert tonight.", True
+            return "You have already been on alert three times.", False
 
-            return "You have already used your landmine.", False
-
-        if not player.hasBullet:
-            return "You have no bullets remaining.", False
+        else:
+            return "Bro can you read? Either type 1 to go on alert, or don't type at all", False
 
     # Find target by player number
     target = next(
@@ -89,18 +88,39 @@ def get_target(game, role):
         None
     )
 
-    if actor is None:
-        return None, None
+    if actor is None: return None, None
+    if actor.roundInput is None: return actor, None
 
-    if actor.roundInput is None:
-        return actor, None
+    if (actor.role == "Veteran"): return actor, actor.roundInput
 
     target = game.players.get(actor.roundInput)
 
     return actor, target
 
+async def isGameOver(guild, game):
+    gameWon, message =  checkWin(game)
+    if gameWon:
+        game.running = False
+        channel = guild.get_channel(game.town_channel_id)
+        await channel.send(message)
+
 def checkWin(game):
-    pass
+    alive_players = [p for p in game.players.values() if p.alive]
+
+    alive_mafia = [p for p in alive_players if isMafia(p)]
+    alive_town = [p for p in alive_players if not isMafia(p) and p.role != "Serial Killer"]
+    alive_sk = [p for p in alive_players if p.role == "Serial Killer"]
+
+    if len(alive_players) == 1 and alive_sk:
+        return True, "The Serial Killer has won!"
+
+    if len(alive_mafia) > 0 and len(alive_mafia) >= len(alive_town) and not alive_sk:
+        return True, "The Mafia have defeated the Townfolk!"
+
+    if not alive_mafia and not alive_sk:
+        return True, "The Townfolk have defeated all threats!"
+
+    return False, None
 
 def is_blocked(player, blocked):
     return player.id in blocked
@@ -120,10 +140,7 @@ async def kill(ctx, game, player, reason):
     channel = ctx.guild.get_channel(game.town_channel_id)
     await channel.send(reason)
     await channel.send(f"{reason}. Their role was: {player.role}")
-    
-    if not checkWin(game):
-    # TODO: check win conditions here and end game if met
-        pass
+    await isGameOver(ctx.guild, game)
 
 async def update_dead_chat_visibility(guild, game):
     dead_channel = guild.get_channel(game.dead_channel_id)
@@ -134,18 +151,27 @@ async def update_dead_chat_visibility(guild, game):
     medium_members = [p.member for p in game.players.values() if p.role == "Medium"]
 
     if game.is_day:
-        # DAY → Medium cannot see
         for member in medium_members:
-            overwrites[member] = discord.PermissionOverwrite(
-                view_channel=False
-            )
+            overwrites[member] = discord.PermissionOverwrite(view_channel=False)
     else:
-        # NIGHT → Medium can see
         for member in medium_members:
-            overwrites[member] = discord.PermissionOverwrite(
-                view_channel=True,
-                send_messages=True,
-                read_message_history=True
-            )
+            overwrites[member] = discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
 
     await dead_channel.edit(overwrites=overwrites)
+
+def isMafia(player):
+    return player.role in ["Mafioso", "Framer"]
+
+async def update_mafia_chat_visibility(guild, game):
+    mafia_channel = guild.get_channel(game.mafia_channel_id)
+
+    overwrites = dict(mafia_channel.overwrites)
+
+    for player in game.players.values():
+        if not  isMafia(player): continue
+        if game.is_day:
+            overwrites[player.member] = discord.PermissionOverwrite(view_channel=False)
+        else:
+            overwrites[player.member] = discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
+
+    await mafia_channel.edit(overwrites=overwrites)

@@ -1,27 +1,30 @@
-from utils import checkWin, checkWin, get_target, getPlayerList, is_blocked, update_dead_chat_visibility
+from utils import checkWin, isGameOver, get_target, getPlayerList, is_blocked, update_dead_chat_visibility, update_mafia_chat_visibility
    
 async def day(guild, game):
+    channel = guild.get_channel(game.town_channel_id)
+
     if game.day_number > 1:
         deaths = calculateResults(game)
         await update_dead_chat_visibility(guild, game)
-        if checkWin(game): return
-
+        await update_mafia_chat_visibility(guild, game)
+        await isGameOver(guild, game)
+       
         for player in game.players.values():
             player.lastTarget = player.roundInput
             player.roundInput = None
             player.vote = None
             player.decision = None
 
-    game.can_vote = True
-    channel = guild.get_channel(game.town_channel_id)
-
-    await channel.send(getPlayerList(game))
-    await channel.send("The town awakens on Day " + str(game.day_number))
-    await channel.send("You may openly discuss with the group")
-    await channel.send("You can also openly vote to place a Player on Trial for lynching")
+    if game.running:
+        game.can_vote = True
+        await channel.send(getPlayerList(game))
+        await channel.send("The town awakens on Day " + str(game.day_number))
+        await channel.send("You may openly discuss with the group")
+        await channel.send("You can also openly vote to place a Player on Trial for lynching")
 
 async def night(guild, game):
     await update_dead_chat_visibility(guild, game)
+    await update_mafia_chat_visibility(guild, game)
     channel = guild.get_channel(game.town_channel_id)
     await channel.send(getPlayerList(game))
     await channel.send("The town desscends into darkness on Night " + str(game.day_number))
@@ -35,16 +38,14 @@ def calculateResults(game):
     healed = set()
     framed = set()
     attacked = []
+    veteranGuard = False
 
-    #TODO Revisit this..
-    jester, target = get_target(game, "Jester")
-    if target: deaths.append((target.id," is dead! The Jester gets their revenge from the grave!"))
-
-    #TODO Revisit this
+   #TODO Revisit this
     veteran, target = get_target(game, "Veteran")
     if veteran and target:
-        veteran.hasBullet = False
-        deaths.append((target.id," was shot in the chest last night!"))
+        if target == 1:
+            veteranGuard = True
+            #deaths.append((target.id," was shot in the chest last night!"))
 
     escort, target = get_target(game, "Escort")
     if escort and target:
@@ -56,6 +57,11 @@ def calculateResults(game):
     doctor, target = get_target(game, "Doctor")
     if (doctor and target and not is_blocked(doctor, blocked)): 
         healed.add(target.id)
+
+  #TODO Revisit this..
+    jester, target = get_target(game, "Jester")
+    if target: deaths.append((target.id," is dead! The Jester gets their revenge from the grave!"))
+
 
     framer, target = get_target(game, "Framer")
     if (framer and target and not is_blocked(framer, blocked)): 

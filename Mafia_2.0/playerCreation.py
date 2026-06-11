@@ -1,7 +1,10 @@
 import random
+import discord
+
 from roleDescriptions import getRoleDescription
 from player import Player
-import discord
+from utils import isMafia
+
 ##roles = ['Doctor','Framer', 'Mafioso', 'Escort', 'Detective', 'Medium', 'Towny', 'Executioner', 'Mayor', 'Serial Killer', 'Veteran', 'Jester']
 ##names = ['byron', 'hayley', 'tristen', 'rhiannon', 'jordan', 'mary', 'james', 'gayan','gihara','jadelyn', 'prigg']
 
@@ -67,7 +70,7 @@ def makeRoles(numOfPlayers):
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return ['Mafioso', 'Escort', 'Medium']
+    return ['Mafioso', 'Framer', 'Medium']
     return roles
 
 def getExecutionerTarget(players):
@@ -113,9 +116,12 @@ async def sendStarterInfo(guild, players):
     for player in players.values():
         print('hmm')
         print(player.name)
-        if player.role in ["Mafioso", "Framer"]:
-            mafia_members.append(player)
-        
+        mafia_members = [p for p in players.values() if isMafia(p)]
+        mafia_teammates = [f"{m.name} : {m.role}" for m in mafia_members if m.id != player.id]
+        mafia_teammate_text = ""
+        if mafia_members:
+            mafia_teammate_text = "**Mafia Team:**\n" + "\n".join(f"{m.name} : {m.role}" for m in mafia_members) + "\n\n"
+
         channel_name = player.name.lower().replace(" ", "-")
         channel = discord.utils.get(guild.text_channels, name=channel_name)
 
@@ -127,16 +133,8 @@ async def sendStarterInfo(guild, players):
         message += "\n\n"
 
         # Mafia teammates
-        if player.role in ["Mafioso", "Framer"]:
-            teammates = [
-                f"{m.name} : {m.role}"
-                for m in mafia_members
-            ]
-
-            if teammates:
-                message += "**Mafia Team:**\n"
-                message += "\n".join(teammates)
-                message += "\n\n"
+        if isMafia(player):
+            message += mafia_teammate_text
 
         # Executioner target
         if player.role == "Executioner" and player.executioner_target is not None:

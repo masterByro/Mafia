@@ -22,8 +22,7 @@ class Player:
         self.executioner_target = None #Executioner target id
         self.revealed = False #Mayor revealed or not
         self.targetInfo = '' #Detective info
-        self.has_mine = True #Veteran landmine
-        self.has_bullet = True #Veteran bullet
+        self.alerts = 3 #Veteran bullets
 
     def reset_round(self):
         self.vote = None

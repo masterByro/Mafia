@@ -6,9 +6,13 @@ class GameState:
         self.can_vote = True
         self.canDecide = False
 
+        #Discord channels
         self.town_channel_id = None
-        self.dead_role_id = None
-        
+        self.dead_channel_id = None
+        self.mafia_channel_id = None
+
+        self.dead_role_id = None #Discord role
+
         # player_id -> Player object
         self.players = {}
 
