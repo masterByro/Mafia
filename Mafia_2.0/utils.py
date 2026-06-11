@@ -1,6 +1,5 @@
 import discord
 
-
 def getPlayerList(game):
     # Build ordered player list
     ordered = sorted(game.players.values(), key=lambda p: p.number)
@@ -27,7 +26,6 @@ async def setAction(game, ctx, number: int):
     if player.role in ["Towny", "Executioner", "Jester", "Mayor"]:
         return f"The {player.role} has no night action.", False
 
-    # Veteran special actions //TODO
     if player.role == "Veteran":
         if number == 1:
             if player.alerts > 0:

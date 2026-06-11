@@ -39,58 +39,77 @@ def calculateResults(game):
     framed = set()
     attacked = []
     veteranGuard = False
+    deathByVeteran = " was shot in the chest last night!"
 
-   #TODO Revisit this
     veteran, target = get_target(game, "Veteran")
     if veteran and target:
-        if target == 1:
+        if target == "alert":
             veteranGuard = True
-            #deaths.append((target.id," was shot in the chest last night!"))
 
     escort, target = get_target(game, "Escort")
     if escort and target:
-        blocked.add(target.id)
-        # Escort dies if visiting SK
-        if target.role == "Serial Killer":
-            deaths.append((escort.id," was horrifically stabbed to death while out visiting last night!"))
+        if target.role == "Veteran" and veteranGuard:
+            attacked.append((target.id,deathByVeteran))
+        else:   
+            blocked.add(target.id)
+            # Escort dies if visiting SK
+            if target.role == "Serial Killer":
+                attacked.append((escort.id," was horrifically stabbed to death while out visiting last night!"))
 
     doctor, target = get_target(game, "Doctor")
-    if (doctor and target and not is_blocked(doctor, blocked)): 
-        healed.add(target.id)
+    if (doctor and target and not is_blocked(doctor, blocked)):
+        if target.role == "Veteran" and veteranGuard:
+            attacked.append((target.id,deathByVeteran))
+        else:   
+            healed.add(target.id)
 
   #TODO Revisit this..
     jester, target = get_target(game, "Jester")
-    if target: deaths.append((target.id," is dead! The Jester gets their revenge from the grave!"))
-
+    if jester and target:
+        if target.role == "Veteran" and veteranGuard:
+            attacked.append((target.id,deathByVeteran))
+        else:  
+            attacked.append((target.id," is dead! The Jester gets their revenge from the grave!"))
 
     framer, target = get_target(game, "Framer")
     if (framer and target and not is_blocked(framer, blocked)): 
-        framed.add(target.id)
+        if target.role == "Veteran" and veteranGuard:
+            attacked.append((target.id,deathByVeteran))
+        else:   
+            framed.add(target.id)
 
     mafioso, target = get_target(game, "Mafioso")
-    if (mafioso and is_blocked(mafioso, blocked) and target and target.id not in healed):
-        attacked.append((target.id, " was murdered last night!"))
+    if (mafioso and is_blocked(mafioso, blocked) and target):
+        if target.role == "Veteran" and veteranGuard:
+            attacked.append((target.id,deathByVeteran))
+        else:   
+            attacked.append((target.id, " was murdered last night!"))
 
     sk, target = get_target(game, "Serial Killer")
-    if (sk and not is_blocked(sk, blocked) and target and target.id not in healed):
-        attacked.append((target.id," was horrifically stabbed to death last night!"))
+    if (sk and not is_blocked(sk, blocked) and target):
+        if target.role == "Veteran" and veteranGuard:
+            attacked.append((target.id,deathByVeteran))
+        else:   
+            attacked.append((target.id," was horrifically stabbed to death last night!"))
 
     detective, target = get_target(game, "Detective")
     if detective:
         if target is None or is_blocked(detective, blocked):
             detective.targetInfo = ("You either did not select anyone to investigate last night, or were blocked")
-
         else:
-            bloody = (
-                target.role in ["Doctor", "Mafioso", "Serial Killer"]
-                or target.id in framed
-                or target.id in attacked
-            )
+            if target.role == "Veteran" and veteranGuard:
+                attacked.append((target.id,deathByVeteran))
+            else:   
+                bloody = (
+                    target.role in ["Doctor", "Mafioso", "Serial Killer"]
+                    or target.id in framed
+                    or target.id in attacked
+                )
 
-            if bloody:
-                detective.targetInfo = (f"Your target, {target.name}, had blood on them last night.")
-            else:
-                detective.targetInfo = (f"Your target, {target.name}, did NOT have blood on them last night.")
+                if bloody:
+                    detective.targetInfo = (f"Your target, {target.name}, had blood on them last night.")
+                else:
+                    detective.targetInfo = (f"Your target, {target.name}, did NOT have blood on them last night.")
 
     for victim_id, msg in attacked:
         if victim_id not in healed:
