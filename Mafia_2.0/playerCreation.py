@@ -135,12 +135,4 @@ async def sendStarterInfo(guild, players: dict[int, Player]):
                 target = players.get(player.executioner_target)
                 if target: message += f"**Your target is:** {target.name}\n\n"
                 
-
-        # Commands template
-        message += (
-            "**Commands**\n"
-            "!vote <player number> - Vote during the day\n"
-            "Once a player has been voted, !guilty, !innocent or abstain from casting a decision"
-            "!action <player number> - Perform your night action\n"
-        )
         await channel.send(message)

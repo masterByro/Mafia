@@ -5,12 +5,12 @@ from dotenv import load_dotenv
 import os
 
 from channelStuff import endChannels, setup_channels
-from dayNight import day, night
+from dayNight import day, night, passTime
 from gamestate import GameState
 from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
-from utils import getPlayerList, getVotedForPlayer, setAction
-from voting import castDecision, clear_vote, decideEnd, on_vote, sendVote
+from utils import getPlayerList, setAction
+from voting import castDecision, clear_vote, decideEnd, decidePhase, on_vote, sendVote
 
 load_dotenv()
 
@@ -26,30 +26,10 @@ global game
 game = GameState()
 
 @bot.event
-async def on_member_join(member):
-    global player_count
-
-    if not member.bot:
-        player_count += 1
-
-
-@bot.event
-async def on_member_remove(member):
-    global player_count
-
-    if not member.bot:
-        player_count -= 1
-        
-
-@bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
-    
     global player_count
-    player_count = sum(
-        1 for member in bot.guilds[0].members
-        if not member.bot
-    )
+    player_count = sum(1 for member in bot.guilds[0].members if not member.bot)
     print(f'Players: {player_count}')
 
 @bot.command()
@@ -64,7 +44,6 @@ async def start(ctx):
     await ctx.send("Game started!")
     await day(guild, game)
 
-
 @bot.command()
 async def end(ctx):
     if ctx.author.id != BYRO_ID: return
@@ -78,13 +57,7 @@ async def end(ctx):
 
 @bot.command()
 async def n(ctx):
-    game.is_day = not game.is_day
-    game.day_number += 1
-    if game.is_day:
-        await day(ctx.guild, game)
-    else:
-        await night(ctx.guild, game)
-
+    await passTime(ctx.guild, game)
 
 @bot.command()
 async def vote(ctx, number: int):
@@ -95,16 +68,8 @@ async def vote(ctx, number: int):
     
 @bot.command()
 async def decide(ctx):
-    if ctx.author.id != BYRO_ID: return
-    accused = getVotedForPlayer(game)
-    if accused is None:
-        await ctx.send("Nobody is currently on trial.")
-        return
-    
-    game.canDecide = True
-    channel = ctx.guild.get_channel(game.town_channel_id)
-    if channel:
-        await channel.send(f"Place your decision: Is {accused.name} guilty or innocent?")
+    feedback = decidePhase(ctx, BYRO_ID, game)
+    await ctx.send(feedback)
 
 @bot.command()
 async def guilty(ctx):
@@ -145,6 +110,14 @@ async def debugplayers(ctx):
     if ctx.author.id != BYRO_ID: return
     message = await debugPlayers(game)
     await ctx.send(message)
+
+@bot.command()
+async def l(ctx):
+    if ctx.author.id != BYRO_ID: return
+    user_id = 710078079049007155
+    member = ctx.guild.get_member(user_id)
+    await member.send("You are a cutey")
+    #await ctx.send(f"I LOVE {member.mention}! SO MUCH")
 
 player_count = 0
 bot.run(token,log_handler=handler, log_level=logging.DEBUG) # type: ignore

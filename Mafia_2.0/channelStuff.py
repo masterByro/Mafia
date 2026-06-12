@@ -69,3 +69,20 @@ async def endChannels(ctx, game: GameState):
     
     mafia_channel = guild.get_channel(game.mafia_channel_id)
     if mafia_channel: await mafia_channel.delete()
+
+async def sendVoteInfo(guild, players):
+    message = "\nDuring the day you can vote to place a player on trial, by typing the command !vote <player id>"
+    await sendPlayersInfo(guild, players, message)
+
+async def sendDecideInfo(guild, players, onTrialPlayer):
+    message = (f"Place your decision: Is {onTrialPlayer.name} guilty or innocent?\nType !guilty, !innocent or abstain from voting")
+    await sendPlayersInfo(guild, players, message)
+
+async def sendPlayersInfo(guild, players, message):
+    # send messages
+    for player in players.values():
+        if not player.alive: continue
+        channel_name = player.name.lower().replace(" ", "-")
+        channel = discord.utils.get(guild.text_channels, name=channel_name)
+        if channel is None: continue
+        await channel.send(message)

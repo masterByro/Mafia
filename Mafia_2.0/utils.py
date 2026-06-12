@@ -121,9 +121,6 @@ def checkWin(game):
 def is_blocked(player, blocked):
     return player.id in blocked
 
-def getVotedForPlayer(game):
-    return next((p for p in game.players.values() if p.votedFor), None)
-
 async def kill(guild, game: GameState, player: Player, reason):
     player.alive = False
     player.roundInput = None

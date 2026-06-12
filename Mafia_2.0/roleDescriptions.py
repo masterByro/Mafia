@@ -17,7 +17,7 @@ def getRoleDescription(role):
     if role == 'Towny': return 'The Towny' + townsFolk + 'They do not have any special roles.'
     if role == 'Jailor': return 'The Jailor' + townsFolk
     if role == 'Executioner': return 'The Executioner wins the game by getting their target lynched. If their target is killed by another means, the Executioner will become a Jester.'
-    if role == 'Jester': return 'The Jester wins the game by getting lynched, simple as that. After being lynched, you may choose to seek revenge on one player condemned you at night.'
+    if role == 'Jester': return 'The Jester wins the game by getting lynched, simple as that. After being lynched, you may choose to seek revenge on one player that condemned you at night.'
     if role == 'Mayor': return 'The Mayor' + townsFolk + 'The Mayor can reveal his role to the group before a round of voting begins. His vote will be worth 3 points from then on.'
     if role == 'Serial Killer': return 'The Serial Killer wins the game by being the last person alive. They can achieve this by killing. And lots of it!'
     if role == 'Veteran': return 'The Veteran' + townsFolk + "The Veteran can be on alert at night three times. You will kill any visitors on those nights"

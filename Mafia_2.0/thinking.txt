@@ -1,4 +1,24 @@
-users in discord opt in with a command
+TODO
+end of night, run through user selections to find outcome
+check for winning condition
+Jailor
+Mayor
+Executioner
+Framer -> Mafioso
+user can write notes/murder message
+Janitor
+Voting command prompts
+
+Bonus:
+users in discord opt in with a command?
+If jester doesnt pick some, it becomes random. Jester can kill abstainers
+Survivor
+Retributionist
+Tracker
+Update veteran to use diff command
+Whispering
+
+Done
 have admin commands
 !start, !end
 users get assigned roles
@@ -7,7 +27,4 @@ mafia has room at night only, medium has dead chat at night only
 main chat, where votes are displayed 
 at night, users use their role with command then target name
 success/retry message
-user can write notes/murder message
-end of night, run through user selections to find outcome
-check for winning condition
 Black role when dead

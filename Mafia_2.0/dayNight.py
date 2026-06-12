@@ -1,6 +1,14 @@
 from gamestate import GameState
 from utils import isGameOver, get_target, getPlayerList, is_blocked, kill, update_dead_chat_visibility, update_mafia_chat_visibility
 from roleDescriptions import sendNightInfo
+from channelStuff import sendVoteInfo
+
+async def passTime(guild, game):
+    game.is_day = not game.is_day
+    game.day_number += 1
+
+    if game.is_day: await day(guild, game)
+    else: await night(guild, game)
 
 async def day(guild, game: GameState):
     channel = guild.get_channel(game.town_channel_id)
@@ -31,6 +39,7 @@ async def day(guild, game: GameState):
         game.can_vote = True  
         await channel.send("You may openly discuss with the group")
         await channel.send("You can also openly vote to place a Player on Trial for lynching")
+        await sendVoteInfo(guild, game.players)
 
 async def night(guild, game):
     await update_dead_chat_visibility(guild, game)
@@ -40,7 +49,6 @@ async def night(guild, game):
     await channel.send("The town desscends into darkness on Night " + str(game.day_number))
     await channel.send("You can now perform your night action")
     await sendNightInfo(guild, game)
-
 
 def calculateResults(game: GameState):
     deaths = []
