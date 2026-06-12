@@ -9,8 +9,9 @@ from dayNight import day, night, passTime
 from gamestate import GameState
 from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
-from utils import getPlayerList, setAction
+from utils import getPlayerList
 from voting import castDecision, clear_vote, decideEnd, decidePhase, on_vote, sendVote
+from roleActions import alertVeteran, setTarget, revealMayor
 
 load_dotenv()
 
@@ -101,9 +102,15 @@ async def list(ctx):
     await ctx.send(getPlayerList(game))
 
 @bot.command()
-async def action(ctx, number: int):
-    feedback, success = await setAction(game, ctx, number)
+async def target(ctx, number: int):
+    feedback, success = await setTarget(game, ctx, number)
     await ctx.send(feedback)
+
+@bot.command()
+async def reveal(ctx): await ctx.send(await revealMayor(game, ctx))
+
+@bot.command()
+async def alert(ctx): await ctx.send(await alertVeteran(game, ctx))
 
 @bot.command()
 async def debugplayers(ctx):

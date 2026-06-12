@@ -3,7 +3,7 @@ import discord
 
 from gamestate import GameState
 from roleDescriptions import getRoleDescription
-from player import Player
+from player import Player, Role
 from utils import isMafia
 
 ##roles = ['Doctor','Framer', 'Mafioso', 'Escort', 'Detective', 'Medium', 'Towny', 'Executioner', 'Mayor', 'Serial Killer', 'Veteran', 'Jester']
@@ -28,7 +28,7 @@ def setup_players(guild, game: GameState):
     
     getExecutionerTarget(game.players)
 
-def makeRoles(numOfPlayers: int):
+def makeRoles(numOfPlayers: int) -> list[Role]:
     ## 11: 2 mafia, 2 chaos, 2 extra, 5 basic
     ## 10: 2 mafia, 1 chaos, 2 extra, 5 basic
     ## 9: 2 mafia, 1 chaos, 1 extra, 5 basic
@@ -89,13 +89,7 @@ def getExecutionerTarget(players: dict[int, Player]):
     valid_targets = [
         p for p in players.values()
         if p.alive
-        and p.role not in [
-            "Mafioso",
-            "Framer",
-            "Executioner",
-            "Serial Killer",
-            "Mayor"
-        ]
+        and p.role not in ["Mafioso", "Framer", "Executioner", "Serial Killer", "Mayor"]
     ]
 
     # no valid targets → convert to Jester

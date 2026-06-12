@@ -46,23 +46,21 @@ async def on_vote(ctx, game: GameState):
             await channel.send(f"{votedOutPlayer.name}, state your defence!")
 
 def tally_votes(game: GameState):
-    # count votes
     vote_count = {}
 
     for voter in game.players.values():
-        if not voter.alive:
-            continue
-        if voter.vote is None:
-            continue
+        if not voter.alive: continue
+        if voter.vote is None: continue
 
-        vote_count[voter.vote] = vote_count.get(voter.vote, 0) + 1
+        weight = 1
+        if voter.role == "Mayor" and voter.revealed: weight = 3
+        vote_count[voter.vote] = vote_count.get(voter.vote, 0) + weight
 
     # number of alive players
     alive_players = [p for p in game.players.values() if p.alive]
     alive_count = len(alive_players)
 
-    if alive_count == 0:
-        return None
+    if alive_count == 0: return None
 
     # majority rule: more than half alive (ceil)
     majority_needed = (alive_count // 2) + 1
@@ -110,12 +108,14 @@ async def decideEnd(ctx, game: GameState):
         if p.decision is None:
             lines.append(f"{p.name} abstained")
         else:
+            weight = 1
+            if p.role == "Mayor" and p.revealed: weight = 3
             lines.append(f"{p.name} voted {p.decision.upper()}")
             if p.decision == "guilty":
-                guilty += 1
+                guilty += weight
                 guilty_voters.append(p.id)
             elif p.decision == "innocent":
-                innocent += 1
+                innocent += weight
 
     await channel.send("\n".join(lines))
 

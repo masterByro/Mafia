@@ -26,18 +26,19 @@ class Player:
 
         # vote
         self.vote = None
-        self.votedFor = None
+        self.votedFor = False
         self.decision = None
 
         # action
-        self.roundInput = None
-        self.lastTarget = None
+        self.roundInput: int|None = None
+        self.lastTarget: int|None = None
 
         # role specific
         self.executioner_target: int | None = None #Executioner target id
         self.revealed = False #Mayor revealed or not
         self.targetInfo = '' #Detective info
         self.alerts = 3 #Veteran bullets
+        self.onAlert = False
         self.guiltyVoters = [] #Jester
 
     def reset_round(self):

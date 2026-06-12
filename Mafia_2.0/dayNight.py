@@ -1,5 +1,5 @@
 from gamestate import GameState
-from utils import isGameOver, get_target, getPlayerList, is_blocked, kill, update_dead_chat_visibility, update_mafia_chat_visibility
+from utils import getByRole, isGameOver, get_target, getPlayerList, is_blocked, kill, update_dead_chat_visibility, update_mafia_chat_visibility
 from roleDescriptions import sendNightInfo
 from channelStuff import sendVoteInfo
 
@@ -67,8 +67,8 @@ def calculateResults(game: GameState):
 
     #Jailor
 
-    veteran, target = get_target(game, "Veteran")
-    if veteran and target == "alert":
+    veteran = getByRole(game.players,  "Veteran")
+    if veteran and veteran.onAlert:
         veteranGuard = True
 
     def visitVet(target):

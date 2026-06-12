@@ -1,7 +1,7 @@
 import discord
 
 from gamestate import GameState
-from player import Player
+from player import Player, Role
 
 def getPlayerList(game: GameState):
     # Build ordered player list
@@ -18,77 +18,16 @@ def getPlayerList(game: GameState):
 
     return "\n".join(lines)
 
-async def setAction(game: GameState, ctx, number: int):
-    if game.is_day: return "Actions may only be performed at night.", False
+def getByRole(players: dict[int, Player], role: Role):
+    return next((p for p in players.values()if p.role == role),None)
 
-    player = game.players.get(ctx.author.id)
-    if player is None: return "You are not part of the game.", False
-
-    if player.role == "Jester" and player.alive: return "Jester can only seek revenge once lynched", False
-    if not player.alive and not player.role == "Jester": return "Dead players cannot perform actions.", False
-
-    # Roles with no night action
-    if player.role in ["Towny", "Executioner", "Mayor"]:
-        return f"The {player.role} has no night action.", False
-
-    if player.role == "Veteran":
-        if number == 1:
-            if player.alerts > 0:
-                player.roundInput = "alert"
-                return "You will be on alert tonight.", True
-            return "You have already been on alert three times.", False
-        else:
-            return "Bro can you read? Either type 1 to be on alert, or don't type at all", False
-
-    # Find target by player number
-    target = next((p for p in game.players.values() if p.number == number),None)
-
-    if target is None: return "Invalid player number.", False
-
-    if not target.alive: return f"{target.name} is dead. You cannot perform actions on them.", False
-
-    # Self-target restrictions
-    if target.id == player.id:
-        if player.role in [
-            "Escort",
-            "Mafioso",
-            "Framer",
-            "Detective",
-            "Serial Killer",
-            "Veteran",
-            "Jester"
-        ]:
-            return f"The {player.role} cannot target themselves.", False
-
-    # Cannot target same person twice in a row
-    if player.lastTarget == target.id:
-        if player.role in ["Doctor", "Escort"]:
-            return (f"The {player.role} cannot target the same player two nights in a row.",False,)
-
-    # Mafia cannot target mafia
-    if player.role in ["Mafioso", "Framer"]:
-        if target.role in ["Mafioso", "Framer"]:
-            return "You cannot target a fellow Mafia member.", False
-
-    #Jester can only kill guilty voters the night after lynch
-    if player.role == "Jester":
-        if len(player.guiltyVoters) == 0: return "You can no longer seek revenge", False
-        if target.id not in player.guiltyVoters: return "You can only target players who voted guilty against you", False
-
-    # Success
-    player.roundInput = target.id
-
-    return (f"You will target {target.name} tonight.", True)
-
-def get_target(game: GameState, role):
-    actor = next((p for p in game.players.values()if p.role == role),None)
+def get_target(game: GameState, role: Role):
+    actor = getByRole(game.players, role)
 
     if actor is None: return None, None
     if actor.roundInput is None: return actor, None
 
-    if (actor.role == "Veteran"): return actor, actor.roundInput
-
-    target = game.players.get(actor.roundInput)
+    target = game.players.get(int(actor.roundInput))
 
     return actor, target
 

@@ -3,7 +3,7 @@ import discord
 from gamestate import GameState
 from player import Player
 
-leaveBlank = '\nType !action followed by the player number of your target (i.e. !action 1)'
+leaveBlank = '\nType !target followed by the player number of your target (i.e. !target 1)'
 
 def getRoleDescription(role):
     townsFolk = ' is a member of the Townsfolk, and wins the game by ridding the town of evil (any Serial Killer or Mafia member).\n'
@@ -18,9 +18,9 @@ def getRoleDescription(role):
     if role == 'Jailor': return 'The Jailor' + townsFolk
     if role == 'Executioner': return 'The Executioner wins the game by getting their target lynched. If their target is killed by another means, the Executioner will become a Jester.'
     if role == 'Jester': return 'The Jester wins the game by getting lynched, simple as that. After being lynched, you may choose to seek revenge on one player that condemned you at night.'
-    if role == 'Mayor': return 'The Mayor' + townsFolk + 'The Mayor can reveal his role to the group before a round of voting begins. His vote will be worth 3 points from then on.'
+    if role == 'Mayor': return 'The Mayor' + townsFolk + 'The Mayor can reveal his role to the group during the day. His vote will be worth 3 points from then on.\n You can do this by typing !reveal'
     if role == 'Serial Killer': return 'The Serial Killer wins the game by being the last person alive. They can achieve this by killing. And lots of it!'
-    if role == 'Veteran': return 'The Veteran' + townsFolk + "The Veteran can be on alert at night three times. You will kill any visitors on those nights"
+    if role == 'Veteran': return 'The Veteran' + townsFolk + "The Veteran can be on alert for three nights. You will kill any visitors on those nights."
     if role == 'GodFather': return 'The GodFather' + mafia + "The GodFather takes over the the murdering if the Mafioso dies."
     return 'oops no role Description, program brokey'
         
@@ -43,16 +43,13 @@ def getActionDescription(game: GameState, player: Player):
         alerts = str(3 - player.alerts)
         message = 'You have used ' + alerts + ' alerts.'
         if player.alerts > 0:
-            message+= "Type !action 1 if you would like to be on alert tonight"
+            message+= "Type !alert to be on alert tonight"
         return message
-    
-    return 'This role does not have a night action'
  
 async def sendNightInfo(guild, game):
     for player in game.players.values():
         channel_name = player.name.lower().replace(" ", "-")
         channel = discord.utils.get(guild.text_channels, name=channel_name)
-        if channel is None: continue
-
         message = getActionDescription(game, player)
-        await channel.send(message)
+
+        if message and channel: await channel.send(message)

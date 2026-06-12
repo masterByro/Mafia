@@ -1,3 +1,6 @@
+from typing import Dict
+from player import Player
+
 class GameState:
     def __init__(self):
         self.running = False
@@ -14,13 +17,13 @@ class GameState:
         self.dead_role_id = None #Discord role
 
         # player_id -> Player object
-        self.players = {}
+        self.players: Dict[int, Player] = {}
 
         # role tracking (optional caches)
-        self.mafia_ids = set()
+        self.mafia_ids: set[int] = set()
 
         # channel tracking
-        self.player_channels = {}  # player_id -> channel_id
+        self.player_channels: Dict[int, int] = {} # player_id -> channel_id
 
         # special roles
         self.executioner_targets = {}  # player_id -> target_id
