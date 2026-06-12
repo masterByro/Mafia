@@ -2,7 +2,6 @@ TODO
 end of night, run through user selections to find outcome
 check for winning condition
 Jailor
-Mayor
 Executioner
 Framer -> Mafioso
 user can write notes/murder message
@@ -17,6 +16,7 @@ Retributionist
 Tracker
 Update veteran to use diff command
 Whispering
+dont sent decision info to the accused
 
 Done
 have admin commands
@@ -28,3 +28,4 @@ main chat, where votes are displayed
 at night, users use their role with command then target name
 success/retry message
 Black role when dead
+Mayor

@@ -69,7 +69,7 @@ async def vote(ctx, number: int):
     
 @bot.command()
 async def decide(ctx):
-    feedback = decidePhase(ctx, BYRO_ID, game)
+    feedback = await decidePhase(ctx, BYRO_ID, game)
     await ctx.send(feedback)
 
 @bot.command()
@@ -103,7 +103,7 @@ async def list(ctx):
 
 @bot.command()
 async def target(ctx, number: int):
-    feedback, success = await setTarget(game, ctx, number)
+    feedback = await setTarget(game, ctx, number)
     await ctx.send(feedback)
 
 @bot.command()

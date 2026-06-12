@@ -1,6 +1,6 @@
 
 from gamestate import GameState
-from utils import kill
+from utils import getByRole, kill
 from channelStuff import sendDecideInfo
 
 async def sendVote(game: GameState, ctx, number):
@@ -126,16 +126,19 @@ async def decideEnd(ctx, game: GameState):
     if guilty > innocent:
         if accused.role == "Jester":
             accused.guiltyVoters = guilty_voters
+            accused.win = True
             await channel.send(f"You FOOLS! {accused.name} is the Jester! He will seek revenge...")
         else: await channel.send(f"⚖️ The castlefolk have voted to lynch {accused.name}.\n"f"Any last words?")
 
+        executioner = getByRole(game.players, 'Executioner')
+        if executioner and executioner.executioner_target == accused.id:
+            executioner.win = True
+            await channel.send(f"🎯 The Executioner has succeeded! " f"{accused.name} was their target.")
         await kill(ctx.guild, game, accused, f"{accused.name} was lynched")
   
     else:
-        game.can_vote = True
-        await channel.send(
-            f"{accused.name} has been spared"
-        )
+        game.can_vote = True 
+        await channel.send(f"{accused.name} has been spared")
 
     #Reset voting
     for p in game.players.values():
@@ -150,7 +153,7 @@ async def decidePhase(ctx, BYRO_ID, game):
         
     game.canDecide = True
     channel = ctx.guild.get_channel(game.town_channel_id)
-    channel.send(f"Place your decision: Is {accused.name} guilty or innocent?")
+    await channel.send(f"Place your decision: Is {accused.name} guilty or innocent?")
     await sendDecideInfo(ctx.guild, game.players, accused)
 
 def getVotedForPlayer(game):

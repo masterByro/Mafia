@@ -1,5 +1,5 @@
 from gamestate import GameState
-from utils import getByRole, isGameOver, get_target, getPlayerList, is_blocked, kill, update_dead_chat_visibility, update_mafia_chat_visibility
+from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, is_blocked, kill, update_dead_chat_visibility, update_mafia_chat_visibility
 from roleDescriptions import sendNightInfo
 from channelStuff import sendVoteInfo
 
@@ -27,6 +27,7 @@ async def day(guild, game: GameState):
             player.decision = None
    
         if deaths:
+            await checkExecutionerTargetDeaths(guild, game, deaths)
             await channel.send("☠️ **Night Results** ☠️\n")
             for victim_id, msg in deaths:
                 victim = game.players[victim_id]
@@ -70,6 +71,7 @@ def calculateResults(game: GameState):
     veteran = getByRole(game.players,  "Veteran")
     if veteran and veteran.onAlert:
         veteranGuard = True
+        veteran.onAlert = False #Reset it
 
     def visitVet(target):
         if target.role == "Veteran" and veteranGuard: 
@@ -90,7 +92,7 @@ def calculateResults(game: GameState):
         if not visitVet(target): healed.add(target.id)
 
     mafioso, target = get_target(game, "Mafioso")
-    if (mafioso and is_blocked(mafioso, blocked) and target):
+    if (mafioso and not is_blocked(mafioso, blocked) and target):
         if not visitVet(target):  
             attacked.append((target.id, " was murdered last night!"))
 

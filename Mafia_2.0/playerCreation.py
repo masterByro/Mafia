@@ -4,7 +4,7 @@ import discord
 from gamestate import GameState
 from roleDescriptions import getRoleDescription
 from player import Player, Role
-from utils import isMafia
+from utils import getByRole, isMafia
 
 ##roles = ['Doctor','Framer', 'Mafioso', 'Escort', 'Detective', 'Medium', 'Towny', 'Executioner', 'Mayor', 'Serial Killer', 'Veteran', 'Jester']
 ##names = ['byron', 'hayley', 'tristen', 'rhiannon', 'jordan', 'mary', 'james', 'gayan','gihara','jadelyn', 'prigg']
@@ -71,36 +71,17 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return ['Jester', 'Mafioso', 'Veteran']
+    return ['Doctor', 'Executioner' ,'Mafioso', 'Mafioso']
     return roles
 
 def getExecutionerTarget(players: dict[int, Player]):
-    # find executioner
-    executioner = None
-    for p in players.values():
-        if p.role == "Executioner":
-            executioner = p
-            break
-
-    if executioner is None:
-        return
-
-    # build valid targets
-    valid_targets = [
-        p for p in players.values()
-        if p.alive
-        and p.role not in ["Mafioso", "Framer", "Executioner", "Serial Killer", "Mayor"]
-    ]
-
-    # no valid targets → convert to Jester
-    if len(valid_targets) == 0:
-        executioner.role = 'Jester'
-        executioner.executioner_target = None
-        return
-
+    executioner = getByRole(players, 'Executioner')
+ 
+    if executioner is None: return
+    possibleTargets = ['Doctor','Escort', 'Medium', 'Towny', 'Veteran']
+    valid_targets = [p for p in players.values() if p.role in possibleTargets]
     target = random.choice(valid_targets)
 
-    # store ID (IMPORTANT: not name)
     executioner.executioner_target = target.id
     
 async def sendStarterInfo(guild, players: dict[int, Player]):
@@ -125,7 +106,7 @@ async def sendStarterInfo(guild, players: dict[int, Player]):
         if isMafia(player): message += mafia_teammate_text
 
         # Executioner target
-        if player.role == "Executioner" and player.executioner_target is not None:
+        if player.role == 'Executioner' and player.executioner_target is not None:
                 target = players.get(player.executioner_target)
                 if target: message += f"**Your target is:** {target.name}\n\n"
                 

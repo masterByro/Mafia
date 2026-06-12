@@ -19,11 +19,5 @@ class GameState:
         # player_id -> Player object
         self.players: Dict[int, Player] = {}
 
-        # role tracking (optional caches)
-        self.mafia_ids: set[int] = set()
-
         # channel tracking
         self.player_channels: Dict[int, int] = {} # player_id -> channel_id
-
-        # special roles
-        self.executioner_targets = {}  # player_id -> target_id

@@ -1,31 +1,19 @@
 from typing import Literal
 
-Role = Literal[
-    "Mafioso",
-    "Framer",
-    "Executioner",
-    "Jester",
-    "Serial Killer",
-    "Mayor",
-    "Doctor",
-    "Escort",
-    "Detective",
-    "Veteran",
-    "Medium"
-]
-
+Role = Literal['Mafioso', 'Framer', 'Executioner', 'Jester', 'Serial Killer', 'Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny']
 class Player:
     def __init__(self, member):
-        self.id = member.id
+        self.id: int = member.id
         self.member = member
         self.name = member.display_name
         self.number = 0
 
         self.role: Role | None = None
         self.alive = True
+        self.win = False
 
         # vote
-        self.vote = None
+        self.vote: int|None = None
         self.votedFor = False
         self.decision = None
 

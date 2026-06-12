@@ -105,3 +105,21 @@ async def update_mafia_chat_visibility(guild, game: GameState):
             overwrites[player.member] = discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
 
     await mafia_channel.edit(overwrites=overwrites)
+
+async def checkExecutionerTargetDeaths(guild, game, deaths):
+    executioner = getByRole(game.players, 'Executioner')
+    if executioner is None: return
+    
+    dead_ids = {victim_id for victim_id, _ in deaths}
+    if executioner.executioner_target not in dead_ids: return
+
+    target = game.players[executioner.executioner_target]
+    executioner.role = "Jester"
+    executioner.executioner_target = None
+    channel = guild.get_channel(game.player_channels[executioner.id])
+    if channel:
+        await channel.send(
+            f"Your target, **{target.name}**, died before they could be lynched.\n\n"
+            "You have become the **Jester**.\n"
+            "Your objective is now to be lynched by the town."
+        )
