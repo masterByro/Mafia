@@ -1,6 +1,8 @@
 
+from gamestate import GameState
 from utils import getVotedForPlayer, kill
-async def sendVote(game, ctx, number):
+
+async def sendVote(game: GameState, ctx, number):
     if not game.can_vote: return "You cannot vote right now.", None
 
     voter = game.players.get(ctx.author.id)
@@ -32,7 +34,7 @@ async def sendVote(game, ctx, number):
 def clear_vote(player):
     player.vote = None
 
-async def on_vote(ctx, game):
+async def on_vote(ctx, game: GameState):
     votedOutPlayer = tally_votes(game)
     if votedOutPlayer:
         votedOutPlayer.votedFor = True
@@ -42,7 +44,7 @@ async def on_vote(ctx, game):
             await channel.send(f"The castlefolk have voted against {votedOutPlayer.name}!")
             await channel.send(f"{votedOutPlayer.name}, state your defence!")
 
-def tally_votes(game):
+def tally_votes(game: GameState):
     # count votes
     vote_count = {}
 
@@ -71,7 +73,7 @@ def tally_votes(game):
 
     return None
 
-async def castDecision(game, ctx, choice):
+async def castDecision(game: GameState, ctx, choice):
     player = game.players.get(ctx.author.id)
     if game.canDecide == False: return "You cannot cast a decision right now."
     if player is None: return "You are not part of the game."
@@ -87,7 +89,7 @@ async def castDecision(game, ctx, choice):
 
     return f"You voted {choice.upper()}."
 
-async def decideEnd(ctx, game):
+async def decideEnd(ctx, game: GameState):
     game.canDecide = False
     guilty = 0
     innocent = 0

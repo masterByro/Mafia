@@ -1,5 +1,8 @@
 import discord
 
+from gamestate import GameState
+from player import Player
+
 leaveBlank = '\nType !action followed by the player number of your target (i.e. !action 1)'
 
 def getRoleDescription(role):
@@ -21,7 +24,7 @@ def getRoleDescription(role):
     if role == 'GodFather': return 'The GodFather' + mafia + "The GodFather takes over the the murdering if the Mafioso dies."
     return 'oops no role Description, program brokey'
         
-def getActionDescription(game, player):
+def getActionDescription(game: GameState, player: Player):
     role = player.role
     if role == 'Doctor': return 'Who would you like to heal?' + leaveBlank
     if role == 'Framer': return 'Who would you like to frame?' + leaveBlank

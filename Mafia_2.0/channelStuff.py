@@ -1,6 +1,8 @@
 import discord
 
-async def setup_channels(guild, game, BYRO_ID):
+from gamestate import GameState
+
+async def setup_channels(guild, game: GameState, BYRO_ID):
     byron = guild.get_member(BYRO_ID)
 
     # Courtyard
@@ -45,7 +47,7 @@ async def setup_channels(guild, game, BYRO_ID):
     )
     game.mafia_channel_id = mafia_channel.id
 
-async def endChannels(ctx, game):
+async def endChannels(ctx, game: GameState):
     guild = ctx.guild
 
     # Delete player channels

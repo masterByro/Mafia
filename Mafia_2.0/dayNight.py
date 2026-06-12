@@ -1,7 +1,8 @@
+from gamestate import GameState
 from utils import isGameOver, get_target, getPlayerList, is_blocked, update_dead_chat_visibility, update_mafia_chat_visibility
 from roleDescriptions import sendNightInfo
 
-async def day(guild, game):
+async def day(guild, game: GameState):
     channel = guild.get_channel(game.town_channel_id)
     nightMessage = ''
     if game.day_number > 1:
@@ -37,7 +38,7 @@ async def night(guild, game):
 
 
 
-def calculateResults(game):
+def calculateResults(game: GameState):
     deaths = []
     blocked = set()
     healed = set()

@@ -1,6 +1,7 @@
 import random
 import discord
 
+from gamestate import GameState
 from roleDescriptions import getRoleDescription
 from player import Player
 from utils import isMafia
@@ -8,7 +9,7 @@ from utils import isMafia
 ##roles = ['Doctor','Framer', 'Mafioso', 'Escort', 'Detective', 'Medium', 'Towny', 'Executioner', 'Mayor', 'Serial Killer', 'Veteran', 'Jester']
 ##names = ['byron', 'hayley', 'tristen', 'rhiannon', 'jordan', 'mary', 'james', 'gayan','gihara','jadelyn', 'prigg']
 
-def setup_players(guild, game):
+def setup_players(guild, game: GameState):
     for member in guild.members:
         if not member.bot:
             game.players[member.id] = Player(member)
@@ -27,7 +28,7 @@ def setup_players(guild, game):
     
     getExecutionerTarget(game.players)
 
-def makeRoles(numOfPlayers):
+def makeRoles(numOfPlayers: int):
     ## 11: 2 mafia, 2 chaos, 2 extra, 5 basic
     ## 10: 2 mafia, 1 chaos, 2 extra, 5 basic
     ## 9: 2 mafia, 1 chaos, 1 extra, 5 basic
@@ -73,7 +74,7 @@ def makeRoles(numOfPlayers):
     return ['Jester', 'Mafioso', 'Veteran']
     return roles
 
-def getExecutionerTarget(players):
+def getExecutionerTarget(players: dict[int, Player]):
     # find executioner
     executioner = None
     for p in players.values():
@@ -99,16 +100,16 @@ def getExecutionerTarget(players):
 
     # no valid targets → convert to Jester
     if len(valid_targets) == 0:
-        executioner.role = "Jester"
+        executioner.role = 'Jester'
         executioner.executioner_target = None
         return
 
     target = random.choice(valid_targets)
 
     # store ID (IMPORTANT: not name)
-    executioner.executioner_target = target
+    executioner.executioner_target = target.id
     
-async def sendStarterInfo(guild, players):
+async def sendStarterInfo(guild, players: dict[int, Player]):
     #Mafia blob
     mafia_members = []
     mafia_members = [p for p in players.values() if isMafia(p)]
@@ -131,7 +132,9 @@ async def sendStarterInfo(guild, players):
 
         # Executioner target
         if player.role == "Executioner" and player.executioner_target is not None:
-                message += f"**Your target is:** {player.executioner_target.name}\n\n"
+                target = players.get(player.executioner_target)
+                if target: message += f"**Your target is:** {target.name}\n\n"
+                
 
         # Commands template
         message += (

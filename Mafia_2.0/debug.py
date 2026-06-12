@@ -1,4 +1,6 @@
-async def debugPlayers(game):
+from gamestate import GameState
+
+async def debugPlayers(game: GameState):
     ordered = sorted(game.players.values(), key=lambda p: p.number)
     lines = ["**Current Players**\n"]
 

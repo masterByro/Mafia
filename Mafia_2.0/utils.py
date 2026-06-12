@@ -1,6 +1,9 @@
 import discord
 
-def getPlayerList(game):
+from gamestate import GameState
+from player import Player
+
+def getPlayerList(game: GameState):
     # Build ordered player list
     ordered = sorted(game.players.values(), key=lambda p: p.number)
 
@@ -15,7 +18,7 @@ def getPlayerList(game):
 
     return "\n".join(lines)
 
-async def setAction(game, ctx, number: int):
+async def setAction(game: GameState, ctx, number: int):
     if game.is_day: return "Actions may only be performed at night.", False
 
     player = game.players.get(ctx.author.id)
@@ -77,7 +80,7 @@ async def setAction(game, ctx, number: int):
 
     return (f"You will target {target.name} tonight.", True)
 
-def get_target(game, role):
+def get_target(game: GameState, role):
     actor = next((p for p in game.players.values()if p.role == role),None)
 
     if actor is None: return None, None
@@ -89,7 +92,7 @@ def get_target(game, role):
 
     return actor, target
 
-async def isGameOver(guild, game):
+async def isGameOver(guild, game: GameState):
     gameWon, message =  checkWin(game)
     if gameWon:
         game.running = False
@@ -121,7 +124,7 @@ def is_blocked(player, blocked):
 def getVotedForPlayer(game):
     return next((p for p in game.players.values() if p.votedFor), None)
 
-async def kill(ctx, game, player, reason):
+async def kill(ctx, game: GameState, player: Player, reason):
     player.alive = False
     player.roundInput = None
     player.vote = None
@@ -151,10 +154,9 @@ async def update_dead_chat_visibility(guild, game):
 
     await dead_channel.edit(overwrites=overwrites)
 
-def isMafia(player):
-    return player.role in ["Mafioso", "Framer"]
+def isMafia(player: Player): return player.role in ["Mafioso", "Framer"]
 
-async def update_mafia_chat_visibility(guild, game):
+async def update_mafia_chat_visibility(guild, game: GameState):
     mafia_channel = guild.get_channel(game.mafia_channel_id)
 
     overwrites = dict(mafia_channel.overwrites)
