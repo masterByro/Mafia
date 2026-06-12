@@ -1,6 +1,6 @@
 
 from gamestate import GameState
-from utils import getByRole, kill
+from utils import getByRole, isGameOver, kill
 from channelStuff import sendDecideInfo
 
 async def sendVote(game: GameState, ctx, number):
@@ -135,7 +135,7 @@ async def decideEnd(ctx, game: GameState):
             executioner.win = True
             await channel.send(f"🎯 The Executioner has succeeded! " f"{accused.name} was their target.")
         await kill(ctx.guild, game, accused, f"{accused.name} was lynched")
-  
+        await isGameOver(ctx.game, game)
     else:
         game.can_vote = True 
         await channel.send(f"{accused.name} has been spared")

@@ -4,15 +4,14 @@ from roleDescriptions import sendNightInfo
 from channelStuff import sendVoteInfo
 
 async def passTime(guild, game):
+    if not game.is_day: game.day_number += 1
     game.is_day = not game.is_day
-    game.day_number += 1
 
     if game.is_day: await day(guild, game)
     else: await night(guild, game)
 
 async def day(guild, game: GameState):
     channel = guild.get_channel(game.town_channel_id)
-    await channel.send(getPlayerList(game))
     await channel.send("The town awakens on Day " + str(game.day_number))
     
     if game.day_number > 1:
@@ -31,11 +30,13 @@ async def day(guild, game: GameState):
             await channel.send("☠️ **Night Results** ☠️\n")
             for victim_id, msg in deaths:
                 victim = game.players[victim_id]
-                await kill(guild, game, game.players[victim_id], f"**{victim.name}** {msg}")   
+                await kill(guild, game, game.players[victim_id], f"**{victim.name}** {msg}")
         else:
             await channel.send("🌙 **Night Results**\nNo one died last night.")
 
+    await channel.send(getPlayerList(game))
     await isGameOver(guild, game)
+    
     if game.running:
         game.can_vote = True  
         await channel.send("You may openly discuss with the group")

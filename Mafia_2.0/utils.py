@@ -45,15 +45,14 @@ def checkWin(game):
     alive_town = [p for p in alive_players if not isMafia(p) and p.role != "Serial Killer"]
     alive_sk = [p for p in alive_players if p.role == "Serial Killer"]
 
-    #TODO: UNCOMMENT
-    # if len(alive_players) == 1 and alive_sk:
-    #     return True, "The Serial Killer has won!"
+    if len(alive_players) == 1 and alive_sk:
+        return True, "The Serial Killer has won!"
 
-    # if len(alive_mafia) > 0 and len(alive_mafia) >= len(alive_town) and not alive_sk:
-    #     return True, "The Mafia have defeated the Townfolk!"
+    if len(alive_mafia) > 0 and len(alive_mafia) > len(alive_town) and not alive_sk:
+        return True, "The Mafia have defeated the Townfolk!"
 
-    # if not alive_mafia and not alive_sk:
-    #     return True, "The Townfolk have defeated all threats!"
+    if not alive_mafia and not alive_sk:
+        return True, "The Townfolk have defeated all threats!"
 
     return False, None
 
@@ -71,7 +70,6 @@ async def kill(guild, game: GameState, player: Player, reason):
 
     channel = guild.get_channel(game.town_channel_id)
     await channel.send(f"{reason}. Their role was: {player.role}")
-    await isGameOver(guild, game)
 
 async def update_dead_chat_visibility(guild, game):
     dead_channel = guild.get_channel(game.dead_channel_id)

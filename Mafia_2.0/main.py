@@ -57,8 +57,7 @@ async def end(ctx):
     await ctx.send("Game ended!")
 
 @bot.command()
-async def n(ctx):
-    await passTime(ctx.guild, game)
+async def n(ctx): await passTime(ctx.guild, game)
 
 @bot.command()
 async def vote(ctx, number: int):
@@ -98,8 +97,7 @@ async def voteclear(ctx):
     clear_vote(player)
 
 @bot.command()
-async def list(ctx):
-    await ctx.send(getPlayerList(game))
+async def list(ctx): await ctx.send(getPlayerList(game))
 
 @bot.command()
 async def target(ctx, number: int):
