@@ -130,7 +130,7 @@ async def decideEnd(ctx, game: GameState):
         else:
             await channel.send(f"⚖️ The castlefolk have voted to lynch {accused.name}.\n"f"Any last words?")
 
-        await kill(ctx, game, accused, f"{accused.name} was lynched")
+        await kill(ctx.guild, game, accused, f"{accused.name} was lynched")
   
     else:
         game.can_vote = True

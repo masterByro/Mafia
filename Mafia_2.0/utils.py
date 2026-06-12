@@ -124,18 +124,18 @@ def is_blocked(player, blocked):
 def getVotedForPlayer(game):
     return next((p for p in game.players.values() if p.votedFor), None)
 
-async def kill(ctx, game: GameState, player: Player, reason):
+async def kill(guild, game: GameState, player: Player, reason):
     player.alive = False
     player.roundInput = None
     player.vote = None
     player.decision = None
     
-    dead_role = ctx.guild.get_role(game.dead_role_id)
+    dead_role = guild.get_role(game.dead_role_id)
     if dead_role: await player.member.add_roles(dead_role)
 
-    channel = ctx.guild.get_channel(game.town_channel_id)
+    channel = guild.get_channel(game.town_channel_id)
     await channel.send(f"{reason}. Their role was: {player.role}")
-    await isGameOver(ctx.guild, game)
+    await isGameOver(guild, game)
 
 async def update_dead_chat_visibility(guild, game):
     dead_channel = guild.get_channel(game.dead_channel_id)
