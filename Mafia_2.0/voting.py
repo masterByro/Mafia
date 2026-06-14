@@ -134,7 +134,7 @@ async def decideEnd(ctx, game: GameState):
         if executioner and executioner.executioner_target == accused.id:
             executioner.win = True
             await channel.send(f"🎯 The Executioner has succeeded! " f"{accused.name} was their target.")
-        await kill(ctx.guild, game, accused, f"{accused.name} was lynched")
+        await kill(ctx.guild, game, accused, f"{accused.name} was lynched.")
         await isGameOver(ctx.game, game)
     else:
         game.can_vote = True 

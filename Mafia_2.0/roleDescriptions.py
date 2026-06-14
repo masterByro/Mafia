@@ -2,11 +2,12 @@ import discord
 
 from gamestate import GameState
 from player import Player
+from utils import getByRole
 
-leaveBlank = '\nType !target followed by the player number of your target (i.e. !target 1)'
+leaveBlank = '\nType !target <palyer ID> to target a player.'
+townsFolk = ' is a member of the Townsfolk, and wins the game by ridding the town of evil (any Serial Killer or Mafia member).\n'
 
 def getRoleDescription(role):
-    townsFolk = ' is a member of the Townsfolk, and wins the game by ridding the town of evil (any Serial Killer or Mafia member).\n'
     mafia = ' is a member of the Mafia, and wins the game if all the Townsfolk are killed.\n'
     if role == 'Doctor': return 'The Doctor' + townsFolk + 'The Doctor can select one Player to heal every night (including yourself). This will prevent that Player from dying if they are attacked.\nYou cannot heal the same person twice in a row, however.'
     if role == 'Framer': return 'The Framer' + mafia + 'The Framer can select one Player to frame every night. This will make the target appear suspicious if investigated by an Investigator.\n If the Mafioso dies, YOU will replace them and become the next Mafioso.'
@@ -15,7 +16,7 @@ def getRoleDescription(role):
     if role == 'Detective': return 'The Detective' + townsFolk + 'The Detective can select one Player to investigate every night, and will receive the results of the investigation the next night.\nThe Detective searches for blood, which will appear on the Mafioso, Doctor, or anybody that was framed or murdered.'
     if role == 'Medium': return 'The Medium' + townsFolk + 'The Medium can speak to the dead at night'
     if role == 'Towny': return 'The Towny' + townsFolk + 'They do not have any special roles.'
-    if role == 'Jailor': return 'The Jailor' + townsFolk
+    if role == 'Jailor': return 'The Jailor' + townsFolk + "During the day, you can select someone to jail with command !target <player id>.\n That night, you can interrogate them and execute them with the command !kill. Type the command again to cancel the execution"
     if role == 'Executioner': return 'The Executioner wins the game by getting their target lynched. If their target is killed by another means, the Executioner will become a Jester.'
     if role == 'Jester': return 'The Jester wins the game by getting lynched, simple as that. After being lynched, you may choose to seek revenge on one player that condemned you at night.'
     if role == 'Mayor': return 'The Mayor' + townsFolk + 'The Mayor can reveal his role to the group during the day. His vote will be worth 3 points from then on.\n You can do this by typing !reveal'
@@ -31,7 +32,6 @@ def getActionDescription(game: GameState, player: Player):
     if role == 'Mafioso': return 'Who would you like to murder?' + leaveBlank
     if role == 'Escort': return 'Who would you like to escort?' + leaveBlank
     if role == 'Detective':  return 'Who would you like to investigate?' + leaveBlank
-    if role == 'Jailor': return 'Who would you like to jail?' + leaveBlank
     if role == 'Serial Killer': return 'Who would you like to kill?' + leaveBlank
     if role == 'Jester': 
         if player.alive == True: return 'The Jester has no night action yet'
@@ -47,9 +47,23 @@ def getActionDescription(game: GameState, player: Player):
         return message
  
 async def sendNightInfo(guild, game):
-    for player in game.players.values():
-        channel_name = player.name.lower().replace(" ", "-")
-        channel = discord.utils.get(guild.text_channels, name=channel_name)
-        message = getActionDescription(game, player)
+    jailor = getByRole(game.players, 'Jailor')
+    jail_prisoner = None
+    if jailor and jailor.roundInput is not None: jail_prisoner = game.players.get(jailor.roundInput)
 
-        if message and channel: await channel.send(message)
+    for player in game.players.values():
+        channel = guild.get_channel(game.player_channels.get(player.id))
+        if not channel: continue
+        if jailor and jail_prisoner:
+
+            if player.id == jailor.id:
+                await channel.send(f"⛓️ You have jailed **{jail_prisoner.name}** tonight.\n" f"Use `!say <message>` to interrogate them.\n" f"Use `!kill` if you wish to execute them.")
+                continue
+
+            if player.id == jail_prisoner.id:
+                await channel.send("⛓️ You have been jailed tonight.\n" f"Use `!say <message>` to respond to the Jailor")
+                continue
+
+
+        message = getActionDescription(game, player)
+        if message: await channel.send(message)

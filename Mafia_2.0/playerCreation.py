@@ -38,7 +38,7 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
     ## 5: 1 mafia, 1 extra, 3 basic
     ## 4: 1 mafia, 3 basic
     townBasic = ['Doctor','Escort', 'Medium', 'Towny']
-    townExtra = ['Mayor', 'Veteran', 'Towny', 'Towny']
+    townExtra = ['Mayor', 'Veteran', 'Jailor' 'Towny', 'Towny']
     mafia = ['Mafioso', 'Framer']
     chaos = ['Executioner', 'Jester']
     chaosWithSK = ['Executioner', 'Jester','Serial Killer']
@@ -71,7 +71,7 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return ['Doctor', 'Mayor' ,'Mafioso', 'Framer']
+    return ['Doctor', 'Jailor' ,'Mafioso', 'Framer']
     return roles
 
 def getExecutionerTarget(players: dict[int, Player]):

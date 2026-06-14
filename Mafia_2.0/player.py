@@ -1,6 +1,6 @@
 from typing import Literal
 
-Role = Literal['Mafioso', 'Framer', 'Executioner', 'Jester', 'Serial Killer', 'Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny']
+Role = Literal['Mafioso', 'Framer', 'Executioner', 'Jester', 'Serial Killer', 'Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny','Jailor']
 class Player:
     def __init__(self, member):
         self.id: int = member.id
@@ -28,6 +28,7 @@ class Player:
         self.alerts = 3 #Veteran bullets
         self.onAlert = False
         self.guiltyVoters = [] #Jester
+        self.willExecute = False
 
     def reset_round(self):
         self.vote = None

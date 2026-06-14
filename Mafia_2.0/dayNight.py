@@ -24,6 +24,10 @@ async def day(guild, game: GameState):
             player.roundInput = None
             player.vote = None
             player.decision = None
+            player.targetInfo = ''
+            player.onAlert = False
+            player.guiltyVoters = []
+            player.willExecute = False
    
         if deaths:
             await checkExecutionerTargetDeaths(guild, game, deaths)
@@ -63,58 +67,62 @@ def calculateResults(game: GameState):
 
     #Jester, Jailor, veteran, escort, doctor, mafioso, serial killer, framer, detective
 
-    jester, target = get_target(game, "Jester")
+    jester, target = get_target(game, 'Jester')
     if jester and target:
         deaths.append((target.id," is dead! The Jester gets their revenge from the grave!"))
 
     #Jailor
+    jailor, target = get_target(game, 'Jailor')
+    if jailor and target:
+        blocked.add(target.id)
+        if jailor.willExecute: deaths.append((target.id," was executed by the Jailor. Has justice been served?"))
 
-    veteran = getByRole(game.players,  "Veteran")
+    veteran = getByRole(game.players, 'Veteran')
     if veteran and veteran.onAlert:
         veteranGuard = True
         veteran.onAlert = False #Reset it
 
     def visitVet(target):
-        if target.role == "Veteran" and veteranGuard: 
+        if target.role ==  'Veteran' and veteranGuard: 
             attacked.append((target.id,deathByVeteran))
             return True
         return False
         
-    escort, target = get_target(game, "Escort")
-    if escort and target:
+    escort, target = get_target(game, 'Escort')
+    if escort  and not is_blocked(escort, blocked) and target:
         if not visitVet(target):
             blocked.add(target.id)
             # Escort dies if visiting SK
-            if target.role == "Serial Killer":
+            if target.role == 'Serial Killer':
                 attacked.append((escort.id," was horrifically stabbed to death while out visiting last night!"))
 
-    doctor, target = get_target(game, "Doctor")
+    doctor, target = get_target(game, 'Doctor')
     if (doctor and target and not is_blocked(doctor, blocked)):
         if not visitVet(target): healed.add(target.id)
 
-    mafioso, target = get_target(game, "Mafioso")
+    mafioso, target = get_target(game, 'Mafioso')
     if (mafioso and not is_blocked(mafioso, blocked) and target):
         if not visitVet(target):  
             attacked.append((target.id, " was murdered last night!"))
 
-    sk, target = get_target(game, "Serial Killer")
+    sk, target = get_target(game, 'Serial Killer')
     if (sk and not is_blocked(sk, blocked) and target):
         if not visitVet(target):
-            attacked.append((target.id," was horrifically stabbed to death last night!"))
+            attacked.append((target.id," was murdered last night!"))
 
-    framer, target = get_target(game, "Framer")
+    framer, target = get_target(game, 'Framer')
     if (framer and target and not is_blocked(framer, blocked)): 
         if not visitVet(target):
             framed.add(target.id)
 
-    detective, target = get_target(game, "Detective")
+    detective, target = get_target(game, 'Detective')
     if detective:
         if target is None or is_blocked(detective, blocked):
             detective.targetInfo = ("You either did not select anyone to investigate last night, or were blocked")
         else:
             if not visitVet(target):
                 bloody = (
-                    target.role in ["Doctor", "Mafioso", "Serial Killer"]
+                    target.role in ['Doctor', 'Mafioso', 'Serial Killer']
                     or target.id in framed
                     or target.id in attacked
                 )

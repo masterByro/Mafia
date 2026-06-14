@@ -1,14 +1,14 @@
 from gamestate import GameState
-from utils import isMafia
+from utils import getByRole, isMafia, sendToPlayer
+from player import Role
 
 async def setTarget(game: GameState, ctx, number: int):
-    if game.is_day: return "Actions may only be performed at night."
-
     player = game.players.get(ctx.author.id)
     if player is None: return "You are not part of the game."
+    if game.is_day and not player.role == 'Jailor': return "Actions may only be performed at night."
 
-    if player.role == "Jester" and player.alive: return "Jester can only seek revenge once lynched"
-    if not player.alive and not player.role == "Jester": return "Dead players cannot perform actions."
+    if player.role == 'Jester' and player.alive: return "Jester can only seek revenge once lynched."
+    if not player.alive and not player.role == 'Jester': return "Dead players cannot perform actions."
 
     # Roles that dont have a target action
     if player.role in ['Towny', 'Executioner', 'Mayor', 'Veteran']:
@@ -23,7 +23,7 @@ async def setTarget(game: GameState, ctx, number: int):
 
     # Self-target restrictions
     if target.id == player.id:
-        if player.role in ['Escort', 'Mafioso', 'Framer', 'Detective', 'Serial Killer', 'Veteran', 'Jester']:
+        if not player.role in ['Doctor']:
             return f"The {player.role} cannot target themselves."
 
     # Cannot target same person twice in a row
@@ -71,3 +71,51 @@ async def alertVeteran(game: GameState, ctx):
     player.alerts -= 1
     player.onAlert = True
     return "You are now on alert"
+
+async def jailorKill(game: GameState, ctx):
+    player = game.players.get(ctx.author.id)
+    if player is None or player.role != 'Jailor' or game.is_day or player.roundInput is None: return 'Not valid. Must be night, you must be jailor, and you must target someone in the day first'
+
+    target = game.players.get(player.roundInput)
+
+    if target is None or not target.alive: return "Your jailed target is no longer valid."
+
+    # toggle execution state
+    player.willExecute = not player.willExecute
+
+    if player.willExecute:
+        message = f"⚔️ You have decided to execute **{target.name}** tonight. Retype `!kill` to change your mind"
+        target_message = "⚔️ The Jailor has decided to execute you tonight."
+    else:
+        message = f"You have decided NOT to execute **{target.name}**."
+        target_message = "The Jailor has changed their mind."
+
+    # send to jailed target
+    channel = ctx.guild.get_channel(game.player_channels.get(target.id))
+
+    if channel: await channel.send(target_message)
+
+    return message
+
+
+async def sayJail(game: GameState, ctx, message: str):
+    if game.is_day: return 'You can only use this at night'
+    speaker = game.players.get(ctx.author.id)
+    jailor = getByRole(game.players, 'Jailor')
+    if jailor is None or not jailor.alive or speaker is None or not speaker.alive: return 'Fail 1'
+
+    prisoner_id = jailor.roundInput
+    if prisoner_id is None: return 'No prisoner was selected during the day'
+
+    prisoner = game.players.get(prisoner_id)
+    if prisoner is None: return 'No prisoner to speak to'
+
+    if speaker.id == jailor.id:
+        await sendToPlayer(ctx.guild, game, prisoner.id, f"**[Jailor]** {message}")
+        return 'Message sent'
+    
+    if speaker.id == prisoner.id:
+        await sendToPlayer(ctx.guild, game, jailor.id, f"**[{speaker.name}]** {message}")
+        return 'Message sent'
+    
+    return 'Not your command to use buster'

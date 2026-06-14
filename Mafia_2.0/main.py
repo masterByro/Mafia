@@ -5,13 +5,13 @@ from dotenv import load_dotenv
 import os
 
 from channelStuff import endChannels, setup_channels
-from dayNight import day, night, passTime
+from dayNight import day, passTime
 from gamestate import GameState
 from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
 from utils import getPlayerList
 from voting import castDecision, clear_vote, decideEnd, decidePhase, on_vote, sendVote
-from roleActions import alertVeteran, setTarget, revealMayor
+from roleActions import alertVeteran, jailorKill, sayJail, setTarget, revealMayor
 
 load_dotenv()
 
@@ -104,11 +104,21 @@ async def target(ctx, number: int):
     feedback = await setTarget(game, ctx, number)
     await ctx.send(feedback)
 
-@bot.command()
+@bot.command() #Mayor
 async def reveal(ctx): await ctx.send(await revealMayor(game, ctx))
 
-@bot.command()
+@bot.command() #Veteran
 async def alert(ctx): await ctx.send(await alertVeteran(game, ctx))
+
+@bot.command() #Jailor execute
+async def kill(ctx): 
+    feedback = await jailorKill(game, ctx)
+    if feedback: await ctx.send(feedback)
+
+@bot.command() #Jail speak
+async def say(ctx, *, message: str):
+    feedback =await sayJail(game, ctx, message)
+    if feedback: await ctx.send(feedback)
 
 @bot.command()
 async def debugplayers(ctx):

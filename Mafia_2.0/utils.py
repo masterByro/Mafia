@@ -69,7 +69,7 @@ async def kill(guild, game: GameState, player: Player, reason):
     if dead_role: await player.member.add_roles(dead_role)
 
     channel = guild.get_channel(game.town_channel_id)
-    await channel.send(f"{reason}. Their role was: {player.role}")
+    await channel.send(f"{reason} Their role was: {player.role}")
 
 async def update_dead_chat_visibility(guild, game):
     dead_channel = guild.get_channel(game.dead_channel_id)
@@ -121,3 +121,10 @@ async def checkExecutionerTargetDeaths(guild, game, deaths):
             "You have become the **Jester**.\n"
             "Your objective is now to be lynched by the town."
         )
+
+async def sendToPlayer(guild, game, player_id, message):
+    channel_id = game.player_channels.get(player_id)
+    if channel_id is None: return
+
+    channel = guild.get_channel(channel_id)
+    if channel: await channel.send(message)
