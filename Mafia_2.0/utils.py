@@ -140,3 +140,12 @@ async def handleMafiosoDeathTransfer(guild, game: GameState, dead_player: Player
 
     channel = guild.get_channel(game.player_channels.get(framer.id))
     if channel: await channel.send("🩸 The Mafioso has died. You have taken their place as the new Mafioso.")
+
+async def sendDetectiveInfo(guild, game):
+    detective = getByRole(game.players, "Detective")
+    if detective is None or not detective.alive: return
+    channel = guild.get_channel(game.player_channels.get(detective.id))
+
+    if detective.targetInfo and channel:
+        await channel.send(detective.targetInfo)
+        detective.targetInfo = None

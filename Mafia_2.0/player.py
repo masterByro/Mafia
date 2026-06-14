@@ -24,15 +24,23 @@ class Player:
         # role specific
         self.executioner_target: int | None = None #Executioner target id
         self.revealed = False #Mayor revealed or not
-        self.targetInfo = '' #Detective info
+        self.targetInfo: str|None = '' #Detective info
         self.alerts = 3 #Veteran bullets
         self.onAlert = False
         self.guiltyVoters = [] #Jester
         self.willExecute = False
+        self.framed = False
 
     def reset_round(self):
-        self.vote = None
+        self.lastTarget = self.roundInput
         self.roundInput = None
+        self.vote = None
+        self.decision = None
+        self.targetInfo = None
+        self.onAlert = False
+        self.guiltyVoters = []
+        self.willExecute = False
+        self.framed = False
 
     def killReset(self):
         self.alive = False

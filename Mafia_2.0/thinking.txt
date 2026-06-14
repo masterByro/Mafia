@@ -2,8 +2,6 @@ TODO
 check for winning condition
 user can write notes/murder message
 Janitor
-Voting command prompts
-fix detective feedback
 
 Bonus:
 users in discord opt in with a command?
@@ -30,3 +28,5 @@ Jailor
 Executioner
 end of night, run through user selections to find outcome
 Framer -> Mafioso
+Voting command prompts
+fix detective feedback

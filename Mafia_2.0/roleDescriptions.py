@@ -4,7 +4,7 @@ from gamestate import GameState
 from player import Player
 from utils import getByRole
 
-leaveBlank = '\nType `!target <palyer ID>` to target a player.'
+leaveBlank = '\nType `!target <player Id>` to target a player.'
 townsFolk = ' is a member of the Townsfolk, and wins the game by ridding the town of evil (any Serial Killer or Mafia member).\n'
 
 def getRoleDescription(role):
@@ -16,7 +16,7 @@ def getRoleDescription(role):
     if role == 'Detective': return 'The Detective' + townsFolk + 'The Detective can select one Player to investigate every night, and will receive the results of the investigation the next night.\nThe Detective searches for blood, which will appear on the Mafioso, Doctor, or anybody that was framed or murdered.'
     if role == 'Medium': return 'The Medium' + townsFolk + 'The Medium can speak to the dead at night'
     if role == 'Towny': return 'The Towny' + townsFolk + 'They do not have any special roles.'
-    if role == 'Jailor': return 'The Jailor' + townsFolk + "During the day, you can select someone to jail with command `!target <player id>`.\n That night, you can interrogate them and execute them with the command `!kill`. Type the command again to cancel the execution"
+    if role == 'Jailor': return 'The Jailor' + townsFolk + "During the day, you can select someone to jail with command `!target <player Id>`.\n That night, you can interrogate them and execute them with the command `!kill`. Type the command again to cancel the execution"
     if role == 'Executioner': return 'The Executioner wins the game by getting their target lynched. If their target is killed by another means, the Executioner will become a Jester.'
     if role == 'Jester': return 'The Jester wins the game by getting lynched, simple as that. After being lynched, you may choose to seek revenge on one player that condemned you at night.'
     if role == 'Mayor': return 'The Mayor' + townsFolk + 'The Mayor can reveal his role to the group during the day. His vote will be worth 3 points from then on.\n You can do this by typing `!reveal`'

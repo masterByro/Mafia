@@ -71,7 +71,7 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return ['Mafioso', 'Serial Killer' ,'Framer', 'Doctor']
+    return ['Mafioso', 'Detective' , 'Escort', 'Framer']
     return roles
 
 def getExecutionerTarget(players: dict[int, Player]):

@@ -71,7 +71,7 @@ async def endChannels(ctx, game: GameState):
     if mafia_channel: await mafia_channel.delete()
 
 async def sendVoteInfo(guild, players):
-    message = f"\nDuring the day you can vote to place a player on trial, by typing the command  `!vote <player id>`"
+    message = f"\nDuring the day you can vote to place a player on trial, by typing the command  `!vote <player Id>`"
     await sendPlayersInfo(guild, players, message)
 
 async def sendDecideInfo(guild, players, onTrialPlayer):

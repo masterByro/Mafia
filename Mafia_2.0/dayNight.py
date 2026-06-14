@@ -1,5 +1,5 @@
 from gamestate import GameState
-from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, is_blocked, kill, update_dead_chat_visibility, update_mafia_chat_visibility
+from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, is_blocked, kill, sendDetectiveInfo, update_dead_chat_visibility, update_mafia_chat_visibility
 from roleDescriptions import sendNightInfo
 from channelStuff import sendVoteInfo
 
@@ -16,18 +16,11 @@ async def day(guild, game: GameState):
     
     if game.day_number > 1:
         deaths = calculateResults(game)
- 
+        await sendDetectiveInfo(guild, game)
         await update_dead_chat_visibility(guild, game)
         await update_mafia_chat_visibility(guild, game)
         for player in game.players.values():
-            player.lastTarget = player.roundInput
-            player.roundInput = None
-            player.vote = None
-            player.decision = None
-            player.targetInfo = ''
-            player.onAlert = False
-            player.guiltyVoters = []
-            player.willExecute = False
+            player.reset_round()
    
         if deaths:
             await checkExecutionerTargetDeaths(guild, game, deaths)
@@ -60,7 +53,6 @@ def calculateResults(game: GameState):
     deaths = []
     blocked = set()
     healed = set()
-    framed = set()
     attacked = []
     veteranGuard = False
     deathByVeteran = " was shot in the chest last night!"
@@ -113,7 +105,7 @@ def calculateResults(game: GameState):
     framer, target = get_target(game, 'Framer')
     if (framer and target and not is_blocked(framer, blocked)): 
         if not visitVet(target):
-            framed.add(target.id)
+            target.framed = True
 
     detective, target = get_target(game, 'Detective')
     if detective:
@@ -121,14 +113,11 @@ def calculateResults(game: GameState):
             detective.targetInfo = ("You either did not select anyone to investigate last night, or were blocked")
         else:
             if not visitVet(target):
-                bloody = (
-                    target.role in ['Doctor', 'Mafioso', 'Serial Killer']
-                    or target.id in framed
-                    or target.id in attacked
-                )
-
+                bloody = target.role in ['Doctor', 'Mafioso', 'Serial Killer'] or target.framed or target.id in attacked
+                
                 if bloody:
                     detective.targetInfo = (f"Your target, {target.name}, had blood on them last night.")
+                    target.framed = False
                 else:
                     detective.targetInfo = (f"Your target, {target.name}, did NOT have blood on them last night.")
 
