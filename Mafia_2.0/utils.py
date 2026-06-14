@@ -60,16 +60,14 @@ def is_blocked(player, blocked):
     return player.id in blocked
 
 async def kill(guild, game: GameState, player: Player, reason):
-    player.alive = False
-    player.roundInput = None
-    player.vote = None
-    player.decision = None
-    
+    player.killReset()
+
     dead_role = guild.get_role(game.dead_role_id)
     if dead_role: await player.member.add_roles(dead_role)
 
     channel = guild.get_channel(game.town_channel_id)
     await channel.send(f"{reason} Their role was: {player.role}")
+    await handleMafiosoDeathTransfer(guild, game, player)
 
 async def update_dead_chat_visibility(guild, game):
     dead_channel = guild.get_channel(game.dead_channel_id)
@@ -128,3 +126,17 @@ async def sendToPlayer(guild, game, player_id, message):
 
     channel = guild.get_channel(channel_id)
     if channel: await channel.send(message)
+
+
+async def handleMafiosoDeathTransfer(guild, game: GameState, dead_player: Player):
+    if dead_player.role != 'Mafioso': return
+
+    framer = getByRole(game.players, "Framer")
+    if framer is None or not framer.alive: return
+
+    # promote framer
+    dead_player.role = 'Mafioso (Dead)'
+    framer.role = 'Mafioso'
+
+    channel = guild.get_channel(game.player_channels.get(framer.id))
+    if channel: await channel.send("🩸 The Mafioso has died. You have taken their place as the new Mafioso.")

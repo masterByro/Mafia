@@ -1,9 +1,5 @@
 TODO
-end of night, run through user selections to find outcome
 check for winning condition
-Jailor
-Executioner
-Framer -> Mafioso
 user can write notes/murder message
 Janitor
 Voting command prompts
@@ -30,3 +26,7 @@ at night, users use their role with command then target name
 success/retry message
 Black role when dead
 Mayor
+Jailor
+Executioner
+end of night, run through user selections to find outcome
+Framer -> Mafioso

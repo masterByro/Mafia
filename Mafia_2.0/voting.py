@@ -23,7 +23,7 @@ async def sendVote(game: GameState, ctx, number):
     channel = ctx.guild.get_channel(game.town_channel_id)
     if channel:
         await channel.send(
-            f"🗳️ {voter.name} has voted for {target.name}!"
+            f"🗳️ {voter.name} has voted for {target.name}"
         )
 
     return (
