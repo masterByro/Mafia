@@ -1,14 +1,17 @@
 TODO
 Info pages
-exclude Byron main acc (on toggle)
 
 Bonus:
 Survivor
 Retributionist
 Tracker
 Whispering
-dont sent decision info to the accused
+dont send decision info to the accused
 Serial killer bloody will
+simplify commands
+run time progressino more auto
+add defence time
+add timers
 
 Done
 have admin commands
@@ -34,3 +37,4 @@ Janitor
 Better post-game info
 Scoreboard
 If jester doesnt pick some, it becomes random. Jester can kill abstainers
+exclude Byron main acc (on toggle)

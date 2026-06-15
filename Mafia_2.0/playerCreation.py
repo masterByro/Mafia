@@ -6,11 +6,14 @@ from roleDescriptions import getRoleDescription
 from player import Player, Role
 from utils import getByRole, isMafia
 
-def setup_players(guild, game: GameState):
-    for member in guild.members:
-        if not member.bot:
-            game.players[member.id] = Player(member)
+ALLOW_BYRO_AS_PLAYER = False
 
+def setup_players(guild, game: GameState, BYRO_ID):
+    for member in guild.members:
+        if member.bot: continue
+        if not ALLOW_BYRO_AS_PLAYER and member.id == BYRO_ID: continue
+        game.players[member.id] = Player(member)
+        
     roles = makeRoles(len(game.players))
     for player, role in zip(game.players.values(), roles):
         player.role = role

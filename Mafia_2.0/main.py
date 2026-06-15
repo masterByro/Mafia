@@ -40,7 +40,7 @@ async def start(ctx):
     if ctx.author.id != BYRO_ID: return
 
     guild = ctx.guild
-    setup_players(guild, game)
+    setup_players(guild, game, BYRO_ID)
     await setup_channels(guild, game, BYRO_ID)
     await sendStarterInfo(guild, game.players)
     game.running = True
