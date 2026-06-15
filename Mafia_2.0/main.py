@@ -65,8 +65,7 @@ async def n(ctx): await passTime(ctx.guild, game)
 async def vote(ctx, number: int):
     feedback, voted_for = await sendVote(game, ctx, number)
     await ctx.send(feedback)
-    if (voted_for):
-        await on_vote(ctx, game)
+    if (voted_for): await on_vote(ctx, game)
     
 @bot.command()
 async def decide(ctx):

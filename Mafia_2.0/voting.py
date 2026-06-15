@@ -152,7 +152,8 @@ async def decidePhase(ctx, BYRO_ID, game):
     game.canDecide = True
     channel = ctx.guild.get_channel(game.town_channel_id)
     await channel.send(f"Place your decision: Is {accused.name} guilty or innocent?")
-    await sendDecideInfo(ctx.guild, game.players, accused)
+    players_without_accused = [p for p in game.players.values() if p.id != accused.id]
+    await sendDecideInfo(ctx.guild, players_without_accused, accused)
 
 def getVotedForPlayer(game):
     return next((p for p in game.players.values() if p.votedFor), None)

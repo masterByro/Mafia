@@ -6,7 +6,6 @@ Survivor
 Retributionist
 Tracker
 Whispering
-dont send decision info to the accused
 Serial killer bloody will
 simplify commands
 run time progressino more auto
@@ -22,7 +21,7 @@ mafia has room at night only, medium has dead chat at night only
 main chat, where votes are displayed 
 at night, users use their role with command then target name
 success/retry message
-Black role when dead
+Red role when dead
 Mayor
 Jailor
 Executioner
@@ -38,3 +37,4 @@ Better post-game info
 Scoreboard
 If jester doesnt pick some, it becomes random. Jester can kill abstainers
 exclude Byron main acc (on toggle)
+dont send decision info to the accuseds
