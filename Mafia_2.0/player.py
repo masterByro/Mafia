@@ -43,12 +43,10 @@ class Player:
         self.lastTarget = self.roundInput
         self.roundInput = None
         self.vote = None
+        self.votedFor = False
         self.decision = None
         self.targetInfo = None
         self.onAlert = False
         self.guiltyVoters = []
         self.willExecute = False
         self.cleaned = False
-
-    def killReset(self):
-        self.alive = False
