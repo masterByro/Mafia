@@ -13,7 +13,7 @@ async def passTime(guild, game):
 
 async def day(guild, game: GameState):
     channel = guild.get_channel(game.town_channel_id)
-    await channel.send("\n====================================================================\n")
+    await channel.send("\n===================================================================\n")
 
     await channel.send("The town awakens on Day " + str(game.day_number))
     
@@ -31,7 +31,7 @@ async def day(guild, game: GameState):
                 await kill(guild, game, game.players[victim_id], f"**{victim.name}** {msg}", note)
         else:
             await channel.send("🌙 **Night Results**\nNo one died last night.")
-            
+
         for player in game.players.values():
             player.reset_round()
 
@@ -48,7 +48,7 @@ async def night(guild, game: GameState):
     await update_dead_chat_visibility(guild, game)
     await update_mafia_chat_visibility(guild, game)
     channel = guild.get_channel(game.town_channel_id)
-    await channel.send("\n====================================================================\n")
+    await channel.send("\n===================================================================\n")
     await channel.send(getPlayerList(game))
     await channel.send("The town descends into darkness on Night " + str(game.day_number))
     await channel.send("You can now perform your night action")

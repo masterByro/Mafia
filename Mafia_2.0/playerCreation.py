@@ -14,6 +14,7 @@ def setup_players(guild, game: GameState):
     roles = makeRoles(len(game.players))
     for player, role in zip(game.players.values(), roles):
         player.role = role
+        player.originalRole = role
     
     #Add integer
     ordered_players = sorted(game.players.values(), key=lambda p: p.name.lower())

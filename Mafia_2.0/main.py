@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 import os
 
-from channelStuff import endChannels, setup_channels
+from channelStuff import buildWinsLeaderboard, endChannels, setup_channels
 from dayNight import day, passTime
 from gamestate import GameState
 from playerCreation import sendStarterInfo, setup_players
@@ -12,6 +12,7 @@ from debug import debugPlayers
 from utils import getPlayerList, setMuderNote
 from voting import castDecision, clear_vote, decideEnd, decidePhase, on_vote, sendVote
 from roleActions import alertVeteran, jailorKill, sayJail, setTarget, revealMayor
+from scoring import initWinsFile
 
 load_dotenv()
 
@@ -31,7 +32,8 @@ async def on_ready():
     print(f'{bot.user} has connected to Discord!')
     global player_count
     player_count = sum(1 for member in bot.guilds[0].members if not member.bot)
-    print(f'Players: {player_count}')
+    initWinsFile()
+    print(f'Players: {player_count}\n Ready to rumble!')
 
 @bot.command()
 async def start(ctx):
@@ -128,6 +130,9 @@ async def debugplayers(ctx):
     if ctx.author.id != BYRO_ID: return
     message = await debugPlayers(game)
     await ctx.send(message)
+
+@bot.command() #Leaderboard
+async def wins(ctx): await ctx.send(buildWinsLeaderboard(ctx))
 
 player_count = 0
 bot.run(token,log_handler=handler, log_level=logging.DEBUG) # type: ignore

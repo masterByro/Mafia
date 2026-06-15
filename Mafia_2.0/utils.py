@@ -1,10 +1,10 @@
 import discord
 
 from gamestate import GameState
-from player import Player, Role
+from player import Player, Role, mafiaRoles, townRoles, neutralEvil, neutralKiller
+from scoring import updateWins
 
 def getPlayerList(game: GameState):
-    # Build ordered player list
     ordered = sorted(game.players.values(), key=lambda p: p.number)
 
     lines = ["**Current Players**\n"]
@@ -17,6 +17,21 @@ def getPlayerList(game: GameState):
         )
 
     return "\n".join(lines)
+
+def getPlayerListEndgame(game: GameState):
+    ordered = sorted(game.players.values(), key=lambda p: p.number)
+    lines = ["**🏁 Final Player Results**\n"]
+
+    for p in ordered:
+        status = "🟢 Alive" if p.alive else "🔴 Dead"
+        win = "🏆 Win" if p.win else "❌ Loss"
+
+        lines.append(
+            f"{p.number}. {p.name} | {status} | { p.originalRole} | {win}"
+        )
+
+    return "\n".join(lines)
+
 
 def getByRole(players: dict[int, Player], role: Role):
     return next((p for p in players.values()if p.role == role),None)
@@ -37,21 +52,33 @@ async def isGameOver(guild, game: GameState):
         game.running = False
         channel = guild.get_channel(game.town_channel_id)
         await channel.send(message)
+        message = getPlayerListEndgame(game)
+        await channel.send(message)
+        updateWins(game)
 
 def checkWin(game):
     alive_players = [p for p in game.players.values() if p.alive]
 
-    alive_mafia = [p for p in alive_players if isMafia(p)]
-    alive_town = [p for p in alive_players if not isMafia(p) and p.role != "Serial Killer"]
-    alive_sk = [p for p in alive_players if p.role == "Serial Killer"]
+    alive_mafia = [p for p in alive_players if p.role in mafiaRoles]
+    alive_town = [p for p in alive_players if p.role in townRoles]
+    alive_neutral_evil = [p for p in alive_players if p.role in neutralEvil]
+    alive_sk = [p for p in alive_players if p.role in neutralKiller]
+
+    def set_winners(players):
+        for p in players:
+            p.win = True
+
 
     if len(alive_players) == 1 and alive_sk:
+        set_winners(alive_sk)
         return True, "The Serial Killer has won!"
 
-    if len(alive_mafia) > 0 and len(alive_mafia) > len(alive_town) and not alive_sk:
-        return True, "The Mafia have defeated the Townfolk!"
+    if alive_mafia and not alive_town and not alive_neutral_evil and not alive_sk:
+        set_winners([p for p in game.players.values() if p.role in mafiaRoles])
+        return True, "The Mafia have eliminated all opposition!"
 
     if not alive_mafia and not alive_sk:
+        set_winners([p for p in game.players.values() if p.role in townRoles])
         return True, "The Townfolk have defeated all threats!"
 
     return False, None
@@ -135,11 +162,7 @@ async def checkExecutionerTargetDeaths(guild, game, deaths):
     executioner.executioner_target = None
     channel = guild.get_channel(game.player_channels[executioner.id])
     if channel:
-        await channel.send(
-            f"Your target, **{target.name}**, died before they could be lynched.\n\n"
-            "You have become the **Jester**.\n"
-            "Your objective is now to be lynched by the town."
-        )
+        await channel.send(f"Your target, **{target.name}**, died before they could be lynched.\n\n" "You have become the **Jester**.\n" "Your objective is now to be lynched by the town.")
 
 async def sendToPlayer(guild, game, player_id, message):
     channel_id = game.player_channels.get(player_id)

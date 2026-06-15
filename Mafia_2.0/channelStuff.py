@@ -1,6 +1,7 @@
 import discord
 
 from gamestate import GameState
+from scoring import loadWins
 
 async def setup_channels(guild, game: GameState, BYRO_ID):
     byron = guild.get_member(BYRO_ID)
@@ -92,3 +93,16 @@ async def sendPlayersInfo(guild, players, message):
         channel = discord.utils.get(guild.text_channels, name=channel_name)
         if channel is None: continue
         await channel.send(message)
+
+def buildWinsLeaderboard(ctx):
+    wins = loadWins()
+    if not wins: return "No wins recorded yet."
+
+    sorted_wins = sorted(wins.items(), key=lambda x: x[1], reverse=True)
+    lines = ["🏆 **Win Leaderboard**\n"]
+    for i, (user_id, count) in enumerate(sorted_wins[:10], start=1):
+        member = ctx.guild.get_member(int(user_id))
+        name = member.display_name if member else f"Unknown ({user_id})"
+        lines.append(f"{i}. {name} — {count} win(s)")
+
+    return "\n".join(lines)

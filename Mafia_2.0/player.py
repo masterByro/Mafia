@@ -1,6 +1,11 @@
 from typing import Literal
 
+
 Role = Literal['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor', 'Executioner', 'Jester', 'Serial Killer', 'Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny','Jailor']
+mafiaRoles: list[Role] = ['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor']
+townRoles: list[Role] = ['Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny', 'Jailor']
+neutralEvil: list[Role] = ['Executioner', 'Jester']
+neutralKiller: list[Role] = ['Serial Killer']
 class Player:
     def __init__(self, member):
         self.id: int = member.id
@@ -11,6 +16,7 @@ class Player:
         self.role: Role | None = None
         self.alive = True
         self.win = False
+        self.originalRole: Role | None = None
 
         # vote
         self.vote: int|None = None
