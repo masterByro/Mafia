@@ -22,8 +22,6 @@ async def day(guild, game: GameState):
         await sendDetectiveInfo(guild, game)
         await update_dead_chat_visibility(guild, game)
         await update_mafia_chat_visibility(guild, game)
-        for player in game.players.values():
-            player.reset_round()
    
         if deaths:
             await checkExecutionerTargetDeaths(guild, game, deaths)
@@ -33,6 +31,9 @@ async def day(guild, game: GameState):
                 await kill(guild, game, game.players[victim_id], f"**{victim.name}** {msg}", note)
         else:
             await channel.send("🌙 **Night Results**\nNo one died last night.")
+            
+        for player in game.players.values():
+            player.reset_round()
 
     await channel.send(getPlayerList(game))
     await isGameOver(guild, game)
@@ -61,7 +62,7 @@ def calculateResults(game: GameState):
     veteranGuard = False
     deathByVeteran = " was shot in the chest last night!"
 
-    #Jester, Jailor, veteran, escort, doctor, mafioso, serial killer, framer, detective
+    #Jester, Jailor, veteran, escort, doctor, mafioso, serial killer, framer, detective, janitor
 
     jester, target = get_target(game, 'Jester')
     if jester and target:
@@ -124,6 +125,11 @@ def calculateResults(game: GameState):
                     target.framed = False
                 else:
                     detective.targetInfo = (f"Your target, {target.name}, did NOT have blood on them last night.")
+
+    janitor, target = get_target(game, 'Janitor')
+    if (janitor and target and not is_blocked(janitor, blocked)): 
+        if not visitVet(target):
+            target.cleaned = True
 
     for victim_id, msg, note in attacked:
         if victim_id not in healed:

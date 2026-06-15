@@ -20,10 +20,11 @@ async def setTarget(game: GameState, ctx, number: int):
     if target is None: return "Invalid player number."
 
     if not target.alive: return f"{target.name} is dead. You cannot perform actions on them."
-
+    
+    noSelfTarget: list[Role] = ['Mafioso', 'Framer','Serial Killer', 'Jester', 'Jailor']
     # Self-target restrictions
     if target.id == player.id:
-        if not player.role in ['Doctor']:
+        if not player.role in noSelfTarget:
             return f"The {player.role} cannot target themselves."
 
     # Cannot target same person twice in a row

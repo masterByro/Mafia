@@ -60,21 +60,35 @@ def is_blocked(player, blocked):
     return player.id in blocked
 
 async def kill(guild, game: GameState, player: Player, reason, note):
-    player.killReset()
+    player.alive = False
 
     dead_role = guild.get_role(game.dead_role_id)
     if dead_role: await player.member.add_roles(dead_role)
 
     channel = guild.get_channel(game.town_channel_id)
-    await channel.send(f"{reason} Their role was: {player.role}")
+    role = player.role
+    janitor = getByRole(game.players, "Janitor")
+
+    if player.cleaned: role = 'CLEANED'
+    await channel.send(f"{reason} Their role was: {role}")
     if note: await channel.send(f"Their killer left this message: {note}")
     await handleMafiosoDeathTransfer(guild, game, player)
-
+    
     will_channel = guild.get_channel(game.player_will_channels.get(player.id))
     if will_channel:
-        await will_channel.set_permissions(guild.default_role, view_channel=True, send_messages=False, read_message_history=True)
-        await will_channel.set_permissions(player.member, view_channel=True, send_messages=False, read_message_history=True)
+        
+        if player.cleaned and janitor:
+            await will_channel.set_permissions(janitor.member, view_channel=True, send_messages=False, read_message_history=True)
+            await will_channel.set_permissions(player.member, view_channel=False, send_messages=False, read_message_history=False)
+        else:
+            await will_channel.set_permissions(guild.default_role, view_channel=True, send_messages=False, read_message_history=True)
+            await will_channel.set_permissions(player.member, view_channel=True, send_messages=False, read_message_history=True)
 
+    if player.cleaned and janitor and janitor.alive:
+        janitor_channel = guild.get_channel(game.player_channels.get(janitor.id))
+
+        if janitor_channel:
+            await janitor_channel.send(f":broom: You have cleaned a body.\n" f"Target: **{player.name}**\n" f"Role: **{player.role}**")
 
 async def update_dead_chat_visibility(guild, game):
     dead_channel = guild.get_channel(game.dead_channel_id)
@@ -93,7 +107,7 @@ async def update_dead_chat_visibility(guild, game):
 
     await dead_channel.edit(overwrites=overwrites)
 
-def isMafia(player: Player): return player.role in ["Mafioso", "Framer"]
+def isMafia(player: Player): return player.role in ['Mafioso', 'Framer', 'Janitor']
 
 async def update_mafia_chat_visibility(guild, game: GameState):
     mafia_channel = guild.get_channel(game.mafia_channel_id)
@@ -137,15 +151,18 @@ async def sendToPlayer(guild, game, player_id, message):
 
 async def handleMafiosoDeathTransfer(guild, game: GameState, dead_player: Player):
     if dead_player.role != 'Mafioso': return
+    promoted = None
+    framer = getByRole(game.players, 'Framer')
+    janitor = getByRole(game.players, 'Janitor')
 
-    framer = getByRole(game.players, "Framer")
-    if framer is None or not framer.alive: return
+    if framer is not None and framer.alive: promoted = framer
+    elif janitor is not None and janitor.alive: promoted = janitor
+    if promoted is None: return
 
-    # promote framer
+    # promote
     dead_player.role = 'Mafioso (Dead)'
-    framer.role = 'Mafioso'
-
-    channel = guild.get_channel(game.player_channels.get(framer.id))
+    promoted.role = 'Mafioso'
+    channel = guild.get_channel(game.player_channels.get(promoted.id))
     if channel: await channel.send("🩸 The Mafioso has died. You have taken their place as the new Mafioso.")
 
 async def sendDetectiveInfo(guild, game):

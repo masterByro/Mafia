@@ -6,9 +6,6 @@ from roleDescriptions import getRoleDescription
 from player import Player, Role
 from utils import getByRole, isMafia
 
-##roles = ['Doctor','Framer', 'Mafioso', 'Escort', 'Detective', 'Medium', 'Towny', 'Executioner', 'Mayor', 'Serial Killer', 'Veteran', 'Jester']
-##names = ['byron', 'hayley', 'tristen', 'rhiannon', 'jordan', 'mary', 'james', 'gayan','gihara','jadelyn', 'prigg']
-
 def setup_players(guild, game: GameState):
     for member in guild.members:
         if not member.bot:
@@ -19,10 +16,7 @@ def setup_players(guild, game: GameState):
         player.role = role
     
     #Add integer
-    ordered_players = sorted(
-        game.players.values(),
-        key=lambda p: p.name.lower()
-    )
+    ordered_players = sorted(game.players.values(), key=lambda p: p.name.lower())
     for i, player in enumerate(ordered_players, start=1):
         player.number = i
     
@@ -71,7 +65,7 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return ['Detective' , 'Mafioso', 'Escort']
+    return ['Detective' , 'Mafioso', 'Escort',  'Janitor']
     return roles
 
 def getExecutionerTarget(players: dict[int, Player]):

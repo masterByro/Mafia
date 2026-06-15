@@ -129,13 +129,5 @@ async def debugplayers(ctx):
     message = await debugPlayers(game)
     await ctx.send(message)
 
-@bot.command()
-async def l(ctx):
-    if ctx.author.id != BYRO_ID: return
-    user_id = 710078079049007155
-    member = ctx.guild.get_member(user_id)
-    await member.send("You are a cutey")
-    #await ctx.send(f"I LOVE {member.mention}! SO MUCH")
-
 player_count = 0
 bot.run(token,log_handler=handler, log_level=logging.DEBUG) # type: ignore

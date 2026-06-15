@@ -1,5 +1,7 @@
 TODO
-Janitor
+Info pages
+Better post-game info
+Scoreboard
 
 Bonus:
 users in discord opt in with a command?
@@ -9,6 +11,7 @@ Retributionist
 Tracker
 Whispering
 dont sent decision info to the accused
+Serial killer bloody will
 
 Done
 have admin commands
@@ -30,3 +33,4 @@ fix detective feedback
 Update veteran to use diff command
 check for winning condition
 user can write notes/murder message
+Janitor

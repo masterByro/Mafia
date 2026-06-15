@@ -4,14 +4,15 @@ from utils import getByRole
 
 leaveBlank = '\nType `!target <player Id>` to target a player.'
 townsFolk = ' is a member of the Townsfolk.\n'
+mafia = ' is a member of the Mafia.\n'
 
 def getRoleDescription(role):
-    mafia = ' is a member of the Mafia, and wins the game if all the Townsfolk are killed.\n'
-    if role == 'Doctor': return 'The Doctor' + townsFolk + 'The Doctor can select one Player to heal every night (including yourself). This will prevent that Player from dying if they are attacked.\nYou cannot heal the same person twice in a row, however.'
-    if role == 'Framer': return 'The Framer' + mafia + 'The Framer can select one Player to frame every night. This will make the target appear suspicious if investigated by an Investigator.\n If the Mafioso dies, YOU will replace them and become the next Mafioso.'
-    if role == 'Mafioso': return 'The Mafioso' + mafia + 'The Mafioso can select one Player to murder every night.\n'
-    if role == 'Escort': return 'The Escort' + townsFolk + 'The Escort can select one Player to escort every night, preventing that Player from being able to perform their role.\nYou cannot escort the same person twice in a row, however.'
-    if role == 'Detective': return 'The Detective' + townsFolk + 'The Detective can select one Player to investigate every night, and will receive the results of the investigation the next night.\nThe Detective searches for blood, which will appear on the Mafioso, Doctor, or anybody that was framed or murdered.'
+    if role == 'Doctor': return 'The Doctor' + townsFolk + 'The Doctor can select one Player to heal each night (including yourself). This will prevent that Player from dying if they are attacked.\nYou cannot heal the same person twice in a row, however.'
+    if role == 'Mafioso': return 'The Mafioso' + mafia + 'The Mafioso can select one Player to murder each night.\n'
+    if role == 'Framer': return 'The Framer' + mafia + 'The Framer can select one Player to frame each night. This will make the target appear suspicious if investigated by an Investigator.\n If the Mafioso dies, you will replace them and become the next Mafioso.'
+    if role == 'Janitor': return 'The Janitor' + mafia + 'The Janitor can select one Player to clean on three night. If that player dies, only you can see their role and will.\n If the Mafioso dies, you will replace them and become the next Mafioso.'
+    if role == 'Escort': return 'The Escort' + townsFolk + 'The Escort can select one Player to escort each night, preventing that Player from being able to perform their role.\nYou cannot escort the same person twice in a row, however.'
+    if role == 'Detective': return 'The Detective' + townsFolk + 'The Detective can select one Player to investigate each night, and will receive the results of the investigation the next night.\nThe Detective searches for blood, which will appear on the Mafioso, Doctor, or anybody that was framed or murdered.'
     if role == 'Medium': return 'The Medium' + townsFolk + 'The Medium can speak to the dead at night'
     if role == 'Towny': return 'The Towny' + townsFolk + 'They do not have any special roles.'
     if role == 'Jailor': return 'The Jailor' + townsFolk + "During the day, you can select someone to jail with command `!target <player Id>`.\n That night, you can interrogate them and execute them with the command `!kill`. Type the command again to cancel the execution"
@@ -26,8 +27,9 @@ def getRoleDescription(role):
 def getActionDescription(game: GameState, player: Player):
     role = player.role
     if role == 'Doctor': return 'Who would you like to heal?' + leaveBlank
-    if role == 'Framer': return 'Who would you like to frame?' + leaveBlank
     if role == 'Mafioso': return 'Who would you like to murder?' + leaveBlank
+    if role == 'Framer': return 'Who would you like to frame?' + leaveBlank
+    if role == 'Janitor': return 'Who would you like to clean?' + leaveBlank
     if role == 'Escort': return 'Who would you like to escort?' + leaveBlank
     if role == 'Detective':  return 'Who would you like to investigate?' + leaveBlank
     if role == 'Serial Killer': return 'Who would you like to kill?' + leaveBlank
