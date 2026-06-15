@@ -1,11 +1,9 @@
-import discord
-
 from gamestate import GameState
 from player import Player
 from utils import getByRole
 
 leaveBlank = '\nType `!target <player Id>` to target a player.'
-townsFolk = ' is a member of the Townsfolk, and wins the game by ridding the town of evil (any Serial Killer or Mafia member).\n'
+townsFolk = ' is a member of the Townsfolk.\n'
 
 def getRoleDescription(role):
     mafia = ' is a member of the Mafia, and wins the game if all the Townsfolk are killed.\n'
