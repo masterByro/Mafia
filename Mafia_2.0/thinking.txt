@@ -1,6 +1,4 @@
 TODO
-check for winning condition
-user can write notes/murder message
 Janitor
 
 Bonus:
@@ -9,7 +7,6 @@ If jester doesnt pick some, it becomes random. Jester can kill abstainers
 Survivor
 Retributionist
 Tracker
-Update veteran to use diff command
 Whispering
 dont sent decision info to the accused
 
@@ -30,3 +27,6 @@ end of night, run through user selections to find outcome
 Framer -> Mafioso
 Voting command prompts
 fix detective feedback
+Update veteran to use diff command
+check for winning condition
+user can write notes/murder message

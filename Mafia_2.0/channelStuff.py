@@ -28,7 +28,10 @@ async def setup_channels(guild, game: GameState, BYRO_ID):
 
         channel = await guild.create_text_channel(name=channel_name, overwrites=overwrites, category=category)
         game.player_channels[player.id] = channel.id
-
+        will_channel = await guild.create_text_channel(name=f"{channel_name}-will", overwrites=overwrites, category=category)
+        game.player_will_channels[player.id] = will_channel.id
+        await will_channel.send("Use this channel to write your will. " "Anything written here may be revealed after your death.")
+        
     # Dead chat
     dead_role = discord.utils.get(guild.roles, name="Dead")
     game.dead_role_id = dead_role.id
@@ -53,8 +56,11 @@ async def endChannels(ctx, game: GameState):
     # Delete player channels
     for channel_id in game.player_channels.values():
         channel = guild.get_channel(channel_id)
-        if channel:
-            await channel.delete()
+        if channel: await channel.delete()
+
+    for channel_id in game.player_will_channels.values():
+        channel = guild.get_channel(channel_id)
+        if channel: await channel.delete()
 
     # Delete category
     category = discord.utils.get(guild.categories, name="Mafia Players")

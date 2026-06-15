@@ -30,6 +30,7 @@ class Player:
         self.guiltyVoters = [] #Jester
         self.willExecute = False
         self.framed = False
+        self.murderNote: str|None = None
 
     def reset_round(self):
         self.lastTarget = self.roundInput

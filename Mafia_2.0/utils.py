@@ -59,7 +59,7 @@ def checkWin(game):
 def is_blocked(player, blocked):
     return player.id in blocked
 
-async def kill(guild, game: GameState, player: Player, reason):
+async def kill(guild, game: GameState, player: Player, reason, note):
     player.killReset()
 
     dead_role = guild.get_role(game.dead_role_id)
@@ -67,7 +67,14 @@ async def kill(guild, game: GameState, player: Player, reason):
 
     channel = guild.get_channel(game.town_channel_id)
     await channel.send(f"{reason} Their role was: {player.role}")
+    if note: await channel.send(f"Their killer left this message: {note}")
     await handleMafiosoDeathTransfer(guild, game, player)
+
+    will_channel = guild.get_channel(game.player_will_channels.get(player.id))
+    if will_channel:
+        await will_channel.set_permissions(guild.default_role, view_channel=True, send_messages=False, read_message_history=True)
+        await will_channel.set_permissions(player.member, view_channel=True, send_messages=False, read_message_history=True)
+
 
 async def update_dead_chat_visibility(guild, game):
     dead_channel = guild.get_channel(game.dead_channel_id)
@@ -149,3 +156,12 @@ async def sendDetectiveInfo(guild, game):
     if detective.targetInfo and channel:
         await channel.send(detective.targetInfo)
         detective.targetInfo = None
+
+async def setMuderNote(game: GameState, ctx, message: str):
+    player = game.players.get(ctx.author.id)
+    killRoles: list[Role] = ['Mafioso', 'Serial Killer', 'Jester', 'Jailor']
+
+    if player is None or player.role not in killRoles: return 'You must be a role that kills to use this'
+    player.murderNote = message
+    return 'Saved'
+    

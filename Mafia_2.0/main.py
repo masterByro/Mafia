@@ -9,7 +9,7 @@ from dayNight import day, passTime
 from gamestate import GameState
 from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
-from utils import getPlayerList
+from utils import getPlayerList, setMuderNote
 from voting import castDecision, clear_vote, decideEnd, decidePhase, on_vote, sendVote
 from roleActions import alertVeteran, jailorKill, sayJail, setTarget, revealMayor
 
@@ -119,6 +119,9 @@ async def kill(ctx):
 async def say(ctx, *, message: str):
     feedback =await sayJail(game, ctx, message)
     if feedback: await ctx.send(feedback)
+
+@bot.command() #Deathnote
+async def m(ctx, *, message: str): await ctx.send(await setMuderNote(game, ctx, message))
 
 @bot.command()
 async def debugplayers(ctx):
