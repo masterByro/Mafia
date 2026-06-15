@@ -99,8 +99,6 @@ async def decideEnd(ctx, game: GameState):
     lines = ["**🧾 Trial Results**\n"]
 
     accused = getVotedForPlayer(game)
-    guilty_voters = []
-
     for p in ordered:
         if accused and p.id == accused.id: continue
 
@@ -113,7 +111,6 @@ async def decideEnd(ctx, game: GameState):
             lines.append(f"{p.name} voted {p.decision.upper()}")
             if p.decision == "guilty":
                 guilty += weight
-                guilty_voters.append(p.id)
             elif p.decision == "innocent":
                 innocent += weight
 
@@ -125,6 +122,7 @@ async def decideEnd(ctx, game: GameState):
 
     if guilty > innocent:
         if accused.role == "Jester":
+            guilty_voters = [p.id for p in ordered if p.alive and p.decision != "innocent" and (not accused or p.id != accused.id)]
             accused.guiltyVoters = guilty_voters
             accused.win = True
             await channel.send(f"You FOOLS! {accused.name} is the Jester! He will seek revenge...")

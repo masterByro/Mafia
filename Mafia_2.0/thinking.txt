@@ -1,11 +1,8 @@
 TODO
 Info pages
-Better post-game info
-Scoreboard
+exclude Byron main acc (on toggle)
 
 Bonus:
-users in discord opt in with a command?
-If jester doesnt pick some, it becomes random. Jester can kill abstainers
 Survivor
 Retributionist
 Tracker
@@ -34,3 +31,6 @@ Update veteran to use diff command
 check for winning condition
 user can write notes/murder message
 Janitor
+Better post-game info
+Scoreboard
+If jester doesnt pick some, it becomes random. Jester can kill abstainers

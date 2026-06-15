@@ -38,7 +38,7 @@ async def setTarget(game: GameState, ctx, number: int):
     #Jester can only kill guilty voters the night after lynch
     if player.role == 'Jester':
         if len(player.guiltyVoters) == 0: return "You can no longer seek revenge"
-        if target.id not in player.guiltyVoters: return "You can only target players who voted guilty against you"
+        if target.id not in player.guiltyVoters: return "You can only target players who did not decide you were innocent"
 
     #Healer can't target revealed Mayor
     if player.role == 'Doctor' and target.role == 'Mayor' and target.revealed:
