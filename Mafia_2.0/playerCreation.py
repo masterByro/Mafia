@@ -6,7 +6,7 @@ from roleDescriptions import getRoleDescription
 from player import Player, Role
 from utils import getByRole, isMafia
 
-ALLOW_BYRO_AS_PLAYER = True
+ALLOW_BYRO_AS_PLAYER = False
 
 def setup_players(guild, game: GameState, BYRO_ID):
     for member in guild.members:

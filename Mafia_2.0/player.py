@@ -1,7 +1,7 @@
 from typing import Literal
 
 
-Role = Literal['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor', 'Executioner', 'Jester', 'Serial Killer','Survivor', 'Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny','Jailor']
+Role = Literal['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor', 'CLEANED', 'Executioner', 'Jester', 'Serial Killer','Survivor', 'Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny','Jailor']
 mafiaRoles: list[Role] = ['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor']
 townRoles: list[Role] = ['Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny', 'Jailor']
 neutralEvil: list[Role] = ['Executioner', 'Jester']

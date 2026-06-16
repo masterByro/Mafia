@@ -18,8 +18,7 @@ async def run_timer(handle: TimerHandle, update_interval: int = 1):
         await asyncio.sleep(update_interval)
 
 def format_time(seconds: int):
-    if seconds < 0:
-        seconds = 0
+    if seconds < 0: seconds = 0
 
     m, s = divmod(seconds, 60)
     return f"{m:02d}:{s:02d}"

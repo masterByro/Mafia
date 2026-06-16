@@ -100,7 +100,6 @@ async def decideEnd(ctx, game: GameState):
 
     channel = ctx.guild.get_channel(game.town_channel_id)
     ordered = sorted(game.players.values(), key=lambda p: p.number)
-    lines = ["**🧾 Trial Results**\n"]
 
     accused = getVotedForPlayer(game)
     for p in ordered:
@@ -108,14 +107,16 @@ async def decideEnd(ctx, game: GameState):
 
         # abstained (never voted or cleared vote)
         if p.decision is None:
-            lines.append(f"{p.name} abstained")
+            lines.append(f"⚪ {p.name} abstained")
         else:
             weight = 1
             if p.role == "Mayor" and p.revealed: weight = 3
-            lines.append(f"{p.name} voted {p.decision.upper()}")
             if p.decision == "guilty":
+                lines.append(f"🟥 {p.name} voted GUILTY")
                 guilty += weight
+                
             elif p.decision == "innocent":
+                lines.append(f"🟩 {p.name} voted INNOCENT")
                 innocent += weight
 
     await channel.send("\n".join(lines))

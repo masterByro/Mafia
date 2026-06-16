@@ -147,6 +147,7 @@ async def calculateResults(guild, game: GameState):
     if (janitor and target and not isDeadOrBlocked(janitor)): 
         if not visitVet(janitor, target):
             target.cleaned = True
+            target.role = 'CLEANED'
 
     for victim_id, msg, note in attacked:
         if victim_id not in healed:

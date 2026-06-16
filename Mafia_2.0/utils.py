@@ -10,11 +10,10 @@ def getPlayerList(game: GameState):
     lines = ["**Current Players**\n"]
 
     for p in ordered:
-        status = "🟢 Alive" if p.alive else "🔴 Dead"
-
-        lines.append(
-            f"{p.number}. {p.name} | {status}"
-        )
+        if p.alive:
+            lines.append(f"{p.number}. {p.name} | 🟢 Alive")
+        else:
+            lines.append(f"{p.number}. {p.name} | 🔴 Dead ({p.role})")
 
     return "\n".join(lines)
 
@@ -92,11 +91,9 @@ async def kill(guild, game: GameState, player: Player, reason, note):
     if dead_role: await player.member.add_roles(dead_role)
 
     channel = guild.get_channel(game.town_channel_id)
-    role = player.role
     janitor = getByRole(game.players, "Janitor")
 
-    if player.cleaned: role = 'CLEANED'
-    await channel.send(f"{reason} Their role was: {role}")
+    await channel.send(f"{reason} Their role was: { player.role}")
     if note: await channel.send(f"Their killer left this message: {note}")
     await handleMafiosoDeathTransfer(guild, game, player)
     
