@@ -74,16 +74,6 @@ async def decide(ctx):
     await ctx.send(feedback)
 
 @bot.command()
-async def guilty(ctx):
-    response = await castDecision(game, ctx, "guilty")
-    await ctx.send(response)
-
-@bot.command()
-async def innocent(ctx):
-    response = await castDecision(game, ctx, "innocent")
-    await ctx.send(response)
-
-@bot.command()
 async def decideend(ctx):
     if ctx.author.id != BYRO_ID: return
     await decideEnd(ctx, game)

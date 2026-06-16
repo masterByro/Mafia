@@ -1,8 +1,9 @@
+import discord
 
 from gamestate import GameState
 from utils import getByRole, isGameOver, kill
-from channelStuff import sendDecideInfo
 from timing import countdown
+from VoteViewObj import VoteView
 
 async def sendVote(game: GameState, ctx, number):
     if not game.can_vote: return "You cannot vote right now.", None
@@ -45,7 +46,7 @@ async def on_vote(ctx, game: GameState):
         if channel:
             await channel.send(f"The castlefolk have voted against {votedOutPlayer.name}!")
             await channel.send(f"{votedOutPlayer.name}, state your defence!")
-            await countdown(channel, 30, prefix="Defence statement: ")
+            await countdown(channel, 2, prefix="Defence statement: ")
             await decidePhase(ctx, game)
 
 def tally_votes(game: GameState):
@@ -156,10 +157,21 @@ async def decidePhase(ctx, game):
     game.canDecide = True
     channel = ctx.guild.get_channel(game.town_channel_id)
     await channel.send(f"Place your decision: Is {accused.name} guilty or innocent?")
-    players_without_accused = [p for p in game.players.values() if p.id != accused.id]
-    await sendDecideInfo(ctx.guild, players_without_accused, accused)
+    await sendDecision(ctx.guild, game)
     await countdown(channel, 20, prefix="Place your decision: ")
     await decideEnd(ctx, game)
 
 def getVotedForPlayer(game):
     return next((p for p in game.players.values() if p.votedFor), None)
+
+async def sendDecision(guild, game):
+    for player in game.players.values():
+        if not player.alive or player.votedFor: continue
+
+        channel_name = player.name.lower().replace(" ", "-")
+        channel = discord.utils.get(guild.text_channels, name=channel_name)
+
+        if channel is None: continue
+
+        view = VoteView(game, player.id)
+        await channel.send("⚖️ Place your decision: Guilty or Innocent?", view=view)

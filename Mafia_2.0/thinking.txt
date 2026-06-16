@@ -1,11 +1,11 @@
 TODO
-Info pages
+simplify commands
+delete timers after 0
 
 Bonus:
 Retributionist
 Tracker
 Whispering
-simplify commands
 multiple doctors, escorts
 
 Done
@@ -40,3 +40,4 @@ Serial killer bloody will
 run time progressino more auto
 add defence time
 add timers
+Info pages

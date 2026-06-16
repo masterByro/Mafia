@@ -11,7 +11,7 @@ ALLOW_BYRO_AS_PLAYER = True
 def setup_players(guild, game: GameState, BYRO_ID):
     for member in guild.members:
         if member.bot: continue
-        if not ALLOW_BYRO_AS_PLAYER and member.id == BYRO_ID: continue
+        if not ALLOW_BYRO_AS_PLAYER and member.id == 710078079049007155: continue
         game.players[member.id] = Player(member)
         
     roles = makeRoles(len(game.players))
