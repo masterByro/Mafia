@@ -1,6 +1,6 @@
 from gamestate import GameState
 from player import Player
-from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, is_blocked, kill, sendDetectiveInfo, update_dead_chat_visibility, update_mafia_chat_visibility
+from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, kill, sendDetectiveInfo, update_dead_chat_visibility, update_mafia_chat_visibility
 from roleDescriptions import sendNightInfo
 from channelStuff import sendVoteInfo
 
@@ -64,66 +64,68 @@ def calculateResults(game: GameState):
 
     #Jester, Jailor, veteran, escort, doctor, mafioso, serial killer, framer, detective, janitor
 
+    def isDead(player: Player): return any(v_id == player.id for v_id, _, _ in deaths)
+    def isBlocked(player: Player): return player.id in blocked
+    def isAttacked(player: Player): return any(v_id == player.id for v_id, _, _ in attacked)
+    def isDeadOrBlocked(player: Player): return isDead(player) or isBlocked(player) or isAttacked(player)
+    def visitVet(visitor: Player, target: Player):
+        if target.role == 'Veteran' and veteranGuard: 
+            attacked.append((visitor.id, deathByVeteran, target.murderNote))
+            return True
+        
+        return False
     jester, target = get_target(game, 'Jester')
     if jester and target:
         deaths.append((target.id," is dead! The Jester gets their revenge from the grave!", jester.murderNote))
 
     #Jailor
     jailor, target = get_target(game, 'Jailor')
-    if jailor and target:
+    if jailor and target and not isDeadOrBlocked(jailor):
         blocked.add(target.id)
         if jailor.willExecute: deaths.append((target.id," was executed by the Jailor. Has justice been served?", jailor.murderNote))
 
     veteran = getByRole(game.players, 'Veteran')
-    if veteran and veteran.onAlert:
+    if veteran and veteran.onAlert and not isDeadOrBlocked(veteran):
         veteranGuard = True
-        veteran.onAlert = False #Reset it
 
-    def visitVet(target: Player):
-        if target.role ==  'Veteran' and veteranGuard: 
-            attacked.append((target.id, deathByVeteran, target.murderNote))
-            return True
-        return False
-        
     escort, target = get_target(game, 'Escort')
-    if escort  and not is_blocked(escort, blocked) and target:
-        if not visitVet(target):
+    if escort and not isDeadOrBlocked(escort) and target:
+        if not visitVet(escort, target):
             blocked.add(target.id)
             # Escort dies if visiting SK
             if target.role == 'Serial Killer':
                 attacked.append((escort.id," was horrifically stabbed to death while out visiting last night!", target.murderNote))
 
     doctor, target = get_target(game, 'Doctor')
-    if (doctor and target and not is_blocked(doctor, blocked)):
-        if not visitVet(target): healed.add(target.id)
+    if (doctor and target and not isDeadOrBlocked(doctor)):
+        if not visitVet(doctor, target): healed.add(target.id)
 
     survivor = getByRole(game.players, 'Survivor')
-    if survivor and survivor.onAlert:
+    if survivor and not isDeadOrBlocked(survivor):
         healed.add(survivor.id)
-        survivor.onAlert = False #Reset it
 
     mafioso, target = get_target(game, 'Mafioso')
-    if (mafioso and not is_blocked(mafioso, blocked) and target):
-        if not visitVet(target):  
+    if (mafioso and not isDeadOrBlocked(mafioso) and target):
+        if not visitVet(mafioso, target):  
             attacked.append((target.id, " was murdered last night!",  mafioso.murderNote))
 
     sk, target = get_target(game, 'Serial Killer')
-    if (sk and not is_blocked(sk, blocked) and target):
-        if not visitVet(target):
+    if (sk and not isDeadOrBlocked(sk) and target):
+        if not visitVet(sk, target):
             attacked.append((target.id," was murdered last night!", sk.murderNote))
 
     framer, target = get_target(game, 'Framer')
-    if (framer and target and not is_blocked(framer, blocked)): 
-        if not visitVet(target):
+    if (framer and target and not isDeadOrBlocked(framer)): 
+        if not visitVet(framer, target):
             target.framed = True
 
     detective, target = get_target(game, 'Detective')
     if detective:
-        if target is None or is_blocked(detective, blocked):
+        if target is None or isDeadOrBlocked(detective):
             detective.targetInfo = ("You either did not select anyone to investigate last night, or were blocked")
         else:
-            if not visitVet(target):
-                bloody = target.role in ['Doctor', 'Mafioso', 'Serial Killer'] or target.framed or target.id in attacked
+            if not visitVet(detective, target):
+                bloody = target.role in ['Doctor', 'Mafioso', 'Serial Killer'] or target.framed or isAttacked(target) or isDead(target)
                 
                 if bloody:
                     detective.targetInfo = (f"Your target, {target.name}, had blood on them last night.")
@@ -132,8 +134,8 @@ def calculateResults(game: GameState):
                     detective.targetInfo = (f"Your target, {target.name}, did NOT have blood on them last night.")
 
     janitor, target = get_target(game, 'Janitor')
-    if (janitor and target and not is_blocked(janitor, blocked)): 
-        if not visitVet(target):
+    if (janitor and target and not isDeadOrBlocked(janitor)): 
+        if not visitVet(janitor, target):
             target.cleaned = True
 
     for victim_id, msg, note in attacked:

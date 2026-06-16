@@ -1,10 +1,7 @@
 TODO
 Info pages
-jailed mafia cant use mafia chat
-
 
 Bonus:
-Survivor
 Retributionist
 Tracker
 Whispering
@@ -13,6 +10,7 @@ simplify commands
 run time progressino more auto
 add defence time
 add timers
+multiple doctors, escorts
 
 Done
 have admin commands
@@ -40,3 +38,5 @@ Scoreboard
 If jester doesnt pick some, it becomes random. Jester can kill abstainers
 exclude Byron main acc (on toggle)
 dont send decision info to the accuseds
+Survivor
+jailed mafia cant use mafia chat

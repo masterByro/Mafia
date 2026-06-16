@@ -70,7 +70,7 @@ def checkWin(game):
         for p in game.players.values():
             if p.alive and p.role == 'Survivor':
                 p.win = True
-                
+
     if len(alive_players) == 1 and alive_sk:
         set_winners(alive_sk)
         return True, "The Serial Killer has won!"
@@ -84,9 +84,6 @@ def checkWin(game):
         return True, "The Townfolk have defeated all threats!"
 
     return False, None
-
-def is_blocked(player, blocked):
-    return player.id in blocked
 
 async def kill(guild, game: GameState, player: Player, reason, note):
     player.alive = False
@@ -142,9 +139,11 @@ async def update_mafia_chat_visibility(guild, game: GameState):
     mafia_channel = guild.get_channel(game.mafia_channel_id)
 
     overwrites = dict(mafia_channel.overwrites)
+    jailor = getByRole(game.players, "Jailor")
+    jailed_id = jailor.roundInput if jailor else None
 
     for player in game.players.values():
-        if not  isMafia(player): continue
+        if not isMafia(player) or jailed_id == player.id: continue
         if game.is_day:
             overwrites[player.member] = discord.PermissionOverwrite(view_channel=False)
         else:
