@@ -58,5 +58,5 @@ async def countdown(channel, seconds: int, prefix: str = "⏳ Countdown"):
         await msg.edit(content=f"{prefix}: **{remaining}**")
         await asyncio.sleep(1)
 
-    await msg.edit(content=f"{prefix}: **0**")
+    await msg.delete()
     return msg
