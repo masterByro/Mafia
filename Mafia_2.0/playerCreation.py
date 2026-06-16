@@ -6,7 +6,7 @@ from roleDescriptions import getRoleDescription
 from player import Player, Role
 from utils import getByRole, isMafia
 
-ALLOW_BYRO_AS_PLAYER = False
+ALLOW_BYRO_AS_PLAYER = True
 
 def setup_players(guild, game: GameState, BYRO_ID):
     for member in guild.members:
@@ -69,7 +69,7 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return ['Detective' , 'Mafioso', 'Escort',  'Janitor']
+    return ['Detective' , 'Serial Killer', 'Janitor', 'Escort']
     return roles
 
 def getExecutionerTarget(players: dict[int, Player]):

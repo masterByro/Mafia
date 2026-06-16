@@ -93,17 +93,17 @@ Wins if alive at end of game
 Technical Info:
 
 Action priorities:
-1. Jester
-2. Jailor
-3. Veteran
-4. Escort
-5. Doctor
-6. Survivor
-7. Mafioso
-8. Serial Killer
-9. Framer
-10. Detective
-11. Janitor
+1. Jester            Kills target
+2. Jailor            Blocks target and can choose to kill target
+3. Veteran           Kills all following visitors 
+4. Escort            Blocks target
+5. Doctor            At end of round, will heal Attacked target
+6. Survivor          Protected against Attacks
+7. Mafioso           Attacks target
+8. Serial Killer     Attacks target
+9. Framer            Frames target
+10. Detective        Checks target
+11. Janitor          Cleans target
 
 
 Possible roles:

@@ -5,7 +5,6 @@ Bonus:
 Retributionist
 Tracker
 Whispering
-Serial killer bloody will
 simplify commands
 run time progressino more auto
 add defence time
@@ -40,3 +39,4 @@ exclude Byron main acc (on toggle)
 dont send decision info to the accuseds
 Survivor
 jailed mafia cant use mafia chat
+Serial killer bloody will

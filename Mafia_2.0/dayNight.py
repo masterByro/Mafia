@@ -18,7 +18,7 @@ async def day(guild, game: GameState):
     await channel.send("The town awakens on Day " + str(game.day_number))
     
     if game.day_number > 1:
-        deaths = calculateResults(game)
+        deaths = await calculateResults(guild, game)
         await sendDetectiveInfo(guild, game)
         await update_dead_chat_visibility(guild, game)
         await update_mafia_chat_visibility(guild, game)
@@ -54,7 +54,7 @@ async def night(guild, game: GameState):
     await channel.send("You can now perform your night action")
     await sendNightInfo(guild, game)
 
-def calculateResults(game: GameState):
+async def calculateResults(guild, game: GameState):
     deaths = [] # (victim_id, death_message, murder_note)
     blocked = set()
     healed = set()
@@ -95,6 +95,12 @@ def calculateResults(game: GameState):
             # Escort dies if visiting SK
             if target.role == 'Serial Killer':
                 attacked.append((escort.id," was horrifically stabbed to death while out visiting last night!", target.murderNote))
+                will_channel_id = game.player_will_channels.get(escort.id)
+                if will_channel_id:
+                    will_channel = guild.get_channel(will_channel_id)
+                    if will_channel: 
+                        await will_channel.purge(limit=100)
+                        await will_channel.send("🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸")
 
     doctor, target = get_target(game, 'Doctor')
     if (doctor and target and not isDeadOrBlocked(doctor)):
