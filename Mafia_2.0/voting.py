@@ -3,7 +3,7 @@ import discord
 from gamestate import GameState
 from utils import getByRole, isGameOver, kill
 from timing import countdown
-from UI.JudgeViewObj import JudgeView
+from UI.JudgeViewer import JudgeView
 
 async def on_vote(guild, game: GameState):
     votedOutPlayer = tally_votes(game)

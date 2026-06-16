@@ -2,7 +2,7 @@ import discord
 
 from gamestate import GameState
 from scoring import loadWins
-from UI.VoteSelectObj import VoteView
+from UI.VoteSelecter import VoteView
 
 async def setup_channels(guild, game: GameState, BYRO_ID):
     byron = guild.get_member(BYRO_ID)
