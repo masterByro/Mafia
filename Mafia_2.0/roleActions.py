@@ -2,51 +2,39 @@ from gamestate import GameState
 from utils import getByRole, isMafia, sendToPlayer
 from player import Role, Player
 
-async def setTarget(game: GameState, ctx, number: int):
-    player = game.players.get(ctx.author.id)
-    if player is None: return "You are not part of the game."
-    if game.is_day and not player.role == 'Jailor': return "Actions may only be performed at night."
+def getPossibleOptions(game: GameState, player: Player) -> list[Player]:
+    if player is None: return []
+    if game.is_day and player.role != 'Jailor': return []
+    if player.role == 'Jester' and player.alive: return []
+    if not player.alive and player.role != 'Jester': return []
+    if player.role in ['Towny', 'Executioner', 'Mayor', 'Veteran', 'Survivor']: return []
 
-    if player.role == 'Jester' and player.alive: return "Jester can only seek revenge once lynched."
-    if not player.alive and not player.role == 'Jester': return "Dead players cannot perform actions."
+    possible = []
+    noSelfTarget = ['Mafioso', 'Framer', 'Serial Killer', 'Jester', 'Jailor']
 
-    # Roles that dont have a target action #TODO Switch not role not in. That waay its opt in, not opt out
-    if player.role in ['Towny', 'Executioner', 'Mayor', 'Veteran', 'Survivor']:
-        return f"The {player.role} cannot use this command."
+    for target in game.players.values():
+        if not target.alive: continue
 
-    # Find target by player number
-    target = next((p for p in game.players.values() if p.number == number),None)
+        # Self-target restrictions
+        if target.id == player.id and player.role in noSelfTarget: continue
 
-    if target is None: return "Invalid player number."
+        # Cannot target same person twice in a row
+        if player.role in ['Doctor', 'Escort'] and player.lastTarget == target.id: continue
 
-    if not target.alive: return f"{target.name} is dead. You cannot perform actions on them."
-    
-    noSelfTarget: list[Role] = ['Mafioso', 'Framer','Serial Killer', 'Jester', 'Jailor']
-    # Self-target restrictions
-    if target.id == player.id:
-        if player.role in noSelfTarget:
-            return f"The {player.role} cannot target themselves."
+        # Mafia cannot target mafia
+        if isMafia(player) and isMafia(target): continue
 
-    # Cannot target same person twice in a row
-    if player.role in ['Doctor', 'Escort'] and player.lastTarget == target.id:
-        return f"The {player.role} cannot target the same player two nights in a row."
+        # Jester can only target guilty voters
+        if player.role == 'Jester':
+            if len(player.guiltyVoters) == 0: continue
+            if target.id not in player.guiltyVoters: continue
 
-    # Mafia cannot target mafia
-    if isMafia(player) and isMafia(target):
-        return "You cannot target a fellow Mafia member."
+        # Doctor cannot heal revealed mayor
+        if (player.role == 'Doctor' and target.role == 'Mayor' and target.revealed): continue
 
-    #Jester can only kill guilty voters the night after lynch
-    if player.role == 'Jester':
-        if len(player.guiltyVoters) == 0: return "You can no longer seek revenge"
-        if target.id not in player.guiltyVoters: return "You can only target players who did not decide you were innocent"
+        possible.append(target)
 
-    #Healer can't target revealed Mayor
-    if player.role == 'Doctor' and target.role == 'Mayor' and target.revealed:
-        return 'You cannot protect the Mayor'
-    
-    # Success
-    player.roundInput = target.id
-    return f"You will target {target.name} tonight."
+    return possible
 
 async def jailorKill(game: GameState, ctx):
     player = game.players.get(ctx.author.id)

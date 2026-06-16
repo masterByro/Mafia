@@ -1,9 +1,11 @@
 from gamestate import GameState
 from player import Player, Role
 from utils import getByRole
-from UI.AlertButton import AlertView
+from roleActions import getPossibleOptions
 
-leaveBlank = '\nType `!target <player Id>` to target a player.'
+from UI.AlertButton import AlertView
+from UI.TargetDropdowns import TargetView
+
 townsFolk = ' is a member of the Townsfolk.\n'
 mafia = ' is a member of the Mafia.\n'
 
@@ -27,18 +29,14 @@ def getRoleDescription(role: Role|None):
         
 def getActionDescription(game: GameState, player: Player):
     role = player.role
-    if role == 'Doctor': return 'Who would you like to heal?' + leaveBlank
-    if role == 'Mafioso': return 'Who would you like to murder?' + leaveBlank
-    if role == 'Framer': return 'Who would you like to frame?' + leaveBlank
-    if role == 'Janitor': return 'Who would you like to clean?' + leaveBlank
-    if role == 'Escort': return 'Who would you like to escort?' + leaveBlank
-    if role == 'Detective':  return 'Who would you like to investigate?' + leaveBlank
-    if role == 'Serial Killer': return 'Who would you like to kill?' + leaveBlank
-    if role == 'Jester': 
-        if player.alive == True: return 'The Jester has no night action yet'
-        if len(player.guiltyVoters) == 0: 'The Jester can no longer seek revenge'
-        targets = [f"{p.number}. {p.name}" for p in game.players.values() if p.id in player.guiltyVoters and p.alive]
-        return ("Who would you like to seek revenge on?\n\n" "Possible targets:\n" + "\n".join(targets) + leaveBlank)
+    if role == 'Doctor': return 'Who would you like to heal?'
+    if role == 'Mafioso': return 'Who would you like to murder?'
+    if role == 'Framer': return 'Who would you like to frame?'
+    if role == 'Janitor': return 'Who would you like to clean?'
+    if role == 'Escort': return 'Who would you like to escort?'
+    if role == 'Detective':  return 'Who would you like to investigate?'
+    if role == 'Serial Killer': return 'Who would you like to kill?'
+    if role == 'Jester' and len(player.guiltyVoters) > 0 and not player.alive:  return 'Who would you like to seek revenge on?'
     if role in  ['Veteran', 'Survivor']: 
         return 'You have ' + str(player.alerts) + ' alerts remaining.'
  
@@ -63,6 +61,10 @@ async def sendNightInfo(guild, game):
 
         message = getActionDescription(game, player)
         if message: await channel.send(message)
-        
+        canTargetPlayers: list[Role] = ['Mafioso', 'Framer', 'Janitor', 'Jester', 'Serial Killer', 'Doctor', 'Escort', 'Detective']
+
+        if player.role in canTargetPlayers:
+            possibleOptions = getPossibleOptions(game, player)
+            if len(possibleOptions) > 0: await channel.send(view=TargetView(game, possibleOptions))
         if player.role in ["Veteran", "Survivor"]:
             await channel.send(view=AlertView(game))

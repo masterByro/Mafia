@@ -148,14 +148,15 @@ async def update_mafia_chat_visibility(guild, game: GameState):
 
     await mafia_channel.edit(overwrites=overwrites)
 
-async def checkExecutionerTargetDeaths(guild, game, deaths):
+async def checkExecutionerTargetDeaths(guild, game: GameState, deaths):
     executioner = getByRole(game.players, 'Executioner')
     if executioner is None: return
     
-    dead_ids = {victim_id for victim_id, _ in deaths}
-    if executioner.executioner_target not in dead_ids: return
+    dead_ids = {death[0] for death in deaths}
+    target_id = executioner.executioner_target
+    if  target_id is None or target_id not in dead_ids: return
 
-    target = game.players[executioner.executioner_target]
+    target = game.players[target_id]
     executioner.role = "Jester"
     executioner.executioner_target = None
     channel = guild.get_channel(game.player_channels[executioner.id])

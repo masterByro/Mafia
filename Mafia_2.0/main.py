@@ -11,7 +11,7 @@ from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
 from utils import getPlayerList, setMuderNote
 from voting import decideEnd, decidePhase
-from roleActions import jailorKill, sayJail, setTarget
+from roleActions import jailorKill, sayJail
 from scoring import initWinsFile
 
 load_dotenv()
@@ -59,7 +59,9 @@ async def end(ctx):
     await ctx.send("Game ended!")
 
 @bot.command()
-async def n(ctx): await passTime(ctx.guild, game)
+async def n(ctx): 
+    if ctx.author.id != BYRO_ID: return
+    await passTime(ctx.guild, game)
 
 @bot.command() #Depreacted
 async def decide(ctx):
@@ -74,11 +76,6 @@ async def decideend(ctx):
     
 @bot.command()
 async def list(ctx): await ctx.send(getPlayerList(game))
-
-@bot.command()
-async def target(ctx, number: int):
-    feedback = await setTarget(game, ctx, number)
-    await ctx.send(feedback)
 
 @bot.command() #Jailor execute
 async def kill(ctx): 
