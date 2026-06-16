@@ -1,12 +1,12 @@
 from gamestate import GameState
-from player import Player
+from player import Player, Role
 from utils import getByRole
 
 leaveBlank = '\nType `!target <player Id>` to target a player.'
 townsFolk = ' is a member of the Townsfolk.\n'
 mafia = ' is a member of the Mafia.\n'
 
-def getRoleDescription(role):
+def getRoleDescription(role: Role|None):
     if role == 'Doctor': return 'The Doctor' + townsFolk + 'The Doctor can select one Player to heal each night (including yourself). This will prevent that Player from dying if they are attacked.\nYou cannot heal the same person twice in a row, however.'
     if role == 'Mafioso': return 'The Mafioso' + mafia + 'The Mafioso can select one Player to murder each night.\n'
     if role == 'Framer': return 'The Framer' + mafia + 'The Framer can select one Player to frame each night. This will make the target appear suspicious if investigated by an Investigator.\n If the Mafioso dies, you will replace them and become the next Mafioso.'
@@ -20,8 +20,8 @@ def getRoleDescription(role):
     if role == 'Jester': return 'The Jester wins the game by getting lynched, simple as that. After being lynched, you may choose to seek revenge on one player that condemned you at night.'
     if role == 'Mayor': return 'The Mayor' + townsFolk + 'The Mayor can reveal his role to the group during the day. His vote will be worth 3 points from then on.\n You can do this by typing `!reveal`'
     if role == 'Serial Killer': return 'The Serial Killer wins the game by being the last person alive. They can achieve this by killing. And lots of it!'
+    if role == 'Survivor': return 'The Survivor wins by staying alive until the very end. You can be on alert 3 night,'
     if role == 'Veteran': return 'The Veteran' + townsFolk + "The Veteran can be on alert for three nights. You will kill any visitors on those nights."
-    if role == 'GodFather': return 'The GodFather' + mafia + "The GodFather takes over the the murdering if the Mafioso dies."
     return 'oops no role Description, program brokey'
         
 def getActionDescription(game: GameState, player: Player):
@@ -39,7 +39,7 @@ def getActionDescription(game: GameState, player: Player):
         targets = [f"{p.number}. {p.name}" for p in game.players.values() if p.id in player.guiltyVoters and p.alive]
         return ("Who would you like to seek revenge on?\n\n" "Possible targets:\n" + "\n".join(targets) + leaveBlank)
     
-    if role == 'Veteran': 
+    if role in  ['Veteran', 'Survivor']: 
         alerts = str(3 - player.alerts)
         message = 'You have used ' + alerts + ' alerts.'
         if player.alerts > 0:

@@ -11,7 +11,7 @@ from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
 from utils import getPlayerList, setMuderNote
 from voting import castDecision, clear_vote, decideEnd, decidePhase, on_vote, sendVote
-from roleActions import alertVeteran, jailorKill, sayJail, setTarget, revealMayor
+from roleActions import onAlert, jailorKill, sayJail, setTarget, revealMayor
 from scoring import initWinsFile
 
 load_dotenv()
@@ -108,8 +108,8 @@ async def target(ctx, number: int):
 @bot.command() #Mayor
 async def reveal(ctx): await ctx.send(await revealMayor(game, ctx))
 
-@bot.command() #Veteran
-async def alert(ctx): await ctx.send(await alertVeteran(game, ctx))
+@bot.command() #Veteran, Survivvor
+async def alert(ctx): await ctx.send(await onAlert(game, ctx))
 
 @bot.command() #Jailor execute
 async def kill(ctx): 

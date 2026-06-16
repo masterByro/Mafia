@@ -61,11 +61,11 @@ async def revealMayor(game: GameState, ctx):
     await channel.send((f"{player.name} has revealed themselves as the Mayor!"))
     return "You sucessfully reveal yourself"
 
-async def alertVeteran(game: GameState, ctx):
+async def onAlert(game: GameState, ctx):
     player = game.players.get(ctx.author.id)
     if player is None: return "You are not part of the game."
-    if not player.role == 'Veteran': return "Nice Try bozo"
-    if player.alerts == 0: return "You have already revealed your rolebeen on alert 3 times"
+    if player.role not in ['Veteran', 'Survivor']: return "Nice Try bozo"
+    if player.alerts == 0: return "You have already been on alert 3 times"
     if not player.alive: return "You are dead. Too late mate. So sad"
     if game.is_day: return "You can only go on alert at night"
     

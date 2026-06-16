@@ -1,3 +1,4 @@
 .env
 discord.log
-_pycache_
+__pycache__/
+*.log

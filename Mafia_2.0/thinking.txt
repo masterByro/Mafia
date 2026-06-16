@@ -1,5 +1,7 @@
 TODO
 Info pages
+jailed mafia cant use mafia chat
+
 
 Bonus:
 Survivor

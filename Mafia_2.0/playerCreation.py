@@ -37,9 +37,9 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
     ## 4: 1 mafia, 3 basic
     townBasic = ['Doctor','Escort', 'Medium', 'Towny']
     townExtra = ['Mayor', 'Veteran', 'Jailor' 'Towny', 'Towny']
-    mafia = ['Mafioso', 'Framer']
-    chaos = ['Executioner', 'Jester']
-    chaosWithSK = ['Executioner', 'Jester','Serial Killer']
+    mafia = ['Mafioso', 'Framer', 'Janitor']
+    chaos = ['Executioner', 'Jester', 'Survivor']
+    chaosWithSK = ['Executioner', 'Jester','Serial Killer', 'Survivor']
 
     random.shuffle(chaos)
     random.shuffle(townExtra)

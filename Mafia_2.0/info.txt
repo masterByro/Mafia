@@ -1,0 +1,113 @@
+# MAFIA GAME ROLE GUIDE
+
+---
+
+🟢 TOWNFOLK
+Eliminate the Mafia and Serial Killer
+
+👨‍⚕️ Doctor
+**Action:** Heal one player each night
+**Info:** Cannot target the same player twice. Can target themselves. Cannot target a mayor that has revealed themselves. Cannot heal a death caused by the Jailor or Jester
+
+🕵️ Detective
+**Action:** Investigate one player each night
+**Info:** Receives clues indicating if the target had “blood” on them. This will detect Mafioso, Serial Killers, Doctors, anyone who has been framed or attacked that night
+
+🚪 Escort
+**Action:** Roleblock one player each night
+**Info:** Prevents target from using their night ability. Escorting the Serial Killer will result in the Escort's death
+
+👑 Mayor
+**Action:** Reveal their role publicly, in order to have more voting power
+**Info:** Mayor can publicly reveal their role during the day anytime. Once revealed their vote and judgement are worth 3 votes. Once revealed, Doctor can no longer heal them
+
+🛡️ Veteran
+**Action:** Go on alert, killing any night visitor
+**Info:** Veteran can go on alert 3 times per game, attacking all visitors received on those nights.
+
+💀 Jailor
+**Action:** Selects a target to jail during the day, interrogates them and can execute them at night
+**Info:** Must select target during daytime. Interrogate the target at night, blocking the target from using their action. Can choose to execute them. Nothing can protect/save the target.
+
+👻 Medium
+**Action:** Communicate with the dead at night
+**Info:** Dead chat becomes accessible during the night
+
+## 🏘️ Towny
+**Action:** None
+**Info:** No special powers
+
+---
+
+🔴 Mafia: 
+Eliminate all Townsfolk and the Serial Killer
+All mafia members can access a private Mafia chatroom at night to co-ordinate their strategy (if a mafia member is hauled to Jail, they won't be able to speak to the other Mafia members that night)
+If a Mafioso dies, the Framer will take their place. If there's no Framer, the Janitor will take their place 
+
+## 🔫 Mafioso
+**Action:** Kill one player each night
+**Info:** Primary killing role of Mafia
+
+## 🎭 Framer
+**Action:** Frame a target each night
+**Info:** Makes target appear suspicious to investigative roles. Target remains framed until they are investigated (So your night 1 target will show up as suspicious if investigated even on night 3)
+
+## 🧹 Janitor
+**Action:** Clean a kill
+**Info:** If your target dies that night, their will and role will be visible only to you, instead of being publically broadcasted
+
+
+---
+
+# NEUTRAL CHAOS
+
+⚖️ Executioner
+Wins if their target is lynched
+**Action:**  None
+**Info:** A random town member is selected as your target. If they die of other means, you will turn into the Jester, and your win condition changes
+
+🤡 Jester
+Wins if they get lynched
+**Ability:** None
+**Info:** Can take revenge after death. The night after the lynching, you can murder any player who did not vote 'Innocent' for you
+
+---
+
+# NEUTRAL EVIL
+
+🔪 Serial Killer
+Wins when everyone in the town is dead (except the Survivor)
+**Action:** Kill one player each night
+**Info:** If targeted by the Escort, you murder the escort instead of your selected target
+
+---
+
+# NEUTRAL BENIGN
+
+🏕️ Survivor
+Wins if alive at end of game
+**Action:** Protect yourself at night, for up to 3 nights
+**Info:** Your action does not protect you from the Jester or the Jailor
+
+
+Technical Info:
+
+Action priorities:
+1. Jester
+2. Jailor
+3. Veteran
+4. Escort
+5. Doctor
+6. Survivor
+7. Mafioso
+8. Serial Killer
+9. Framer
+10. Detective
+11. Janitor
+
+
+Possible roles:
+Towny is the only role that there can be multiple of
+In every game: Mafioso, Doctor, Escort, Medium 
+Framer and Detective exist together
+There will not be an Executioner and Jester

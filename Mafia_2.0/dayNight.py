@@ -97,6 +97,11 @@ def calculateResults(game: GameState):
     if (doctor and target and not is_blocked(doctor, blocked)):
         if not visitVet(target): healed.add(target.id)
 
+    survivor = getByRole(game.players, 'Survivor')
+    if survivor and survivor.onAlert:
+        healed.add(survivor.id)
+        survivor.onAlert = False #Reset it
+
     mafioso, target = get_target(game, 'Mafioso')
     if (mafioso and not is_blocked(mafioso, blocked) and target):
         if not visitVet(target):  

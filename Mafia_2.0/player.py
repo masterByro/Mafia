@@ -1,10 +1,11 @@
 from typing import Literal
 
 
-Role = Literal['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor', 'Executioner', 'Jester', 'Serial Killer', 'Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny','Jailor']
+Role = Literal['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor', 'Executioner', 'Jester', 'Serial Killer','Survivor', 'Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny','Jailor']
 mafiaRoles: list[Role] = ['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor']
 townRoles: list[Role] = ['Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny', 'Jailor']
 neutralEvil: list[Role] = ['Executioner', 'Jester']
+neutralNeutral: list[Role] = ['Survivor']
 neutralKiller: list[Role] = ['Serial Killer']
 class Player:
     def __init__(self, member):
@@ -31,7 +32,7 @@ class Player:
         self.executioner_target: int | None = None #Executioner target id
         self.revealed = False #Mayor revealed or not
         self.targetInfo: str|None = '' #Detective info
-        self.alerts = 3 #Veteran bullets
+        self.alerts = 3 #Veteran bullets / Survivor vests
         self.onAlert = False
         self.guiltyVoters = [] #Jester
         self.willExecute = False #Jailor

@@ -57,7 +57,7 @@ async def isGameOver(guild, game: GameState):
         updateWins(game)
 
 def checkWin(game):
-    alive_players = [p for p in game.players.values() if p.alive]
+    alive_players = [p for p in game.players.values() if p.alive and p.role != 'Survivor']
 
     alive_mafia = [p for p in alive_players if p.role in mafiaRoles]
     alive_town = [p for p in alive_players if p.role in townRoles]
@@ -67,8 +67,10 @@ def checkWin(game):
     def set_winners(players):
         for p in players:
             p.win = True
-
-
+        for p in game.players.values():
+            if p.alive and p.role == 'Survivor':
+                p.win = True
+                
     if len(alive_players) == 1 and alive_sk:
         set_winners(alive_sk)
         return True, "The Serial Killer has won!"
