@@ -69,7 +69,8 @@ async def vote(ctx, number: int):
     
 @bot.command()
 async def decide(ctx):
-    feedback = await decidePhase(ctx, BYRO_ID, game)
+    if ctx.author.id != BYRO_ID: return
+    feedback = await decidePhase(ctx, game)
     await ctx.send(feedback)
 
 @bot.command()
@@ -85,11 +86,7 @@ async def innocent(ctx):
 @bot.command()
 async def decideend(ctx):
     if ctx.author.id != BYRO_ID: return
-    
     await decideEnd(ctx, game)
-    
-    channel = ctx.guild.get_channel(game.town_channel_id)
-    await channel.send(f"Place your decision: Is {player.votedFor.name} guilty or innocent?") # type: ignore
     
 # TODO: Uplift user feedback 
 @bot.command()

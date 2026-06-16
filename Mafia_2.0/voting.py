@@ -2,6 +2,7 @@
 from gamestate import GameState
 from utils import getByRole, isGameOver, kill
 from channelStuff import sendDecideInfo
+from timing import countdown
 
 async def sendVote(game: GameState, ctx, number):
     if not game.can_vote: return "You cannot vote right now.", None
@@ -44,6 +45,8 @@ async def on_vote(ctx, game: GameState):
         if channel:
             await channel.send(f"The castlefolk have voted against {votedOutPlayer.name}!")
             await channel.send(f"{votedOutPlayer.name}, state your defence!")
+            await countdown(channel, 30, prefix="Defence statement: ")
+            await decidePhase(ctx, game)
 
 def tally_votes(game: GameState):
     vote_count = {}
@@ -126,7 +129,9 @@ async def decideEnd(ctx, game: GameState):
             accused.guiltyVoters = guilty_voters
             accused.win = True
             await channel.send(f"You FOOLS! {accused.name} is the Jester! He will seek revenge...")
-        else: await channel.send(f"⚖️ The castlefolk have voted to lynch {accused.name}.\n"f"Any last words?")
+        else:
+            await channel.send(f"⚖️ The castlefolk have voted to lynch {accused.name}.\n"f"Any last words?")
+            await countdown(channel, 12, prefix="Last words: ")
 
         executioner = getByRole(game.players, 'Executioner')
         if executioner and executioner.executioner_target == accused.id:
@@ -144,8 +149,7 @@ async def decideEnd(ctx, game: GameState):
         p.decision = None
         p.votedFor = False
 
-async def decidePhase(ctx, BYRO_ID, game):
-    if ctx.author.id != BYRO_ID: return
+async def decidePhase(ctx, game):
     accused = getVotedForPlayer(game)
     if accused is None: return "Nobody is currently on trial."
         
@@ -154,6 +158,8 @@ async def decidePhase(ctx, BYRO_ID, game):
     await channel.send(f"Place your decision: Is {accused.name} guilty or innocent?")
     players_without_accused = [p for p in game.players.values() if p.id != accused.id]
     await sendDecideInfo(ctx.guild, players_without_accused, accused)
+    await countdown(channel, 20, prefix="Place your decision: ")
+    await decideEnd(ctx, game)
 
 def getVotedForPlayer(game):
     return next((p for p in game.players.values() if p.votedFor), None)

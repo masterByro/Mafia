@@ -3,6 +3,7 @@ from player import Player
 from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, kill, sendDetectiveInfo, update_dead_chat_visibility, update_mafia_chat_visibility
 from roleDescriptions import sendNightInfo
 from channelStuff import sendVoteInfo
+from timing import countdown
 
 async def passTime(guild, game):
     if not game.is_day: game.day_number += 1
@@ -53,6 +54,9 @@ async def night(guild, game: GameState):
     await channel.send("The town descends into darkness on Night " + str(game.day_number))
     await channel.send("You can now perform your night action")
     await sendNightInfo(guild, game)
+    await countdown(channel, 90, prefix="Night: ")
+    await passTime(guild, game)
+
 
 async def calculateResults(guild, game: GameState):
     deaths = [] # (victim_id, death_message, murder_note)
