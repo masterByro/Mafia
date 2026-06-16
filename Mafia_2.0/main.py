@@ -10,7 +10,7 @@ from gamestate import GameState
 from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
 from utils import getPlayerList, setMuderNote
-from voting import castDecision, clear_vote, decideEnd, decidePhase, on_vote, sendVote
+from voting import decideEnd, decidePhase
 from roleActions import onAlert, jailorKill, sayJail, setTarget, revealMayor
 from scoring import initWinsFile
 
@@ -61,29 +61,17 @@ async def end(ctx):
 @bot.command()
 async def n(ctx): await passTime(ctx.guild, game)
 
-@bot.command()
-async def vote(ctx, number: int):
-    feedback, voted_for = await sendVote(game, ctx, number)
-    await ctx.send(feedback)
-    if (voted_for): await on_vote(ctx, game)
-    
-@bot.command()
+@bot.command() #Depreacted
 async def decide(ctx):
     if ctx.author.id != BYRO_ID: return
-    feedback = await decidePhase(ctx, game)
+    feedback = await decidePhase(ctx.guild, game)
     await ctx.send(feedback)
 
-@bot.command()
+@bot.command() #Depreacted
 async def decideend(ctx):
     if ctx.author.id != BYRO_ID: return
-    await decideEnd(ctx, game)
+    await decideEnd(ctx.guild, game)
     
-# TODO: Uplift user feedback 
-@bot.command()
-async def voteclear(ctx):
-    player = game.players.get(ctx.author.id)
-    clear_vote(player)
-
 @bot.command()
 async def list(ctx): await ctx.send(getPlayerList(game))
 

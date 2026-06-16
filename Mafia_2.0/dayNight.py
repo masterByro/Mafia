@@ -2,8 +2,8 @@ from gamestate import GameState
 from player import Player
 from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, kill, sendDetectiveInfo, update_dead_chat_visibility, update_mafia_chat_visibility
 from roleDescriptions import sendNightInfo
-from channelStuff import sendVoteInfo
 from timing import countdown
+from channelStuff import sendVoteDropdown
 
 async def passTime(guild, game):
     if not game.is_day: game.day_number += 1
@@ -43,7 +43,7 @@ async def day(guild, game: GameState):
         game.can_vote = True  
         await channel.send("You may openly discuss with the group")
         await channel.send("You can also openly vote to place a Player on Trial for lynching")
-        await sendVoteInfo(guild, game.players)
+        await sendVoteDropdown(guild, game)
 
 async def night(guild, game: GameState):
     await update_dead_chat_visibility(guild, game)

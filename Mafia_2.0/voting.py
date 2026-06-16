@@ -3,51 +3,19 @@ import discord
 from gamestate import GameState
 from utils import getByRole, isGameOver, kill
 from timing import countdown
-from VoteViewObj import VoteView
+from JudgeViewObj import JudgeView
 
-async def sendVote(game: GameState, ctx, number):
-    if not game.can_vote: return "You cannot vote right now.", None
-
-    voter = game.players.get(ctx.author.id)
-    if voter is None: return "You are not part of the game.", None
-    if not voter.alive: return "Dead players cannot vote.", None
-
-    # find target by number
-    target = next((p for p in game.players.values() if p.number == number), None)
-    if target is None: return "Invalid player number.", None
-    #if target.id == voter.id: return "You cannot vote for yourself.", None TODO: UNCOMMENT
-    if not target.alive: return "You cannot vote for a dead player.", None
-
-    # success
-    voter.vote = target.id
-
-    # announce in town channel
-    channel = ctx.guild.get_channel(game.town_channel_id)
-    if channel:
-        await channel.send(
-            f"🗳️ {voter.name} has voted for {target.name}"
-        )
-
-    return (
-        f"You voted for {target.name}.",
-        target.name
-    )
-
-
-def clear_vote(player):
-    player.vote = None
-
-async def on_vote(ctx, game: GameState):
+async def on_vote(guild, game: GameState):
     votedOutPlayer = tally_votes(game)
     if votedOutPlayer:
         votedOutPlayer.votedFor = True
         game.can_vote = False
-        channel = ctx.guild.get_channel(game.town_channel_id)
+        channel = guild.get_channel(game.town_channel_id)
         if channel:
             await channel.send(f"The castlefolk have voted against {votedOutPlayer.name}!")
             await channel.send(f"{votedOutPlayer.name}, state your defence!")
             await countdown(channel, 2, prefix="Defence statement: ")
-            await decidePhase(ctx, game)
+            await decidePhase(guild, game)
 
 def tally_votes(game: GameState):
     vote_count = {}
@@ -92,13 +60,13 @@ async def castDecision(game: GameState, ctx, choice):
 
     return f"You voted {choice.upper()}."
 
-async def decideEnd(ctx, game: GameState):
+async def decideEnd(guild, game: GameState):
     game.canDecide = False
     guilty = 0
     innocent = 0
     lines = ["**🧾 Trial Results**\n"]
 
-    channel = ctx.guild.get_channel(game.town_channel_id)
+    channel = guild.get_channel(game.town_channel_id)
     ordered = sorted(game.players.values(), key=lambda p: p.number)
 
     accused = getVotedForPlayer(game)
@@ -139,8 +107,8 @@ async def decideEnd(ctx, game: GameState):
         if executioner and executioner.executioner_target == accused.id:
             executioner.win = True
             await channel.send(f"🎯 The Executioner has succeeded! " f"{accused.name} was their target.")
-        await kill(ctx.guild, game, accused, f"{accused.name} was lynched.", None)
-        await isGameOver(ctx.game, game)
+        await kill(guild, game, accused, f"{accused.name} was lynched.", None)
+        await isGameOver(guild, game)
     else:
         game.can_vote = True 
         await channel.send(f"{accused.name} has been spared")
@@ -151,16 +119,16 @@ async def decideEnd(ctx, game: GameState):
         p.decision = None
         p.votedFor = False
 
-async def decidePhase(ctx, game):
+async def decidePhase(guild, game):
     accused = getVotedForPlayer(game)
     if accused is None: return "Nobody is currently on trial."
         
     game.canDecide = True
-    channel = ctx.guild.get_channel(game.town_channel_id)
+    channel = guild.get_channel(game.town_channel_id)
     await channel.send(f"Place your decision: Is {accused.name} guilty or innocent?")
-    await sendDecision(ctx.guild, game)
+    await sendDecision(guild, game)
     await countdown(channel, 20, prefix="Place your decision: ")
-    await decideEnd(ctx, game)
+    await decideEnd(guild, game)
 
 def getVotedForPlayer(game):
     return next((p for p in game.players.values() if p.votedFor), None)
@@ -174,5 +142,5 @@ async def sendDecision(guild, game):
 
         if channel is None: continue
 
-        view = VoteView(game, player.id)
+        view = JudgeView(game, player.id)
         await channel.send("⚖️ Place your decision: Guilty or Innocent?", view=view)

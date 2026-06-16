@@ -1,6 +1,6 @@
 import discord
 
-class VoteView(discord.ui.View):
+class JudgeView(discord.ui.View):
     def __init__(self, game, voter_id):
         super().__init__(timeout=None)
         self.game = game

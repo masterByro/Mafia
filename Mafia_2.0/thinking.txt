@@ -1,6 +1,5 @@
 TODO
 simplify commands
-delete timers after 0
 
 Bonus:
 Retributionist
@@ -41,3 +40,4 @@ run time progressino more auto
 add defence time
 add timers
 Info pages
+delete timers after 0

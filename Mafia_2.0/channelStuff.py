@@ -2,6 +2,7 @@ import discord
 
 from gamestate import GameState
 from scoring import loadWins
+from VoteSelectObj import VoteView
 
 async def setup_channels(guild, game: GameState, BYRO_ID):
     byron = guild.get_member(BYRO_ID)
@@ -77,20 +78,15 @@ async def endChannels(ctx, game: GameState):
     mafia_channel = guild.get_channel(game.mafia_channel_id)
     if mafia_channel: await mafia_channel.delete()
 
-async def sendVoteInfo(guild, players):
-    message = f"\nDuring the day you can vote to place a player on trial, by typing the command  `!vote <player Id>`"
-    await sendPlayersInfo(guild,  list(players.values()), message)
-
-
-async def sendPlayersInfo(guild, players, message):
-    for player in players:
+async def sendVoteDropdown(guild, game):
+    for player in game.players.values():
         if not player.alive: continue
 
         channel_name = player.name.lower().replace(" ", "-")
         channel = discord.utils.get(guild.text_channels, name=channel_name)
-        if channel is None: continue
 
-        await channel.send(message)
+        if channel is None: continue
+        await channel.send("🗳️ Vote for who should go on trial:", view=VoteView(game, player.id))
 
 def buildWinsLeaderboard(ctx):
     wins = loadWins()
