@@ -6,9 +6,6 @@ Retributionist
 Tracker
 Whispering
 simplify commands
-run time progressino more auto
-add defence time
-add timers
 multiple doctors, escorts
 
 Done
@@ -40,3 +37,6 @@ dont send decision info to the accuseds
 Survivor
 jailed mafia cant use mafia chat
 Serial killer bloody will
+run time progressino more auto
+add defence time
+add timers
