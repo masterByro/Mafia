@@ -11,7 +11,7 @@ from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
 from utils import getPlayerList, setMuderNote
 from voting import decideEnd, decidePhase
-from roleActions import onAlert, jailorKill, sayJail, setTarget, revealMayor
+from roleActions import onAlert, jailorKill, sayJail, setTarget
 from scoring import initWinsFile
 
 load_dotenv()
@@ -42,7 +42,7 @@ async def start(ctx):
     guild = ctx.guild
     setup_players(guild, game, BYRO_ID)
     await setup_channels(guild, game, BYRO_ID)
-    await sendStarterInfo(guild, game.players)
+    await sendStarterInfo(guild, game)
     game.running = True
     await ctx.send("Game started!")
     await day(guild, game)
@@ -79,9 +79,6 @@ async def list(ctx): await ctx.send(getPlayerList(game))
 async def target(ctx, number: int):
     feedback = await setTarget(game, ctx, number)
     await ctx.send(feedback)
-
-@bot.command() #Mayor
-async def reveal(ctx): await ctx.send(await revealMayor(game, ctx))
 
 @bot.command() #Veteran, Survivvor
 async def alert(ctx): await ctx.send(await onAlert(game, ctx))

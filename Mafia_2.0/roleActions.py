@@ -48,19 +48,6 @@ async def setTarget(game: GameState, ctx, number: int):
     player.roundInput = target.id
     return f"You will target {target.name} tonight."
 
-async def revealMayor(game: GameState, ctx):
-    player = game.players.get(ctx.author.id)
-    if player is None: return "You are not part of the game."
-    if not player.role == 'Mayor': return "Nice Try bozo"
-    if player.revealed: return "You have already revealed your role"
-    if not player.alive: return "You are dead. Too late mate. So sad"
-    if not game.is_day: return "You can only reveal your role during the day"
-    
-    player.revealed = True
-    channel = ctx.guild.get_channel(game.town_channel_id)
-    await channel.send((f"{player.name} has revealed themselves as the Mayor!"))
-    return "You sucessfully reveal yourself"
-
 async def onAlert(game: GameState, ctx):
     player = game.players.get(ctx.author.id)
     if player is None: return "You are not part of the game."

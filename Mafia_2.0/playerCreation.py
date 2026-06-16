@@ -5,6 +5,7 @@ from gamestate import GameState
 from roleDescriptions import getRoleDescription
 from player import Player, Role
 from utils import getByRole, isMafia
+from UI.MayorReveal import MayorRevealView
 
 ALLOW_BYRO_AS_PLAYER = False
 
@@ -69,7 +70,7 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return ['Detective' , 'Serial Killer', 'Janitor', 'Escort']
+    return ['Mafioso' , 'Mayor', 'Doctor', 'Escort']
     return roles
 
 def getExecutionerTarget(players: dict[int, Player]):
@@ -82,7 +83,9 @@ def getExecutionerTarget(players: dict[int, Player]):
 
     executioner.executioner_target = target.id
     
-async def sendStarterInfo(guild, players: dict[int, Player]):
+async def sendStarterInfo(guild, game: GameState):
+    players = game.players
+
     #Mafia blob
     mafia_members = []
     mafia_members = [p for p in players.values() if isMafia(p)]
@@ -109,3 +112,6 @@ async def sendStarterInfo(guild, players: dict[int, Player]):
                 if target: message += f"**Your target is:** {target.name}\n\n"
                 
         await channel.send(message)
+
+        if player.role == 'Mayor':
+            await channel.send("🟢 Mayor Actions Available:", view=MayorRevealView(game))
