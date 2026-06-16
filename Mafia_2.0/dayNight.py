@@ -54,8 +54,8 @@ async def night(guild, game: GameState):
     await channel.send("The town descends into darkness on Night " + str(game.day_number))
     await channel.send("You can now perform your night action")
     await sendNightInfo(guild, game)
-    await countdown(channel, 90, prefix="Night: ")
-    await passTime(guild, game)
+    await countdown(channel, 90, prefix="Night")
+    #await passTime(guild, game)
 
 
 async def calculateResults(guild, game: GameState):

@@ -7,7 +7,7 @@ from player import Player, Role
 from utils import getByRole, isMafia
 from UI.MayorReveal import MayorRevealView
 
-ALLOW_BYRO_AS_PLAYER = False
+ALLOW_BYRO_AS_PLAYER = True
 
 def setup_players(guild, game: GameState, BYRO_ID):
     for member in guild.members:
@@ -70,7 +70,7 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return ['Mafioso' , 'Mayor', 'Doctor', 'Escort']
+    return  ['Executioner', 'Survivor', 'Veteran', 'Mafioso']
     return roles
 
 def getExecutionerTarget(players: dict[int, Player]):

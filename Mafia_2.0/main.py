@@ -11,7 +11,7 @@ from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
 from utils import getPlayerList, setMuderNote
 from voting import decideEnd, decidePhase
-from roleActions import onAlert, jailorKill, sayJail, setTarget
+from roleActions import jailorKill, sayJail, setTarget
 from scoring import initWinsFile
 
 load_dotenv()
@@ -79,9 +79,6 @@ async def list(ctx): await ctx.send(getPlayerList(game))
 async def target(ctx, number: int):
     feedback = await setTarget(game, ctx, number)
     await ctx.send(feedback)
-
-@bot.command() #Veteran, Survivvor
-async def alert(ctx): await ctx.send(await onAlert(game, ctx))
 
 @bot.command() #Jailor execute
 async def kill(ctx): 

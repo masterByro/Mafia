@@ -14,7 +14,7 @@ async def on_vote(guild, game: GameState):
         if channel:
             await channel.send(f"The castlefolk have voted against {votedOutPlayer.name}!")
             await channel.send(f"{votedOutPlayer.name}, state your defence!")
-            await countdown(channel, 2, prefix="Defence statement: ")
+            await countdown(channel, 2, prefix="Defence statement")
             await decidePhase(guild, game)
 
 def tally_votes(game: GameState):
@@ -101,7 +101,7 @@ async def decideEnd(guild, game: GameState):
             await channel.send(f"You FOOLS! {accused.name} is the Jester! He will seek revenge...")
         else:
             await channel.send(f"⚖️ The castlefolk have voted to lynch {accused.name}.\n"f"Any last words?")
-            await countdown(channel, 12, prefix="Last words: ")
+            await countdown(channel, 12, prefix="Last words")
 
         executioner = getByRole(game.players, 'Executioner')
         if executioner and executioner.executioner_target == accused.id:
@@ -127,7 +127,7 @@ async def decidePhase(guild, game):
     channel = guild.get_channel(game.town_channel_id)
     await channel.send(f"Place your decision: Is {accused.name} guilty or innocent?")
     await sendDecision(guild, game)
-    await countdown(channel, 20, prefix="Place your decision: ")
+    await countdown(channel, 20, prefix="Place your decision")
     await decideEnd(guild, game)
 
 def getVotedForPlayer(game):

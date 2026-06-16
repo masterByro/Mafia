@@ -1,5 +1,15 @@
 import discord
 
+from typing import Tuple
+
+def reveal_mayor(game, player) -> Tuple[bool, str]:
+    if player is None: return False, "You are not part of the game."
+    if player.role != "Mayor": return False, "Nice Try bozo"
+    if player.revealed: return False, "You have already revealed your role"
+    if not player.alive: return False, "You are dead. Too late mate. So sad"
+    if not game.is_day: return False, "You can only reveal your role during the day"
+    return True, "You successfully reveal yourself."
+
 class MayorRevealView(discord.ui.View):
     def __init__(self, game):
         super().__init__(timeout=None)
@@ -14,15 +24,10 @@ class MayorRevealView(discord.ui.View):
         game = self.game
         player = game.players.get(interaction.user.id)
 
-        message = None
-        if player is None: message = "You are not part of the game."
-        if player.role != "Mayor": message = "Nice Try bozo"
-        if player.revealed: message = "You have already revealed your role"
-        if not player.alive: message = "You are dead. Too late mate. So sad"
-        if not game.is_day: message = "You can only reveal your role during the day"
-        if message:
+        success, message = reveal_mayor(game, player)
+        if not success:
             return await interaction.response.send_message(message, ephemeral=True)
-
+        
         # SUCCESS
         player.revealed = True
         guild = interaction.guild
@@ -32,5 +37,5 @@ class MayorRevealView(discord.ui.View):
         if isinstance(channel, discord.TextChannel) or isinstance(channel, discord.Thread):
             await channel.send(f"📢 {player.name} has revealed themselves as the Mayor!")
 
-        await interaction.response.send_message("You successfully reveal yourself.", ephemeral=True)
+        await interaction.response.send_message(message, ephemeral=True)
 

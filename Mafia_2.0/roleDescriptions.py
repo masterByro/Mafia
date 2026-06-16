@@ -1,6 +1,7 @@
 from gamestate import GameState
 from player import Player, Role
 from utils import getByRole
+from UI.AlertButton import AlertView
 
 leaveBlank = '\nType `!target <player Id>` to target a player.'
 townsFolk = ' is a member of the Townsfolk.\n'
@@ -38,13 +39,8 @@ def getActionDescription(game: GameState, player: Player):
         if len(player.guiltyVoters) == 0: 'The Jester can no longer seek revenge'
         targets = [f"{p.number}. {p.name}" for p in game.players.values() if p.id in player.guiltyVoters and p.alive]
         return ("Who would you like to seek revenge on?\n\n" "Possible targets:\n" + "\n".join(targets) + leaveBlank)
-    
     if role in  ['Veteran', 'Survivor']: 
-        alerts = str(3 - player.alerts)
-        message = 'You have used ' + alerts + ' alerts.'
-        if player.alerts > 0:
-            message+= "Type `!alert` to be on alert tonight"
-        return message
+        return 'You have ' + str(player.alerts) + ' alerts remaining.'
  
 async def sendNightInfo(guild, game):
     jailor = getByRole(game.players, 'Jailor')
@@ -67,3 +63,6 @@ async def sendNightInfo(guild, game):
 
         message = getActionDescription(game, player)
         if message: await channel.send(message)
+        
+        if player.role in ["Veteran", "Survivor"]:
+            await channel.send(view=AlertView(game))

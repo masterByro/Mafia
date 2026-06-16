@@ -1,6 +1,6 @@
 from gamestate import GameState
 from utils import getByRole, isMafia, sendToPlayer
-from player import Role
+from player import Role, Player
 
 async def setTarget(game: GameState, ctx, number: int):
     player = game.players.get(ctx.author.id)
@@ -10,8 +10,8 @@ async def setTarget(game: GameState, ctx, number: int):
     if player.role == 'Jester' and player.alive: return "Jester can only seek revenge once lynched."
     if not player.alive and not player.role == 'Jester': return "Dead players cannot perform actions."
 
-    # Roles that dont have a target action
-    if player.role in ['Towny', 'Executioner', 'Mayor', 'Veteran']:
+    # Roles that dont have a target action #TODO Switch not role not in. That waay its opt in, not opt out
+    if player.role in ['Towny', 'Executioner', 'Mayor', 'Veteran', 'Survivor']:
         return f"The {player.role} cannot use this command."
 
     # Find target by player number
@@ -47,18 +47,6 @@ async def setTarget(game: GameState, ctx, number: int):
     # Success
     player.roundInput = target.id
     return f"You will target {target.name} tonight."
-
-async def onAlert(game: GameState, ctx):
-    player = game.players.get(ctx.author.id)
-    if player is None: return "You are not part of the game."
-    if player.role not in ['Veteran', 'Survivor']: return "Nice Try bozo"
-    if player.alerts == 0: return "You have already been on alert 3 times"
-    if not player.alive: return "You are dead. Too late mate. So sad"
-    if game.is_day: return "You can only go on alert at night"
-    
-    player.alerts -= 1
-    player.onAlert = True
-    return "You are now on alert"
 
 async def jailorKill(game: GameState, ctx):
     player = game.players.get(ctx.author.id)
