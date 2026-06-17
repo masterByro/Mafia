@@ -47,6 +47,8 @@ async def day(guild, game: GameState):
         await sendVoteDropdown(guild, game)
 
 async def night(guild, game: GameState):
+    game.can_vote = False
+    game.canDecide = False
     await update_dead_chat_visibility(guild, game)
     await update_mafia_chat_visibility(guild, game)
     channel = guild.get_channel(game.town_channel_id)

@@ -33,7 +33,7 @@ def getPlayerListEndgame(game: GameState):
 
 
 def getByRole(players: dict[int, Player], role: Role):
-    return next((p for p in players.values()if p.role == role),None)
+    return next((p for p in players.values() if p.role == role),None)
 
 def get_target(game: GameState, role: Role):
     actor = getByRole(game.players, role)

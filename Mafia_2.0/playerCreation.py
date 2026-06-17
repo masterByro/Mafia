@@ -36,7 +36,7 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
     ## 5: 1 mafia, 1 extra, 3 basic
     ## 4: 1 mafia, 3 basic
     townBasic = ['Doctor','Escort', 'Medium', 'Towny']
-    townExtra = ['Mayor', 'Veteran', 'Jailor' 'Towny', 'Towny']
+    townExtra = ['Mayor', 'Veteran', 'Jailor', 'Towny', 'Towny']
     mafia = ['Mafioso', 'Framer', 'Janitor']
     chaos = ['Executioner', 'Jester', 'Survivor']
     chaosWithSK = ['Executioner', 'Jester','Serial Killer', 'Survivor']

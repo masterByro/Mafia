@@ -56,15 +56,12 @@ async def sendNightInfo(guild, game):
         if jailor and jail_prisoner:
 
             if player.id == jailor.id:
-      #          await channel.send(f"⛓️ You have jailed **{jail_prisoner.name}** tonight.\n" f"Use `!say <message>` to interrogate them.")
                 await channel.send(f"⛓️ You have jailed **{jail_prisoner.name}** tonight",view=JailSpeakView(game, is_jailor=(player.role == "Jailor")))
                 await channel.send(view=ExecuteView(game))
                 continue
 
             if player.id == jail_prisoner.id:
-                #await channel.send("⛓️ You have been jailed tonight.\n" f"Use `!say <message>` to respond to the Jailor")
                 await channel.send("⛓️ You have been jailed tonight.",view=JailSpeakView(game, is_jailor=(player.role == "Jailor")))
-
                 continue
 
 
