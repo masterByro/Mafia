@@ -1,10 +1,15 @@
+import discord
+
 from gamestate import GameState
 from player import Player, Role
 from utils import getByRole
 from roleActions import getPossibleOptions
 
-from UI.AlertButton import AlertView
+from UI.MayorReveal import MayorRevealView
 from UI.TargetDropdowns import TargetView
+from UI.AlertButton import AlertView
+from UI.JailorButton import ExecuteView
+from UI.JailSpeak import JailSpeakView
 
 townsFolk = ' is a member of the Townsfolk.\n'
 mafia = ' is a member of the Mafia.\n'
@@ -18,7 +23,7 @@ def getRoleDescription(role: Role|None):
     if role == 'Detective': return 'The Detective' + townsFolk + 'The Detective can select one Player to investigate each night, and will receive the results of the investigation the next night.\nThe Detective searches for blood, which will appear on the Mafioso, Doctor, or anybody that was framed or murdered.'
     if role == 'Medium': return 'The Medium' + townsFolk + 'The Medium can speak to the dead at night'
     if role == 'Towny': return 'The Towny' + townsFolk + 'They do not have any special roles.'
-    if role == 'Jailor': return 'The Jailor' + townsFolk + "During the day, you can select someone to jail with command `!target <player Id>`.\n That night, you can interrogate them and execute them with the command `!kill`. Type the command again to cancel the execution"
+    if role == 'Jailor': return 'The Jailor' + townsFolk + "During the day, you can select someone to jail.\n That night, you can interrogate them and choose to execute them."
     if role == 'Executioner': return 'The Executioner wins the game by getting their target lynched. If their target is killed by another means, the Executioner will become a Jester.'
     if role == 'Jester': return 'The Jester wins the game by getting lynched, simple as that. After being lynched, you may choose to seek revenge on one player that condemned you at night.'
     if role == 'Mayor': return 'The Mayor' + townsFolk + 'The Mayor can reveal his role to the group during the day. His vote will be worth 3 points from then on.'
@@ -51,11 +56,15 @@ async def sendNightInfo(guild, game):
         if jailor and jail_prisoner:
 
             if player.id == jailor.id:
-                await channel.send(f"⛓️ You have jailed **{jail_prisoner.name}** tonight.\n" f"Use `!say <message>` to interrogate them.\n" f"Use `!kill` if you wish to execute them.")
+      #          await channel.send(f"⛓️ You have jailed **{jail_prisoner.name}** tonight.\n" f"Use `!say <message>` to interrogate them.")
+                await channel.send(f"⛓️ You have jailed **{jail_prisoner.name}** tonight",view=JailSpeakView(game, is_jailor=(player.role == "Jailor")))
+                await channel.send(view=ExecuteView(game))
                 continue
 
             if player.id == jail_prisoner.id:
-                await channel.send("⛓️ You have been jailed tonight.\n" f"Use `!say <message>` to respond to the Jailor")
+                #await channel.send("⛓️ You have been jailed tonight.\n" f"Use `!say <message>` to respond to the Jailor")
+                await channel.send("⛓️ You have been jailed tonight.",view=JailSpeakView(game, is_jailor=(player.role == "Jailor")))
+
                 continue
 
 
@@ -68,3 +77,19 @@ async def sendNightInfo(guild, game):
             if len(possibleOptions) > 0: await channel.send(view=TargetView(game, possibleOptions))
         if player.role in ["Veteran", "Survivor"]:
             await channel.send(view=AlertView(game))
+
+
+async def sendDayActions(guild, game: GameState):
+    players = game.players
+
+    for player in players.values():
+        channel_name = player.name.lower().replace(" ", "-")
+        channel = discord.utils.get(guild.text_channels, name=channel_name)
+        if channel is None: continue
+
+        if player.role == 'Mayor' and not player.revealed and player.alive:
+            await channel.send("🟢 Mayor Action Available:", view=MayorRevealView(game))
+
+        if player.role == 'Jailor' and player.alive:
+            possibleOptions = getPossibleOptions(game, player)
+            if len(possibleOptions) > 0: await channel.send("You can choose someone to jail tonight:", view=TargetView(game, possibleOptions))

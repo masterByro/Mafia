@@ -16,7 +16,7 @@ class TargetSelect(discord.ui.Select):
 
 
         super().__init__(
-            placeholder="🗳️ Choose a player to target...",
+            placeholder="Choose a player to target...",
             min_values=1,
             max_values=1,
             options=options

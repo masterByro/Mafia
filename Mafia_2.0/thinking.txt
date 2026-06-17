@@ -1,5 +1,4 @@
 TODO
-simplify commands
 
 Bonus:
 Retributionist
@@ -43,3 +42,4 @@ add timers
 Info pages
 delete timers after 0
 check that people cant target jailed guy
+simplify commands

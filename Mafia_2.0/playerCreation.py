@@ -5,7 +5,6 @@ from gamestate import GameState
 from roleDescriptions import getRoleDescription
 from player import Player, Role
 from utils import getByRole, isMafia
-from UI.MayorReveal import MayorRevealView
 
 ALLOW_BYRO_AS_PLAYER = True
 
@@ -70,7 +69,7 @@ def makeRoles(numOfPlayers: int) -> list[Role]:
         else: roles.append('Towny')
 
     random.shuffle(roles)
-    return  ['Executioner', 'Mafioso', 'Towny', 'Doctor']
+    return  ['Doctor', 'Jailor','Serial Killer', 'Mayor']
     return roles
 
 def getExecutionerTarget(players: dict[int, Player]):
@@ -79,6 +78,7 @@ def getExecutionerTarget(players: dict[int, Player]):
     if executioner is None: return
     possibleTargets = ['Doctor','Escort', 'Medium', 'Towny', 'Veteran']
     valid_targets = [p for p in players.values() if p.role in possibleTargets]
+    #Fails here if no townmember. Shouldnt happen, so not fixing. Fix would be to flip to Jester
     target = random.choice(valid_targets)
 
     executioner.executioner_target = target.id
@@ -112,6 +112,3 @@ async def sendStarterInfo(guild, game: GameState):
                 if target: message += f"**Your target is:** {target.name}\n\n"
                 
         await channel.send(message)
-
-        if player.role == 'Mayor':
-            await channel.send("🟢 Mayor Actions Available:", view=MayorRevealView(game))

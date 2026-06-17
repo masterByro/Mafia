@@ -11,7 +11,6 @@ from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers
 from utils import getPlayerList, setMuderNote
 from voting import decideEnd, decidePhase
-from roleActions import jailorKill, sayJail
 from scoring import initWinsFile
 
 load_dotenv()
@@ -76,16 +75,6 @@ async def decideend(ctx):
     
 @bot.command()
 async def list(ctx): await ctx.send(getPlayerList(game))
-
-@bot.command() #Jailor execute
-async def kill(ctx): 
-    feedback = await jailorKill(game, ctx)
-    if feedback: await ctx.send(feedback)
-
-@bot.command() #Jail speak
-async def say(ctx, *, message: str):
-    feedback =await sayJail(game, ctx, message)
-    if feedback: await ctx.send(feedback)
 
 @bot.command() #Deathnote
 async def m(ctx, *, message: str): await ctx.send(await setMuderNote(game, ctx, message))
