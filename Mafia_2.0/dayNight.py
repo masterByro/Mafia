@@ -76,63 +76,67 @@ async def calculateResults(guild, game: GameState):
         if target.role == 'Veteran' and veteranGuard: 
             attacked.append((visitor.id, deathByVeteran, target.murderNote))
             return True
-        
         return False
+
     jester, target = get_target(game, 'Jester')
     if jester and target:
         deaths.append((target.id," is dead! The Jester gets their revenge from the grave!", jester.murderNote))
 
     #Jailor
-    jailor, target = get_target(game, 'Jailor')
-    if jailor and target and not isDeadOrBlocked(jailor):
-        blocked.add(target.id)
-        if jailor.willExecute: deaths.append((target.id," was executed by the Jailor. Has justice been served?", jailor.murderNote))
+    jailor, jailorTarget = get_target(game, 'Jailor')
+    if jailor and jailorTarget and not isDeadOrBlocked(jailor):
+        blocked.add(jailorTarget.id)
+        if jailor.willExecute: deaths.append((jailorTarget.id," was executed by the Jailor. Has justice been served?", jailor.murderNote))
+
+    def visitorCheck(player, target):
+        if isDead(player) or isBlocked(player) or isAttacked(player): return False
+        if jailorTarget and target.id == jailorTarget.id: return False
+        return not visitVet(player, target)
+ 
 
     veteran = getByRole(game.players, 'Veteran')
     if veteran and veteran.onAlert and not isDeadOrBlocked(veteran):
         veteranGuard = True
 
     escort, target = get_target(game, 'Escort')
-    if escort and not isDeadOrBlocked(escort) and target:
-        if not visitVet(escort, target):
-            blocked.add(target.id)
-            # Escort dies if visiting SK
-            if target.role == 'Serial Killer':
-                attacked.append((escort.id," was horrifically stabbed to death while out visiting last night!", target.murderNote))
-                will_channel_id = game.player_will_channels.get(escort.id)
-                if will_channel_id:
-                    will_channel = guild.get_channel(will_channel_id)
-                    if will_channel: 
-                        await will_channel.purge(limit=100)
-                        await will_channel.send("🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸")
+    if escort and target and visitorCheck(escort, target):
+        blocked.add(target.id)
+        # Escort dies if visiting SK
+        if target.role == 'Serial Killer':
+            attacked.append((escort.id," was horrifically stabbed to death while out visiting last night!", target.murderNote))
+            will_channel_id = game.player_will_channels.get(escort.id)
+            if will_channel_id:
+                will_channel = guild.get_channel(will_channel_id)
+                if will_channel: 
+                    await will_channel.purge(limit=100)
+                    await will_channel.send("🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸")
 
     doctor, target = get_target(game, 'Doctor')
-    if (doctor and target and not isDeadOrBlocked(doctor)):
-        if not visitVet(doctor, target): healed.add(target.id)
+    if doctor and target and visitorCheck(doctor, target):
+        healed.add(target.id)
 
     survivor = getByRole(game.players, 'Survivor')
-    if survivor and not isDeadOrBlocked(survivor):
+    if survivor and not isDeadOrBlocked(survivor) and survivor.onAlert:
         healed.add(survivor.id)
 
     mafioso, target = get_target(game, 'Mafioso')
-    if (mafioso and not isDeadOrBlocked(mafioso) and target):
-        if not visitVet(mafioso, target):  
-            attacked.append((target.id, " was murdered last night!",  mafioso.murderNote))
+    if (mafioso and target and visitorCheck(mafioso, target)):
+        attacked.append((target.id, " was murdered last night!",  mafioso.murderNote))
 
     sk, target = get_target(game, 'Serial Killer')
-    if (sk and not isDeadOrBlocked(sk) and target):
-        if not visitVet(sk, target):
-            attacked.append((target.id," was murdered last night!", sk.murderNote))
+    if (sk and target and visitorCheck(sk, target)):
+        attacked.append((target.id," was murdered last night!", sk.murderNote))
 
     framer, target = get_target(game, 'Framer')
-    if (framer and target and not isDeadOrBlocked(framer)): 
-        if not visitVet(framer, target):
-            target.framed = True
+    if (framer and target and visitorCheck(framer, target)): 
+        target.framed = True
 
     detective, target = get_target(game, 'Detective')
     if detective:
         if target is None or isDeadOrBlocked(detective):
             detective.targetInfo = ("You either did not select anyone to investigate last night, or were blocked")
+        elif jailorTarget and target.id == jailorTarget.id: 
+            detective.targetInfo = ("Your target was in jail last night, you were unable to investigate them")
         else:
             if not visitVet(detective, target):
                 bloody = target.role in ['Doctor', 'Mafioso', 'Serial Killer'] or target.framed or isAttacked(target) or isDead(target)
@@ -143,15 +147,20 @@ async def calculateResults(guild, game: GameState):
                 else:
                     detective.targetInfo = (f"Your target, {target.name}, did NOT have blood on them last night.")
 
-    janitor, target = get_target(game, 'Janitor')
-    if (janitor and target and not isDeadOrBlocked(janitor)): 
-        if not visitVet(janitor, target):
-            target.cleaned = True
-            target.role = 'CLEANED'
-
+    canJanitorClean = False
+    janitor, janitorTarget = get_target(game, 'Janitor')
+    if janitor and janitorTarget:
+        canJanitorClean = visitorCheck(janitor, janitorTarget)
+        
     for victim_id, msg, note in attacked:
         if victim_id not in healed:
             deaths.append((victim_id, msg, note))
+  
+    if canJanitorClean and janitorTarget:
+            dead_ids = {victim_id for victim_id, _, _ in deaths}
+            if janitorTarget.id in dead_ids:
+                janitorTarget.cleaned = True
+                janitorTarget.role = 'CLEANED'
 
     return deaths
 

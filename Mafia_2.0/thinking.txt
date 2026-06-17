@@ -3,9 +3,10 @@ simplify commands
 
 Bonus:
 Retributionist
-Tracker
-Whispering
+Tracker/Lookout
+Witch
 multiple doctors, escorts
+Blackmailer / Whispers
 
 Done
 have admin commands
@@ -41,3 +42,4 @@ add defence time
 add timers
 Info pages
 delete timers after 0
+check that people cant target jailed guy
