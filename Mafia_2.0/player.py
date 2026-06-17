@@ -1,11 +1,11 @@
 from typing import Literal
 
 
-Role = Literal['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor', 'CLEANED', 'Executioner', 'Jester', 'Serial Killer','Survivor', 'Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny','Jailor']
-mafiaRoles: list[Role] = ['Mafioso', 'Mafioso (Dead)', 'Framer', 'Janitor']
-townRoles: list[Role] = ['Mayor', 'Doctor', 'Escort', 'Detective', 'Veteran', 'Medium', 'Towny', 'Jailor']
+Role = Literal['Insurgent', 'Insurgent (Dead)', 'Propagandist', 'Warden', 'CLEANED', 'Executioner', 'Jester', 'Serial Killer','Wanderer', 'Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Peasant','Jailor']
+mafiaRoles: list[Role] = ['Insurgent', 'Insurgent (Dead)', 'Propagandist', 'Warden']
+townRoles: list[Role] = ['Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Peasant', 'Jailor']
 neutralEvil: list[Role] = ['Executioner', 'Jester']
-neutralNeutral: list[Role] = ['Survivor']
+neutralNeutral: list[Role] = ['Wanderer']
 neutralKiller: list[Role] = ['Serial Killer']
 class Player:
     def __init__(self, member):
@@ -30,15 +30,15 @@ class Player:
 
         # role specific
         self.executioner_target: int | None = None #Executioner target id
-        self.revealed = False #Mayor revealed or not
-        self.targetInfo: str|None = '' #Detective info
-        self.alerts = 3 #Veteran bullets / Survivor vests
+        self.revealed = False #Chancellor revealed or not
+        self.targetInfo: str|None = '' #Inquisitor info
+        self.alerts = 3 #Knight bullets / Wanderer vests
         self.onAlert = False
         self.guiltyVoters = [] #Jester
         self.willExecute = False #Jailor
-        self.framed = False #Framer
+        self.framed = False #Propagandist
         self.murderNote: str|None = None
-        self.cleaned = False #Janitor
+        self.cleaned = False #Warden
 
     def reset_round(self): #Don't reset framed
         self.lastTarget = self.roundInput

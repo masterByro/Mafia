@@ -18,7 +18,7 @@ async def setup_channels(guild, game: GameState, BYRO_ID):
     game.town_channel_id = town_channel.id
 
     ## Individual channels
-    category = await guild.create_category("Mafia Players")
+    category = await guild.create_category("Uprising Players")
     for player in game.players.values():
         channel_name = player.name.lower().replace(" ", "-")
 
@@ -45,7 +45,7 @@ async def setup_channels(guild, game: GameState, BYRO_ID):
     game.dead_channel_id = dead_channel.id
 
     mafia_channel = await guild.create_text_channel(
-        name="mafia-chat",
+        name="Uprising-chat",
         overwrites={guild.default_role: discord.PermissionOverwrite( view_channel=False),
             guild.me: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
         }
@@ -65,7 +65,7 @@ async def endChannels(ctx, game: GameState):
         if channel: await channel.delete()
 
     # Delete category
-    category = discord.utils.get(guild.categories, name="Mafia Players")
+    category = discord.utils.get(guild.categories, name="Uprising Players")
     if category:
         await category.delete()
 

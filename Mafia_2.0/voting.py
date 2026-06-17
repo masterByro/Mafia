@@ -25,7 +25,7 @@ def tally_votes(game: GameState):
         if voter.vote is None: continue
 
         weight = 1
-        if voter.role == "Mayor" and voter.revealed: weight = 3
+        if voter.role == "Chancellor" and voter.revealed: weight = 3
         vote_count[voter.vote] = vote_count.get(voter.vote, 0) + weight
 
     # number of alive players
@@ -78,7 +78,7 @@ async def decideEnd(guild, game: GameState):
             lines.append(f"⚪ {p.name} abstained")
         else:
             weight = 1
-            if p.role == "Mayor" and p.revealed: weight = 3
+            if p.role == "Chancellor" and p.revealed: weight = 3
             if p.decision == "guilty":
                 lines.append(f"🟥 {p.name} voted GUILTY")
                 guilty += weight

@@ -56,7 +56,7 @@ async def isGameOver(guild, game: GameState):
         updateWins(game)
 
 def checkWin(game):
-    alive_players = [p for p in game.players.values() if p.alive and p.role != 'Survivor']
+    alive_players = [p for p in game.players.values() if p.alive and p.role != 'Wanderer']
 
     alive_mafia = [p for p in alive_players if p.role in mafiaRoles]
     alive_town = [p for p in alive_players if p.role in townRoles]
@@ -67,7 +67,7 @@ def checkWin(game):
         for p in players:
             p.win = True
         for p in game.players.values():
-            if p.alive and p.role == 'Survivor':
+            if p.alive and p.role == 'Wanderer':
                 p.win = True
 
     if len(alive_players) == 1 and alive_sk:
@@ -76,7 +76,7 @@ def checkWin(game):
 
     if alive_mafia and not alive_town and not alive_neutral_evil and not alive_sk:
         set_winners([p for p in game.players.values() if p.role in mafiaRoles])
-        return True, "The Mafia have eliminated all opposition!"
+        return True, "The Uprising have eliminated all opposition!"
 
     if not alive_mafia and not alive_sk:
         set_winners([p for p in game.players.values() if p.role in townRoles])
@@ -91,7 +91,7 @@ async def kill(guild, game: GameState, player: Player, reason, note):
     if dead_role: await player.member.add_roles(dead_role)
 
     channel = guild.get_channel(game.town_channel_id)
-    janitor = getByRole(game.players, "Janitor")
+    Warden = getByRole(game.players, "Warden")
 
     await channel.send(f"{reason} Their role was: { player.role}")
     if note: await channel.send(f"Their killer left this message: {note}")
@@ -100,15 +100,15 @@ async def kill(guild, game: GameState, player: Player, reason, note):
     will_channel = guild.get_channel(game.player_will_channels.get(player.id))
     if will_channel:
         
-        if player.cleaned and janitor:
-            await will_channel.set_permissions(janitor.member, view_channel=True, send_messages=False, read_message_history=True)
+        if player.cleaned and Warden:
+            await will_channel.set_permissions(Warden.member, view_channel=True, send_messages=False, read_message_history=True)
             await will_channel.set_permissions(player.member, view_channel=False, send_messages=False, read_message_history=False)
         else:
             await will_channel.set_permissions(guild.default_role, view_channel=True, send_messages=False, read_message_history=True)
             await will_channel.set_permissions(player.member, view_channel=True, send_messages=False, read_message_history=True)
 
-    if player.cleaned and janitor and janitor.alive:
-        janitor_channel = guild.get_channel(game.player_channels.get(janitor.id))
+    if player.cleaned and Warden and Warden.alive:
+        janitor_channel = guild.get_channel(game.player_channels.get(Warden.id))
 
         if janitor_channel:
             await janitor_channel.send(f":broom: You have cleaned a body.\n" f"Target: **{player.name}**\n" f"Role: **{player.role}**")
@@ -130,7 +130,7 @@ async def update_dead_chat_visibility(guild, game):
 
     await dead_channel.edit(overwrites=overwrites)
 
-def isMafia(player: Player): return player.role in ['Mafioso', 'Framer', 'Janitor']
+def isMafia(player: Player): return player.role in ['Insurgent', 'Propagandist', 'Warden']
 
 async def update_mafia_chat_visibility(guild, game: GameState):
     mafia_channel = guild.get_channel(game.mafia_channel_id)
@@ -172,33 +172,33 @@ async def sendToPlayer(guild, game, player_id, message):
 
 
 async def handleMafiosoDeathTransfer(guild, game: GameState, dead_player: Player):
-    if dead_player.role != 'Mafioso': return
+    if dead_player.role != 'Insurgent': return
     promoted = None
-    framer = getByRole(game.players, 'Framer')
-    janitor = getByRole(game.players, 'Janitor')
+    Propagandist = getByRole(game.players, 'Propagandist')
+    Warden = getByRole(game.players, 'Warden')
 
-    if framer is not None and framer.alive: promoted = framer
-    elif janitor is not None and janitor.alive: promoted = janitor
+    if Propagandist is not None and Propagandist.alive: promoted = Propagandist
+    elif Warden is not None and Warden.alive: promoted = Warden
     if promoted is None: return
 
     # promote
-    dead_player.role = 'Mafioso (Dead)'
-    promoted.role = 'Mafioso'
+    dead_player.role = 'Insurgent (Dead)'
+    promoted.role = 'Insurgent'
     channel = guild.get_channel(game.player_channels.get(promoted.id))
-    if channel: await channel.send("🩸 The Mafioso has died. You have taken their place as the new Mafioso.")
+    if channel: await channel.send("🩸 The Insurgent has died. You have taken their place as the new Insurgent.")
 
 async def sendDetectiveInfo(guild, game):
-    detective = getByRole(game.players, "Detective")
-    if detective is None or not detective.alive: return
-    channel = guild.get_channel(game.player_channels.get(detective.id))
+    Inquisitor = getByRole(game.players, "Inquisitor")
+    if Inquisitor is None or not Inquisitor.alive: return
+    channel = guild.get_channel(game.player_channels.get(Inquisitor.id))
 
-    if detective.targetInfo and channel:
-        await channel.send(detective.targetInfo)
-        detective.targetInfo = None
+    if Inquisitor.targetInfo and channel:
+        await channel.send(Inquisitor.targetInfo)
+        Inquisitor.targetInfo = None
 
 async def setMuderNote(game: GameState, ctx, message: str):
     player = game.players.get(ctx.author.id)
-    killRoles: list[Role] = ['Mafioso', 'Serial Killer', 'Jester', 'Jailor']
+    killRoles: list[Role] = ['Insurgent', 'Serial Killer', 'Jester', 'Jailor']
 
     if player is None or player.role not in killRoles: return 'You must be a role that kills to use this'
     player.murderNote = message
