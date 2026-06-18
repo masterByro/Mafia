@@ -5,15 +5,14 @@ from player import Player, Role, mafiaRoles, townRoles, neutralEvil, neutralKill
 from scoring import updateWins
 
 def getPlayerList(game: GameState):
-    ordered = sorted(game.players.values(), key=lambda p: p.number)
 
     lines = ["**Current Players**\n"]
 
-    for p in ordered:
+    for p in game.players.values():
         if p.alive:
-            lines.append(f"{p.number}. {p.name} | 🟢 Alive")
+            lines.append(f"{p.name} | 🟢 Alive")
         else:
-            lines.append(f"{p.number}. {p.name} | 🔴 Dead ({p.role})")
+            lines.append(f"{p.name} | 🔴 Dead ({p.role})")
 
     return "\n".join(lines)
 

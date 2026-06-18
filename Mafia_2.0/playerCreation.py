@@ -1,4 +1,5 @@
 import random
+from typing import List
 import discord
 
 from gamestate import GameState
@@ -26,51 +27,48 @@ def setup_players(guild, game: GameState, BYRO_ID):
     
     getExecutionerTarget(game.players)
 
-def makeRoles(numOfPlayers: int) -> list[Role]:
-    ## 11: 2 Uprising, 2 chaos, 2 extra, 5 basic
-    ## 10: 2 Uprising, 1 chaos, 2 extra, 5 basic
-    ## 9: 2 Uprising, 1 chaos, 1 extra, 5 basic
-    ## 8: 2 Uprising, 1 chaos or 1 extra, 5 basic
-    ## 7: 2 Uprising, 1 exec or 1 extra, 4 basic
-    ## 6: 1 Uprising, 1 exec or 1 extra, 4 basic
-    ## 5: 1 Uprising, 1 extra, 3 basic
-    ## 4: 1 Uprising, 3 basic
+ALL_ROLES: List[Role] = ['Insurgent', 'Propagandist', 'Warden', 'Executioner', 'Jester', 'Serial Killer','Wanderer', 'Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Jailor', 'Peasant', 'Peasant', 'Peasant']
+
+def generate_roles(num_players: int):
+    while True:
+        pool = ALL_ROLES.copy()
+
+        # If you want guaranteed Peasants as filler:
+        while len(pool) < num_players:
+            pool.append("Peasant")
+
+        random.shuffle(pool)
+        roles = pool[:num_players]
+
+        if validate_roles(roles, num_players):
+            return roles
+
+def validate_roles(roles: list[Role], playerNum) -> bool:
     townBasic = ['Healer','Escort', 'Medium', 'Peasant']
-    townExtra = ['Chancellor', 'Knight', 'Jailor', 'Peasant', 'Peasant']
+    townExtra = ['Chancellor', 'Knight', 'Jailor', 'Inquisitor']
     Uprising = ['Insurgent', 'Propagandist', 'Warden']
     chaos = ['Executioner', 'Jester', 'Wanderer']
     chaosWithSK = ['Executioner', 'Jester','Serial Killer', 'Wanderer']
 
-    random.shuffle(chaos)
-    random.shuffle(townExtra)
-    random.shuffle(townBasic)
-    random.shuffle(chaosWithSK)
-    
-    roles = ['Insurgent']
-    if numOfPlayers >= 6: roles.append(chaos[0])
-    if numOfPlayers >= 7: 
-        roles.append('Propagandist')
-        roles.append('Inquisitor')
-    if numOfPlayers >= 8: 
-        roles.pop(1)
-        roles.append(chaosWithSK[0])
-    if numOfPlayers >= 9: roles.append(townExtra[1])
-    if numOfPlayers >= 10: roles.append(townExtra[2])
-    if numOfPlayers >= 11: 
-        roles.pop(3)
-        roles.append(chaos[0])
-        roles.append('Serial Killer')
-    
-    i = 0
-    while len(roles) < numOfPlayers:
-        if i <= 4: 
-            roles.append(townBasic[i])
-            i += 1
-        else: roles.append('Peasant')
+    if 'Insurgent' not in roles: return False
+    if 'Propagandist' in roles and 'Inquisitor' not in roles: return False
+    if 'Executioner' in roles and  'Jester' in roles: return False
+    if playerNum > 6 and not ( 'Propagandist' in roles or 'Warden' in roles): return False
+    return True
 
-    random.shuffle(roles)
-    return  ['Healer', 'Jailor','Serial Killer', 'Chancellor']
-    return roles
+def makeRoles(playerNum: int) -> list[Role]:
+    #15 roles
+    #return  ['Healer', 'Jailor','Serial Killer', 'Chancellor']
+
+    while True: 
+        pool = ALL_ROLES.copy()
+
+        random.shuffle(pool)
+        roles = pool[:playerNum]
+
+        if validate_roles(roles, playerNum):
+            return roles
+        
 
 def getExecutionerTarget(players: dict[int, Player]):
     executioner = getByRole(players, 'Executioner')

@@ -1,7 +1,7 @@
 from typing import Literal
 
 
-Role = Literal['Insurgent', 'Insurgent (Dead)', 'Propagandist', 'Warden', 'CLEANED', 'Executioner', 'Jester', 'Serial Killer','Wanderer', 'Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Peasant','Jailor']
+Role = Literal['Insurgent', 'Insurgent (Dead)', 'Propagandist', 'Warden', 'CLEANED', 'Executioner', 'Jester', 'Serial Killer','Wanderer', 'Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Peasant', 'Jailor']
 mafiaRoles: list[Role] = ['Insurgent', 'Insurgent (Dead)', 'Propagandist', 'Warden']
 townRoles: list[Role] = ['Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Peasant', 'Jailor']
 neutralEvil: list[Role] = ['Executioner', 'Jester']
