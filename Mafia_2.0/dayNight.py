@@ -1,6 +1,6 @@
 from gamestate import GameState
 from player import Player
-from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, kill, sendDetectiveInfo, update_dead_chat_visibility, update_mafia_chat_visibility
+from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, kill, sendDetectiveInfo, update_dead_chat_visibility, update_mafia_chat_visibility, sendWatchmanInfo
 from roleDescriptions import sendNightInfo, sendDayActions
 from timing import countdown
 from channelStuff import sendVoteDropdown
@@ -21,6 +21,7 @@ async def day(guild, game: GameState):
     if game.day_number > 1:
         deaths = await calculateResults(guild, game)
         await sendDetectiveInfo(guild, game)
+        await sendWatchmanInfo(guild, game)
         await update_dead_chat_visibility(guild, game)
         await update_mafia_chat_visibility(guild, game)
    
@@ -69,7 +70,9 @@ async def calculateResults(guild, game: GameState):
     veteranGuard = False
     deathByVeteran = " was shot in the chest last night!"
 
-    #Jester, Jailor, Knight, escort, Healer, Insurgent, serial killer, Propagandist, Inquisitor, Warden
+    #Jester, Jailor, Knight, escort, Healer, Insurgent, serial killer, Propagandist, Inquisitor, Warden, Watchman
+    def addVisit(visitor, target): 
+        if visitor.id != target.id: target.visits.append(f"{target.name} was visited by {visitor.name}")
 
     def isDead(player: Player): return any(v_id == player.id for v_id, _, _ in deaths)
     def isBlocked(player: Player): return player.id in blocked
@@ -83,6 +86,7 @@ async def calculateResults(guild, game: GameState):
 
     jester, target = get_target(game, 'Jester')
     if jester and target:
+        addVisit(jester, target)
         deaths.append((target.id," is dead! The Jester gets their revenge from the grave!", jester.murderNote))
 
     #Jailor
@@ -94,6 +98,7 @@ async def calculateResults(guild, game: GameState):
     def visitorCheck(player, target):
         if isDead(player) or isBlocked(player) or isAttacked(player): return False
         if jailorTarget and target.id == jailorTarget.id: return False
+        addVisit(player, target)
         return not visitVet(player, target)
  
 
@@ -155,6 +160,13 @@ async def calculateResults(guild, game: GameState):
     if Warden and janitorTarget:
         canJanitorClean = visitorCheck(Warden, janitorTarget)
         
+    watchMan, target = get_target(game, 'Watchman')
+    if (watchMan and target): 
+        if isDeadOrBlocked(watchMan) or visitVet(watchMan, target): return False
+        if jailorTarget and target.id == jailorTarget.id: watchMan.visits = ['Your target was hauled off to Jail last night']
+        else: 
+            watchMan.visits = target.visits
+
     for victim_id, msg, note in attacked:
         if victim_id not in healed:
             deaths.append((victim_id, msg, note))

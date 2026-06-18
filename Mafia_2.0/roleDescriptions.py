@@ -30,6 +30,7 @@ def getRoleDescription(role: Role|None):
     if role == 'Serial Killer': return 'The Serial Killer wins the game by being the last person alive. They can achieve this by killing. And lots of it!'
     if role == 'Wanderer': return 'The Wanderer wins by staying alive until the very end. You can be on alert 3 night,'
     if role == 'Knight': return 'The Knight' + townsFolk + "The Knight can be on alert for three nights. You will kill any visitors on those nights."
+    if role == 'Watchman': return 'The Watchman' + townsFolk + "The Watchman can select a player's house each night to watch over, keeping track of who visits it."
     return 'oops no role Description, program brokey'
         
 def getActionDescription(game: GameState, player: Player):
@@ -41,9 +42,9 @@ def getActionDescription(game: GameState, player: Player):
     if role == 'Escort': return 'Who would you like to escort?'
     if role == 'Inquisitor':  return 'Who would you like to investigate?'
     if role == 'Serial Killer': return 'Who would you like to kill?'
+    if role == 'Watchman': return "Who's house would you like to watch?"
     if role == 'Jester' and len(player.guiltyVoters) > 0 and not player.alive:  return 'Who would you like to seek revenge on?'
-    if role in  ['Knight', 'Wanderer']: 
-        return 'You have ' + str(player.alerts) + ' alerts remaining.'
+    if role in  ['Knight', 'Wanderer']:  return 'You have ' + str(player.alerts) + ' alerts remaining.'
  
 async def sendNightInfo(guild, game):
     jailor = getByRole(game.players, 'Jailor')
@@ -67,7 +68,7 @@ async def sendNightInfo(guild, game):
 
         message = getActionDescription(game, player)
         if message: await channel.send(message)
-        canTargetPlayers: list[Role] = ['Insurgent', 'Propagandist', 'Warden', 'Jester', 'Serial Killer', 'Healer', 'Escort', 'Inquisitor']
+        canTargetPlayers: list[Role] = ['Insurgent', 'Propagandist', 'Warden', 'Jester', 'Serial Killer', 'Healer', 'Escort', 'Inquisitor', 'Watchman']
 
         if player.role in canTargetPlayers:
             possibleOptions = getPossibleOptions(game, player)

@@ -29,20 +29,6 @@ def setup_players(guild, game: GameState, BYRO_ID):
 
 ALL_ROLES: List[Role] = ['Insurgent', 'Propagandist', 'Warden', 'Executioner', 'Jester', 'Serial Killer','Wanderer', 'Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Jailor', 'Peasant', 'Peasant', 'Peasant']
 
-def generate_roles(num_players: int):
-    while True:
-        pool = ALL_ROLES.copy()
-
-        # If you want guaranteed Peasants as filler:
-        while len(pool) < num_players:
-            pool.append("Peasant")
-
-        random.shuffle(pool)
-        roles = pool[:num_players]
-
-        if validate_roles(roles, num_players):
-            return roles
-
 def validate_roles(roles: list[Role], playerNum) -> bool:
     townBasic = ['Healer','Escort', 'Medium', 'Peasant']
     townExtra = ['Chancellor', 'Knight', 'Jailor', 'Inquisitor']
@@ -58,7 +44,7 @@ def validate_roles(roles: list[Role], playerNum) -> bool:
 
 def makeRoles(playerNum: int) -> list[Role]:
     #15 roles
-    #return  ['Healer', 'Jailor','Serial Killer', 'Chancellor']
+    #return ['Healer', 'Watchman', 'Chancellor', 'Serial Killer']
 
     while True: 
         pool = ALL_ROLES.copy()

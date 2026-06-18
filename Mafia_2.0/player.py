@@ -1,7 +1,7 @@
 from typing import Literal
 
 
-Role = Literal['Insurgent', 'Insurgent (Dead)', 'Propagandist', 'Warden', 'CLEANED', 'Executioner', 'Jester', 'Serial Killer','Wanderer', 'Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Peasant', 'Jailor']
+Role = Literal['Insurgent', 'Insurgent (Dead)', 'Propagandist', 'Warden', 'CLEANED', 'Executioner', 'Jester', 'Serial Killer','Wanderer', 'Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Peasant', 'Jailor', 'Watchman']
 mafiaRoles: list[Role] = ['Insurgent', 'Insurgent (Dead)', 'Propagandist', 'Warden']
 townRoles: list[Role] = ['Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Peasant', 'Jailor']
 neutralEvil: list[Role] = ['Executioner', 'Jester']
@@ -39,6 +39,7 @@ class Player:
         self.framed = False #Propagandist
         self.murderNote: str|None = None
         self.cleaned = False #Warden
+        self.visits = [] #For watchman
 
     def reset_round(self): #Don't reset framed
         self.lastTarget = self.roundInput
@@ -51,3 +52,4 @@ class Player:
         self.guiltyVoters = []
         self.willExecute = False
         self.cleaned = False
+        self.visits = []

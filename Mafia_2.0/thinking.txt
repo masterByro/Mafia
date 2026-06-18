@@ -2,7 +2,7 @@ TODO
 
 Bonus:
 Retributionist
-Tracker/Lookout
+Tracker
 Witch
 multiple doctors, escorts
 Blackmailer / Whispers
@@ -43,3 +43,4 @@ Info pages
 delete timers after 0
 check that people cant target jailed guy
 simplify commands
+Lookout

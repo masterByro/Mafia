@@ -186,14 +186,28 @@ async def handleMafiosoDeathTransfer(guild, game: GameState, dead_player: Player
     channel = guild.get_channel(game.player_channels.get(promoted.id))
     if channel: await channel.send("🩸 The Insurgent has died. You have taken their place as the new Insurgent.")
 
-async def sendDetectiveInfo(guild, game):
+async def sendDetectiveInfo(guild, game: GameState):
     Inquisitor = getByRole(game.players, "Inquisitor")
-    if Inquisitor is None or not Inquisitor.alive: return
+    if Inquisitor is None or not Inquisitor.alive or not Inquisitor.targetInfo: return
     channel = guild.get_channel(game.player_channels.get(Inquisitor.id))
 
-    if Inquisitor.targetInfo and channel:
+    if channel:
         await channel.send(Inquisitor.targetInfo)
         Inquisitor.targetInfo = None
+
+async def sendWatchmanInfo(guild, game: GameState):
+    watchMan = getByRole(game.players, 'Watchman')
+    if watchMan is None or not watchMan.alive or not watchMan.roundInput: return
+    channel = guild.get_channel(game.player_channels.get(watchMan.id))
+    if not channel: return
+    
+    lines = ["**Night Movements**\n"]
+    if len(watchMan.visits) > 0:
+        for visit in watchMan.visits:
+            lines.append(visit)
+    else: 'Your target was not visited last night'
+    await channel.send("\n".join(lines))
+
 
 async def setMuderNote(game: GameState, ctx, message: str):
     player = game.players.get(ctx.author.id)
