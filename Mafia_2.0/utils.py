@@ -200,12 +200,12 @@ async def sendWatchmanInfo(guild, game: GameState):
     if watchMan is None or not watchMan.alive or not watchMan.roundInput: return
     channel = guild.get_channel(game.player_channels.get(watchMan.id))
     if not channel: return
-    
+
     lines = ["**Night Movements**\n"]
     if len(watchMan.visits) > 0:
         for visit in watchMan.visits:
             lines.append(visit)
-    else: 'Your target was not visited last night'
+    else: lines.append('Your target was not visited last night')
     await channel.send("\n".join(lines))
 
 

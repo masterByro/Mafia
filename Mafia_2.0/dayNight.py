@@ -162,10 +162,11 @@ async def calculateResults(guild, game: GameState):
         
     watchMan, target = get_target(game, 'Watchman')
     if (watchMan and target): 
-        if isDeadOrBlocked(watchMan) or visitVet(watchMan, target): return False
-        if jailorTarget and target.id == jailorTarget.id: watchMan.visits = ['Your target was hauled off to Jail last night']
-        else: 
-            watchMan.visits = target.visits
+        if isDeadOrBlocked(watchMan) or visitVet(watchMan, target): pass
+        else:
+            if jailorTarget and target.id == jailorTarget.id: watchMan.visits = ['Your target was hauled off to Jail last night']
+            else: 
+                watchMan.visits = target.visits
 
     for victim_id, msg, note in attacked:
         if victim_id not in healed:

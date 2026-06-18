@@ -27,11 +27,11 @@ def setup_players(guild, game: GameState, BYRO_ID):
     
     getExecutionerTarget(game.players)
 
-ALL_ROLES: List[Role] = ['Insurgent', 'Propagandist', 'Warden', 'Executioner', 'Jester', 'Serial Killer','Wanderer', 'Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Jailor', 'Peasant', 'Peasant', 'Peasant']
+ALL_ROLES: List[Role] = ['Insurgent', 'Propagandist', 'Warden', 'Executioner', 'Jester', 'Serial Killer','Wanderer', 'Chancellor', 'Healer', 'Escort', 'Inquisitor', 'Knight', 'Medium', 'Jailor', 'Watchman', 'Peasant', 'Peasant', 'Peasant']
 
 def validate_roles(roles: list[Role], playerNum) -> bool:
     townBasic = ['Healer','Escort', 'Medium', 'Peasant']
-    townExtra = ['Chancellor', 'Knight', 'Jailor', 'Inquisitor']
+    townExtra = ['Chancellor', 'Knight', 'Jailor', 'Inquisitor', 'Watchman']
     Uprising = ['Insurgent', 'Propagandist', 'Warden']
     chaos = ['Executioner', 'Jester', 'Wanderer']
     chaosWithSK = ['Executioner', 'Jester','Serial Killer', 'Wanderer']
@@ -43,7 +43,7 @@ def validate_roles(roles: list[Role], playerNum) -> bool:
     return True
 
 def makeRoles(playerNum: int) -> list[Role]:
-    #15 roles
+    #16 roles
     #return ['Healer', 'Watchman', 'Chancellor', 'Serial Killer']
 
     while True: 
@@ -60,7 +60,7 @@ def getExecutionerTarget(players: dict[int, Player]):
     executioner = getByRole(players, 'Executioner')
  
     if executioner is None: return
-    possibleTargets = ['Healer','Escort', 'Medium', 'Peasant', 'Knight']
+    possibleTargets = ['Healer','Escort', 'Medium', 'Peasant', 'Knight', 'Jailor', 'Inquisitor', 'Watchman']
     valid_targets = [p for p in players.values() if p.role in possibleTargets]
     #Fails here if no townmember. Shouldnt happen, so not fixing. Fix would be to flip to Jester
     target = random.choice(valid_targets)
