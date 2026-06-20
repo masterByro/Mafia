@@ -4,8 +4,8 @@ from gamestate import GameState
 from scoring import loadWins
 from UI.VoteSelecter import VoteView
 
-async def setup_channels(guild, game: GameState, BYRO_ID):
-    byron = guild.get_member(BYRO_ID)
+async def setup_channels(guild, game: GameState, ADMIN_ID):
+    admin = guild.get_member(ADMIN_ID)
 
     # Courtyard
     town_channel = await guild.create_text_channel(
@@ -25,7 +25,7 @@ async def setup_channels(guild, game: GameState, BYRO_ID):
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(view_channel=False),
             player.member: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True),
-            byron: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
+            admin: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
         }
 
         channel = await guild.create_text_channel(name=channel_name, overwrites=overwrites, category=category)

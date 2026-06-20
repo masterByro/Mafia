@@ -4,6 +4,7 @@ from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_targe
 from roleDescriptions import sendNightInfo, sendDayActions
 from timing import countdown
 from channelStuff import sendVoteDropdown
+from debug import save_night_debug_start, save_night_debug_end
 
 async def passTime(guild, game):
     if not game.is_day: game.day_number += 1
@@ -14,7 +15,7 @@ async def passTime(guild, game):
 
 async def day(guild, game: GameState):
     channel = guild.get_channel(game.town_channel_id)
-    await channel.send("\n===================================================================\n")
+    await channel.send("\n==============================\n")
 
     await channel.send("The town awakens on Day " + str(game.day_number))
     
@@ -53,12 +54,12 @@ async def night(guild, game: GameState):
     await update_dead_chat_visibility(guild, game)
     await update_mafia_chat_visibility(guild, game)
     channel = guild.get_channel(game.town_channel_id)
-    await channel.send("\n===================================================================\n")
+    await channel.send("\n==============================\n")
     await channel.send(getPlayerList(game))
     await channel.send("The town descends into darkness on Night " + str(game.day_number))
     await channel.send("You can now perform your night action")
     await sendNightInfo(guild, game)
-    await countdown(channel, 90, prefix="Night")
+    await countdown(channel, 70, prefix="Night")
     #await passTime(guild, game)
 
 
@@ -69,6 +70,9 @@ async def calculateResults(guild, game: GameState):
     attacked = []  # (victim_id, death_message, murder_note)
     veteranGuard = False
     deathByVeteran = " was shot in the chest last night!"
+
+    # DEBUG: Save starting state
+    save_night_debug_start(game)
 
     #Jester, Jailor, Knight, escort, Healer, Insurgent, serial killer, Propagandist, Inquisitor, Warden, Watchman
     def addVisit(visitor, target): 
@@ -177,6 +181,9 @@ async def calculateResults(guild, game: GameState):
             if janitorTarget.id in dead_ids:
                 janitorTarget.cleaned = True
                 janitorTarget.role = 'CLEANED'
+
+    # DEBUG: Save results
+    save_night_debug_end(game, deaths, blocked, healed, attacked)
 
     return deaths
 

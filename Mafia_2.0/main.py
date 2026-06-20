@@ -8,7 +8,7 @@ from channelStuff import buildWinsLeaderboard, endChannels, setup_channels
 from dayNight import day, passTime
 from gamestate import GameState
 from playerCreation import sendStarterInfo, setup_players
-from debug import debugPlayers
+from debug import debugPlayers, clear_debug
 from utils import getPlayerList, setMuderNote
 from voting import decideEnd, decidePhase
 from scoring import initWinsFile
@@ -22,7 +22,8 @@ intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-ADMIN_ID = 963737040183246879 
+ADMIN_ID = 963737040183246879
+BYRO_ID = 240752638273126400
 global game
 game = GameState()
 
@@ -36,7 +37,7 @@ async def on_ready():
 
 @bot.command()
 async def start(ctx):
-    if ctx.author.id != ADMIN_ID: return
+    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
 
     guild = ctx.guild
     setup_players(guild, game, ADMIN_ID)
@@ -48,29 +49,34 @@ async def start(ctx):
 
 @bot.command()
 async def end(ctx):
-    if ctx.author.id != ADMIN_ID: return
+    global game
+    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     
     await endChannels(ctx, game)
     dead_role = discord.utils.get(ctx.guild.roles, name="Dead")
     if dead_role:
-            for member in dead_role.members:
-                await member.remove_roles(dead_role)
-    await ctx.send("Game ended!")
+        for member in dead_role.members:
+            await member.remove_roles(dead_role)
+    
+    # RESET GAME STATE COMPLETELY
+    game = GameState()
+    clear_debug()
+    await ctx.send("Game ended! State reset.")
 
 @bot.command()
 async def n(ctx): 
-    if ctx.author.id != ADMIN_ID: return
+    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     await passTime(ctx.guild, game)
 
 @bot.command() #Depreacted
 async def decide(ctx):
-    if ctx.author.id != ADMIN_ID: return
+    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     feedback = await decidePhase(ctx.guild, game)
     await ctx.send(feedback)
 
 @bot.command() #Depreacted
 async def decideend(ctx):
-    if ctx.author.id != ADMIN_ID: return
+    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     await decideEnd(ctx.guild, game)
     
 @bot.command()
@@ -81,7 +87,7 @@ async def m(ctx, *, message: str): await ctx.send(await setMuderNote(game, ctx, 
 
 @bot.command()
 async def debugplayers(ctx):
-    if ctx.author.id != ADMIN_ID: return
+    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     message = await debugPlayers(game)
     await ctx.send(message)
 

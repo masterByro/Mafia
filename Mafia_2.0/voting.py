@@ -4,7 +4,6 @@ from gamestate import GameState
 from utils import getByRole, isGameOver, kill
 from timing import countdown
 from UI.JudgeViewer import JudgeView
-from channelStuff import sendVoteDropdown
 from dayNight import passTime
 
 async def on_vote(guild, game: GameState):
@@ -109,6 +108,7 @@ async def handle_innocent_verdict(guild, game: GameState, accused):
     
     if game.voteAttempts > 0:
         await channel.send(f"Vote attempts remaining: {game.voteAttempts}")
+        from channelStuff import sendVoteDropdown
         await sendVoteDropdown(guild, game)
         game.can_vote = True
     else:

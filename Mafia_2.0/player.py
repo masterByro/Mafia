@@ -33,7 +33,7 @@ class Player:
         self.revealed = False #Chancellor revealed or not
         self.targetInfo: str|None = '' #Inquisitor info
         self.alerts = 3 #Knight bullets / Wanderer vests
-        self.onAlert = False
+        self.onAlert = False #Knight/Wanderer
         self.guiltyVoters = [] #Jester
         self.willExecute = False #Jailor
         self.framed = False #Propagandist
