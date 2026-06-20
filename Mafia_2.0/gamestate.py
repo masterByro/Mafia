@@ -8,6 +8,7 @@ class GameState:
         self.day_number = 1
         self.can_vote = True
         self.canDecide = False
+        self.voteAttempts = 3
 
         #Discord channels
         self.town_channel_id = None
