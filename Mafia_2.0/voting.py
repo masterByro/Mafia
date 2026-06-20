@@ -14,7 +14,7 @@ async def on_vote(guild, game: GameState):
         if channel:
             await channel.send(f"The castlefolk have voted against {votedOutPlayer.name}!")
             await channel.send(f"{votedOutPlayer.name}, state your defence!")
-            await countdown(channel, 2, prefix="Defence statement")
+            await countdown(channel, 15, prefix="Defence statement")
             await decidePhase(guild, game)
 
 def tally_votes(game: GameState):
@@ -72,6 +72,7 @@ async def decideEnd(guild, game: GameState):
     accused = getVotedForPlayer(game)
     for p in ordered:
         if accused and p.id == accused.id: continue
+        if not p.alive: continue
 
         # abstained (never voted or cleared vote)
         if p.decision is None:

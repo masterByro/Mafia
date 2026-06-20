@@ -1,4 +1,5 @@
 TODO
+re-voting during day
 
 Bonus:
 Retributionist

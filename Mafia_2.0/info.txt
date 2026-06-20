@@ -33,6 +33,11 @@ Eliminate the Uprising and Serial Killer
 **Action:** Communicate with the dead at night
 **Info:** Dead chat becomes accessible during the night
 
+Watchman
+🔭 Watchman
+**Action:** Notes down everyone who visits your target's house
+**Info:** Select a target's house to watch over. You will keep track of every player who visits this house. This information will become available to you in the morning if you are still alive
+
 ## 🏘️ Peasant
 **Action:** None
 **Info:** No special powers
@@ -91,23 +96,18 @@ Wins if alive at end of game
 
 
 Technical Info:
-
 Action priorities:
 1. Jester            Kills target
 2. Jailor            Blocks target and can choose to kill target
-3. Knight           Kills all following visitors 
+3. Knight            Kills all following visitors 
 4. Escort            Blocks target
 5. Healer            At end of round, will heal Attacked target
 6. Wanderer          Protected against Attacks
-7. Insurgent           Attacks target
+7. Insurgent         Attacks target
 8. Serial Killer     Attacks target
-9. Propagandist            Frames target
-10. Inquisitor        Checks target
-11. Warden          Cleans target
+9. Propagandist      Frames target
+10. Inquisitor       Checks target
+11. Warden           Cleans target
+12. Watchman         Keeps track of who visits target        
 
-
-Possible roles:
-Peasant is the only role that there can be multiple of
-In every game: Insurgent, Healer, Escort, Medium 
-Propagandist and Inquisitor exist together
-There will not be an Executioner and Jester
+You can use the command !m <message> to write a message that is leave next to every player you murder at night

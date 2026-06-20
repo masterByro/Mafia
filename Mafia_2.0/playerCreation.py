@@ -7,12 +7,10 @@ from roleDescriptions import getRoleDescription
 from player import Player, Role
 from utils import getByRole, isMafia
 
-ALLOW_BYRO_AS_PLAYER = True
-
 def setup_players(guild, game: GameState, BYRO_ID):
     for member in guild.members:
         if member.bot: continue
-        if not ALLOW_BYRO_AS_PLAYER and member.id == 710078079049007155: continue
+        if member.id == 963737040183246879: continue #963737040183246879 = 12gp
         game.players[member.id] = Player(member)
         
     roles = makeRoles(len(game.players))
@@ -44,7 +42,10 @@ def validate_roles(roles: list[Role], playerNum) -> bool:
 
 def makeRoles(playerNum: int) -> list[Role]:
     #16 roles
-    #return ['Healer', 'Watchman', 'Chancellor', 'Serial Killer']
+    #return ['Healer', 'Watchman', 'Escort', 'Insurgent']
+    # pool: list[Role] = ['Executioner',  'Healer', 'Chancellor', 'Serial Killer']
+    # random.shuffle(pool)
+    # return pool
 
     while True: 
         pool = ALL_ROLES.copy()

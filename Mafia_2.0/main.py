@@ -22,7 +22,7 @@ intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-BYRO_ID = 240752638273126400 
+ADMIN_ID = 963737040183246879 
 global game
 game = GameState()
 
@@ -36,11 +36,11 @@ async def on_ready():
 
 @bot.command()
 async def start(ctx):
-    if ctx.author.id != BYRO_ID: return
+    if ctx.author.id != ADMIN_ID: return
 
     guild = ctx.guild
-    setup_players(guild, game, BYRO_ID)
-    await setup_channels(guild, game, BYRO_ID)
+    setup_players(guild, game, ADMIN_ID)
+    await setup_channels(guild, game, ADMIN_ID)
     await sendStarterInfo(guild, game)
     game.running = True
     await ctx.send("Game started!")
@@ -48,7 +48,7 @@ async def start(ctx):
 
 @bot.command()
 async def end(ctx):
-    if ctx.author.id != BYRO_ID: return
+    if ctx.author.id != ADMIN_ID: return
     
     await endChannels(ctx, game)
     dead_role = discord.utils.get(ctx.guild.roles, name="Dead")
@@ -59,18 +59,18 @@ async def end(ctx):
 
 @bot.command()
 async def n(ctx): 
-    if ctx.author.id != BYRO_ID: return
+    if ctx.author.id != ADMIN_ID: return
     await passTime(ctx.guild, game)
 
 @bot.command() #Depreacted
 async def decide(ctx):
-    if ctx.author.id != BYRO_ID: return
+    if ctx.author.id != ADMIN_ID: return
     feedback = await decidePhase(ctx.guild, game)
     await ctx.send(feedback)
 
 @bot.command() #Depreacted
 async def decideend(ctx):
-    if ctx.author.id != BYRO_ID: return
+    if ctx.author.id != ADMIN_ID: return
     await decideEnd(ctx.guild, game)
     
 @bot.command()
@@ -81,7 +81,7 @@ async def m(ctx, *, message: str): await ctx.send(await setMuderNote(game, ctx, 
 
 @bot.command()
 async def debugplayers(ctx):
-    if ctx.author.id != BYRO_ID: return
+    if ctx.author.id != ADMIN_ID: return
     message = await debugPlayers(game)
     await ctx.send(message)
 

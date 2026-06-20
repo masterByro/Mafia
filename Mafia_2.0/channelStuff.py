@@ -18,7 +18,7 @@ async def setup_channels(guild, game: GameState, BYRO_ID):
     game.town_channel_id = town_channel.id
 
     ## Individual channels
-    category = await guild.create_category("Uprising Players")
+    category = await guild.create_category("Players")
     for player in game.players.values():
         channel_name = player.name.lower().replace(" ", "-")
 
@@ -65,7 +65,7 @@ async def endChannels(ctx, game: GameState):
         if channel: await channel.delete()
 
     # Delete category
-    category = discord.utils.get(guild.categories, name="Uprising Players")
+    category = discord.utils.get(guild.categories, name="Players")
     if category:
         await category.delete()
 
