@@ -43,9 +43,9 @@ def validate_roles(roles: list[Role], playerNum) -> bool:
 def makeRoles(playerNum: int) -> list[Role]:
     #16 roles
     #return ['Healer', 'Watchman', 'Escort', 'Insurgent']
-    # pool: list[Role] = ['Executioner',  'Healer', 'Chancellor', 'Serial Killer']
-    # random.shuffle(pool)
-    # return pool
+    pool: list[Role] = ['Insurgent',  'Propagandist', 'Healer', 'Escort', 'Medium', 'Inquisitor', 'Peasant', 'Peasant']
+    random.shuffle(pool)
+    return pool
 
     while True: 
         pool = ALL_ROLES.copy()
