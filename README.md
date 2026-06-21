@@ -88,19 +88,36 @@ Optional: in `Mafia_2.0/playerCreation.py`, `ALLOW_BYRO_AS_PLAYER` controls whet
 
 ### Prerequisites
 
-- **Python 3.8+**
+- **Python 3.10+** (3.11 or 3.12 recommended; 3.9 and below will fail on type hints and recent `discord.py` dependencies)
 - **pip**
 
-### Install dependencies
+### Virtual environment
 
-From the repository root:
+Create and activate a venv inside `Mafia_2.0` so dependencies stay isolated from your system Python.
 
-```bash
+**Windows (PowerShell):**
+
+```powershell
 cd Mafia_2.0
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
+**macOS / Linux:**
+
+```bash
+cd Mafia_2.0
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Use any installed 3.10+ interpreter for the `py -3.12` / `python3` step (e.g. `py -3.10`, `py -3.13`).
+
 Dependencies: `discord.py`, `python-dotenv`.
+
+Reactivate the venv whenever you open a new terminal: run the `Activate.ps1` or `source` command above before starting the bot.
 
 ### Environment variables
 
@@ -115,6 +132,8 @@ Never commit your bot token.
 ---
 
 ## Run the bot
+
+With the venv activated:
 
 ```bash
 cd Mafia_2.0
@@ -177,6 +196,8 @@ Full role descriptions and action priority order are in `[Mafia_2.0/info.txt](Ma
 | Bot cannot create channels       | Missing **Manage Channels** permission or role hierarchy too low                                        |
 | Bot cannot assign Dead role      | Missing **Manage Roles** permission or bot role below the `Dead` role                                   |
 | Wrong server used                | Bot is in multiple servers; it always uses `bot.guilds[0]` — use a bot invite scoped to one test server |
+| `TypeVarTuple` / `default` error | Python is too old for installed packages — recreate the venv with **Python 3.10+** and reinstall deps   |
+| `unsupported operand type(s) for \|` | Same as above — the code uses `Role \| None` type hints, which require **Python 3.10+**              |
 
 
 Logs are written to `Mafia_2.0/discord.log` while the bot runs.
