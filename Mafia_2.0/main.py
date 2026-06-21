@@ -12,6 +12,7 @@ from debug import debugPlayers
 from utils import getPlayerList, setMuderNote
 from voting import decideEnd, decidePhase
 from scoring import initWinsFile
+from noFriends import setup_no_friends
 
 load_dotenv()
 
@@ -22,7 +23,7 @@ intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-BYRO_ID = 240752638273126400 
+BYRO_ID = 430972166364725249 
 global game
 game = GameState()
 
@@ -87,6 +88,19 @@ async def debugplayers(ctx):
 
 @bot.command() #Leaderboard
 async def wins(ctx): await ctx.send(buildWinsLeaderboard(ctx))
+
+@bot.command()
+async def nofriends(ctx): 
+    await ctx.send("No friends, no fun.");
+    if ctx.author.id != BYRO_ID: return
+
+    guild = ctx.guild
+    game.nofriends = True
+    await setup_no_friends(guild, game, BYRO_ID);
+    game.running = True
+    await ctx.send("Game started!")
+    await day(guild, game)
+
 
 player_count = 0
 bot.run(token,log_handler=handler, log_level=logging.DEBUG) # type: ignore

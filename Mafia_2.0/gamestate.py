@@ -22,3 +22,5 @@ class GameState:
         # channel tracking
         self.player_channels: Dict[int, int] = {} # player_id -> channel_id
         self.player_will_channels: Dict[int, int]  = {}
+
+        self.nofriends = False
