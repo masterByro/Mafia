@@ -19,23 +19,10 @@ class VoteSelect(discord.ui.Select):
             options=options
         )
 
-    def _get_voter(self, interaction: discord.Interaction):
-        if self.game.nofriends:
-            channel = interaction.channel
-            if channel is None:
-                return None
-            channel_name = channel.name
-            return next(
-                (p for p in self.game.players.values()
-                 if p.name.lower().replace(" ", "-") == channel_name),
-                None,
-            )
-        return self.game.players.get(interaction.user.id)
-
     async def callback(self, interaction: discord.Interaction):
         game = self.game
 
-        voter = self._get_voter(interaction)
+        voter = game.get_player_from_interaction(interaction)
 
         if game.can_vote == False:
             return await interaction.response.send_message("You cannot vote right now.", ephemeral=True)

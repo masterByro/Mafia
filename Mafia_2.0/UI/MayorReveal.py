@@ -22,7 +22,7 @@ class MayorRevealView(discord.ui.View):
     )
     async def reveal(self, interaction: discord.Interaction, button: discord.ui.Button):
         game = self.game
-        player = game.players.get(interaction.user.id)
+        player = game.get_player_from_interaction(interaction)
 
         success, message = reveal_mayor(game, player)
         if not success:

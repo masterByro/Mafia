@@ -27,7 +27,7 @@ class JailSpeakModal(discord.ui.Modal, title="Jail Communication"):
         self.is_jailor = is_jailor
 
     async def on_submit(self, interaction: discord.Interaction):
-        speaker = self.game.players.get(interaction.user.id)
+        speaker = self.game.get_player_from_interaction(interaction)
         jailor = getByRole(self.game.players, 'Jailor')
 
         if self.game.is_day:

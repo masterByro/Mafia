@@ -24,3 +24,20 @@ class GameState:
         self.player_will_channels: Dict[int, int]  = {}
 
         self.nofriends = False
+
+    # nofriends Mode 
+    # player is chosen from channel name, rather than user id    
+    def get_player_from_interaction(self, interaction):
+        if self.nofriends:
+            voter_name = interaction.channel.name
+
+            return next(
+                (
+                    player
+                    for player in self.players.values()
+                    if player.name.lower() == voter_name.lower()
+                ),
+                None
+            )
+
+        return self.players.get(interaction.user.id)
