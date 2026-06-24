@@ -209,7 +209,7 @@ async def sendWatchmanInfo(guild, game: GameState):
     await channel.send("\n".join(lines))
 
 
-async def setMuderNote(game: GameState, ctx, message: str):
+async def setMurderNote(game: GameState, ctx, message: str):
     player = game.players.get(ctx.author.id)
     killRoles: list[Role] = ['Insurgent', 'Serial Killer', 'Jester', 'Jailor']
 
