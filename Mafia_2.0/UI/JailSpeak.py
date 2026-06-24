@@ -58,8 +58,6 @@ class JailSpeakModal(discord.ui.Modal, title="Jail Communication"):
         jailor_channel = self.game.player_channels.get(jailor.id)
         prisoner_channel = self.game.player_channels.get(prisoner.id)
 
-        guild = interaction.guild
-
         if not jailor_channel or not prisoner_channel:
             return await interaction.response.send_message(
                 "Missing jail channels.",
@@ -82,10 +80,7 @@ class JailSpeakModal(discord.ui.Modal, title="Jail Communication"):
 
         guild = interaction.guild
         if guild is None:
-            return await interaction.response.send_message(
-                "Guild not found.",
-                ephemeral=True
-            )
+            return await interaction.response.send_message("Guild not found.",ephemeral=True)
         
         for ch_id in (jailor_channel, prisoner_channel):
             channel = guild.get_channel(ch_id)

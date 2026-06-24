@@ -1,5 +1,4 @@
 import discord
-from voting import on_vote
 
 class VoteView(discord.ui.View):
     def __init__(self, game, voter_id):
@@ -55,4 +54,5 @@ class VoteSelect(discord.ui.Select):
             await channel.send(f"🗳️ {voter.name} has voted for {target.name}")
 
         await interaction.response.send_message(f"You voted for **{target.name}**.", ephemeral=True)
+        from voting import on_vote
         await on_vote(guild, game)

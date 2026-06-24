@@ -1,29 +1,29 @@
-# MAFIA GAME ROLE GUIDE
+# Uprising GAME ROLE GUIDE
 
 ---
 
 🟢 TOWNFOLK
-Eliminate the Mafia and Serial Killer
+Eliminate the Uprising and Serial Killer
 
-👨‍⚕️ Doctor
+👨‍⚕️ Healer
 **Action:** Heal one player each night
-**Info:** Cannot target the same player twice. Can target themselves. Cannot target a mayor that has revealed themselves. Cannot heal a death caused by the Jailor or Jester
+**Info:** Cannot target the same player twice. Can target themselves. Cannot target a Chancellor that has revealed themselves. Cannot heal a death caused by the Jailor or Jester
 
-🕵️ Detective
+🕵️ Inquisitor
 **Action:** Investigate one player each night
-**Info:** Receives clues indicating if the target had “blood” on them. This will detect Mafioso, Serial Killers, Doctors, anyone who has been framed or attacked that night
+**Info:** Receives clues indicating if the target had “blood” on them. This will detect Insurgent, Serial Killers, Doctors, anyone who has been framed or attacked that night
 
 🚪 Escort
 **Action:** Roleblock one player each night
 **Info:** Prevents target from using their night ability. Escorting the Serial Killer will result in the Escort's death
 
-👑 Mayor
+👑 Chancellor
 **Action:** Reveal their role publicly, in order to have more voting power
-**Info:** Mayor can publicly reveal their role during the day anytime. Once revealed their vote and judgement are worth 3 votes. Once revealed, Doctor can no longer heal them
+**Info:** Chancellor can publicly reveal their role during the day anytime. Once revealed their vote and judgement are worth 3 votes. Once revealed, Healer can no longer heal them
 
-🛡️ Veteran
+🛡️ Knight
 **Action:** Go on alert, killing any night visitor
-**Info:** Veteran can go on alert 3 times per game, attacking all visitors received on those nights.
+**Info:** Knight can go on alert 3 times per game, attacking all visitors received on those nights.
 
 💀 Jailor
 **Action:** Selects a target to jail during the day, interrogates them and can execute them at night
@@ -33,26 +33,31 @@ Eliminate the Mafia and Serial Killer
 **Action:** Communicate with the dead at night
 **Info:** Dead chat becomes accessible during the night
 
-## 🏘️ Towny
+Watchman
+🔭 Watchman
+**Action:** Notes down everyone who visits your target's house
+**Info:** Select a target's house to watch over. You will keep track of every player who visits this house. This information will become available to you in the morning if you are still alive
+
+🏘️ Peasant
 **Action:** None
 **Info:** No special powers
 
 ---
 
-🔴 Mafia: 
+🔴 Uprising: 
 Eliminate all Townsfolk and the Serial Killer
-All mafia members can access a private Mafia chatroom at night to co-ordinate their strategy (if a mafia member is hauled to Jail, they won't be able to speak to the other Mafia members that night)
-If a Mafioso dies, the Framer will take their place. If there's no Framer, the Janitor will take their place 
+All Uprising members can access a private Uprising chatroom at night to co-ordinate their strategy (if a Uprising member is hauled to Jail, they won't be able to speak to the other Uprising members that night)
+If a Insurgent dies, the Propagandist will take their place. If there's no Propagandist, the Warden will take their place 
 
-## 🔫 Mafioso
+## 🔫 Insurgent
 **Action:** Kill one player each night
-**Info:** Primary killing role of Mafia
+**Info:** Primary killing role of Uprising
 
-## 🎭 Framer
+## 🎭 Propagandist
 **Action:** Frame a target each night
 **Info:** Makes target appear suspicious to investigative roles. Target remains framed until they are investigated (So your night 1 target will show up as suspicious if investigated even on night 3)
 
-## 🧹 Janitor
+## 🧹 Warden
 **Action:** Clean a kill
 **Info:** If your target dies that night, their will and role will be visible only to you, instead of being publically broadcasted
 
@@ -76,7 +81,7 @@ Wins if they get lynched
 # NEUTRAL EVIL
 
 🔪 Serial Killer
-Wins when everyone in the town is dead (except the Survivor)
+Wins when everyone in the town is dead (except the Wanderer)
 **Action:** Kill one player each night
 **Info:** If targeted by the Escort, you murder the escort instead of your selected target
 
@@ -84,30 +89,25 @@ Wins when everyone in the town is dead (except the Survivor)
 
 # NEUTRAL BENIGN
 
-🏕️ Survivor
+🏕️ Wanderer
 Wins if alive at end of game
 **Action:** Protect yourself at night, for up to 3 nights
 **Info:** Your action does not protect you from the Jester or the Jailor
 
 
 Technical Info:
-
 Action priorities:
 1. Jester            Kills target
 2. Jailor            Blocks target and can choose to kill target
-3. Veteran           Kills all following visitors 
+3. Knight            Kills all following visitors 
 4. Escort            Blocks target
-5. Doctor            At end of round, will heal Attacked target
-6. Survivor          Protected against Attacks
-7. Mafioso           Attacks target
+5. Healer            At end of round, will heal Attacked target
+6. Wanderer          Protected against Attacks
+7. Insurgent         Attacks target
 8. Serial Killer     Attacks target
-9. Framer            Frames target
-10. Detective        Checks target
-11. Janitor          Cleans target
+9. Propagandist      Frames target
+10. Inquisitor       Checks target
+11. Warden           Cleans target
+12. Watchman         Keeps track of who visits target        
 
-
-Possible roles:
-Towny is the only role that there can be multiple of
-In every game: Mafioso, Doctor, Escort, Medium 
-Framer and Detective exist together
-There will not be an Executioner and Jester
+You can use the command !m <message> to write a message that is leave next to every player you murder at night
