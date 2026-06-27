@@ -3,7 +3,7 @@ from gamestate import GameState
 from playerCreation import sendStarterInfo, setup_players
 from channelStuff import setup_channels
 
-async def setup_no_friends(guild, game: GameState, BYRO_ID):
+async def setup_no_friends(guild, game: GameState, ADMIN_ID):
     #Add more members
     members = list(guild.members)
     
@@ -23,7 +23,7 @@ async def setup_no_friends(guild, game: GameState, BYRO_ID):
         name=guild.name
     )
 
-    setup_players(fake_guild, game, BYRO_ID)
-    await setup_channels(guild, game, BYRO_ID)
+    setup_players(fake_guild, game, ADMIN_ID)
+    await setup_channels(guild, game, ADMIN_ID)
     await sendStarterInfo(guild, game)
     

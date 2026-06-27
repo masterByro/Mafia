@@ -7,7 +7,7 @@ from roleDescriptions import getRoleDescription
 from player import Player, Role
 from utils import getByRole, isMafia
 
-def setup_players(guild, game: GameState, BYRO_ID):
+def setup_players(guild, game: GameState, ADMIN_ID):
     for member in guild.members:
         if member.bot: continue
         if member.id == 963737040183246879: continue #963737040183246879 = 12gp
