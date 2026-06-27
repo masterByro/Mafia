@@ -1,7 +1,0 @@
-{
-    "python.defaultInterpreterPath": "${workspaceFolder}/Mafia_2.0/.venv/Scripts/python.exe",
-    "python.analysis.typeCheckingMode": "basic",
-    "python.analysis.extraPaths": [
-        "./Mafia_2.0/Objects"
-    ]
-}
