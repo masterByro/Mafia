@@ -36,15 +36,24 @@ async def on_ready():
     print(f'Players: {player_count}\n Ready to rumble!')
 
 @bot.command()
-async def start(ctx):
-    if ctx.author.id != ADMIN_ID and ctx.author.id != ADMIN_ID: return
+async def start(ctx, mode: str = "normal"):
+    if ctx.author.id != ADMIN_ID:
+        return
 
     guild = ctx.guild
-    setup_players(guild, game, ADMIN_ID)
-    await setup_channels(guild, game, ADMIN_ID)
-    await sendStarterInfo(guild, game)
+    game.nofriends = (mode.lower() == "nf")
+
+    if game.nofriends:
+        await setup_no_friends(guild, game, ADMIN_ID)
+    else:
+        setup_players(guild, game, ADMIN_ID)
+        await setup_channels(guild, game, ADMIN_ID)
+        await sendStarterInfo(guild, game)
+
     game.running = True
-    await ctx.send("Game started!")
+
+    await ctx.send(f"Game started! Mode: {mode}")
+
     await day(guild, game)
 
 @bot.command()
@@ -93,19 +102,6 @@ async def debugplayers(ctx):
 
 @bot.command() #Leaderboard
 async def wins(ctx): await ctx.send(buildWinsLeaderboard(ctx))
-
-@bot.command()
-async def nofriends(ctx): 
-    await ctx.send("No friends, no fun.");
-    if ctx.author.id != ADMIN_ID: return
-
-    guild = ctx.guild
-    game.nofriends = True
-    await setup_no_friends(guild, game, ADMIN_ID);
-    game.running = True
-    await ctx.send("Game started!")
-    await day(guild, game)
-
 
 player_count = 0
 bot.run(token,log_handler=handler, log_level=logging.DEBUG) # type: ignore
