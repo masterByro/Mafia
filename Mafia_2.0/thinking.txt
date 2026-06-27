@@ -1,5 +1,16 @@
 TODO
-re-voting during day
+Fix the bugs
+Opt in with a 'react' (or better option?)
+Make game playable in any channel
+Improve channel cleanup
+Limit WILL writing to night only
+Limit day time
+
+Bugs:
+-Jailor couldnt jail first night? (Needs triage)
+-Lookout received incorrect info
+-Players get night action dropdown box even when dead
+-Players cant have space in name
 
 Bonus:
 Retributionist
@@ -7,6 +18,7 @@ Tracker
 Witch
 multiple doctors, escorts
 Blackmailer / Whispers
+Create a 'party mode'- player must get hung each day
 
 Done
 have admin commands
@@ -45,3 +57,4 @@ delete timers after 0
 check that people cant target jailed guy
 simplify commands
 Lookout
+re-voting during day

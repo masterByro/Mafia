@@ -9,7 +9,7 @@ from dayNight import day, passTime
 from gamestate import GameState
 from playerCreation import sendStarterInfo, setup_players
 from debug import debugPlayers, clear_debug
-from utils import getPlayerList, setMuderNote
+from utils import getPlayerList, setMurderNote
 from voting import decideEnd, decidePhase
 from scoring import initWinsFile
 from noFriends import setup_no_friends
@@ -92,7 +92,7 @@ async def decideend(ctx):
 async def list(ctx): await ctx.send(getPlayerList(game))
 
 @bot.command() #Deathnote
-async def m(ctx, *, message: str): await ctx.send(await setMuderNote(game, ctx, message))
+async def m(ctx, *, message: str): await ctx.send(await setMurderNote(game, ctx, message))
 
 @bot.command()
 async def debugplayers(ctx):
