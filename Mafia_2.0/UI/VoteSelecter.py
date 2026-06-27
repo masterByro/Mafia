@@ -34,7 +34,6 @@ class VoteSelect(discord.ui.Select):
 
         target_id = int(self.values[0])
         target = game.players.get(target_id)
-        # target = game.players.get(f"{target_id}")
 
         if target is None:
             return await interaction.response.send_message("Invalid player selection.", ephemeral=True)
