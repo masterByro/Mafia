@@ -69,14 +69,14 @@ Before starting a game:
 The game host is controlled by a Discord user ID in `Mafia_2.0/main.py`:
 
 ```python
-ADMIN_ID = 240752638273126400
+BYRO_ID = 240752638273126400
 ```
 
 Replace this with **your** Discord user ID:
 
 1. In Discord, enable **Developer Mode** (Settings → Advanced → Developer Mode).
 2. Right-click your username → **Copy User ID**.
-3. Paste that number as `ADMIN_ID` in `main.py`.
+3. Paste that number as `BYRO_ID` in `main.py`.
 
 Only the host can run `!start`, `!end`, `!n`, and `!debugplayers`.
 
@@ -190,7 +190,7 @@ Full role descriptions and action priority order are in `[Mafia_2.0/info.txt](Ma
 
 | Problem                          | Likely cause                                                                                            |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Bot does not respond to `!start` | Message Content Intent disabled, or you are not the configured host (`ADMIN_ID`)                         |
+| Bot does not respond to `!start` | Message Content Intent disabled, or you are not the configured host (`BYRO_ID`)                         |
 | `Players: 0` on startup          | Server Members Intent disabled, or no human members in the server                                       |
 | Error about `Dead` role          | Create a server role named exactly `Dead` before starting                                               |
 | Bot cannot create channels       | Missing **Manage Channels** permission or role hierarchy too low                                        |
