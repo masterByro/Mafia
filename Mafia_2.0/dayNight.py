@@ -23,8 +23,12 @@ async def day(guild, game: GameState):
         deaths = await calculateResults(guild, game)
         await sendDetectiveInfo(guild, game)
         await sendWatchmanInfo(guild, game)
-        await update_dead_chat_visibility(guild, game)
-        await update_mafia_chat_visibility(guild, game)
+
+        # nofriends Mode
+        # Prevent updating visibility in nofriends mode
+        if not game.nofriends:
+            await update_dead_chat_visibility(guild, game)
+            await update_mafia_chat_visibility(guild, game)
    
         if deaths:
             await checkExecutionerTargetDeaths(guild, game, deaths)
@@ -51,8 +55,12 @@ async def day(guild, game: GameState):
 async def night(guild, game: GameState):
     game.can_vote = False
     game.canDecide = False
-    await update_dead_chat_visibility(guild, game)
-    await update_mafia_chat_visibility(guild, game)
+
+    # nofriends Mode
+    # Prevent updating visibility in nofriends mode
+    if not game.nofriends:
+        await update_dead_chat_visibility(guild, game)
+        await update_mafia_chat_visibility(guild, game)
     channel = guild.get_channel(game.town_channel_id)
     await channel.send("\n==============================\n")
     await channel.send(getPlayerList(game))

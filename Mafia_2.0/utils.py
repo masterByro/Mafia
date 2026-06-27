@@ -86,8 +86,9 @@ def checkWin(game):
 async def kill(guild, game: GameState, player: Player, reason, note):
     player.alive = False
 
-    dead_role = guild.get_role(game.dead_role_id)
-    if dead_role: await player.member.add_roles(dead_role)
+    if not game.nofriends:
+        dead_role = guild.get_role(game.dead_role_id)
+        if dead_role: await player.member.add_roles(dead_role)
 
     channel = guild.get_channel(game.town_channel_id)
     Warden = getByRole(game.players, "Warden")
