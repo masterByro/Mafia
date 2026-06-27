@@ -1,8 +1,9 @@
 TODO
+re-voting during day
 
 Bonus:
 Retributionist
-Tracker/Lookout
+Tracker
 Witch
 multiple doctors, escorts
 Blackmailer / Whispers
@@ -12,29 +13,29 @@ have admin commands
 !start, !end
 users get assigned roles
 every user has their own room for chat commands
-mafia has room at night only, medium has dead chat at night only
+Uprising has room at night only, medium has dead chat at night only
 main chat, where votes are displayed 
 at night, users use their role with command then target name
 success/retry message
 Red role when dead
-Mayor
+Chancellor
 Jailor
 Executioner
 end of night, run through user selections to find outcome
-Framer -> Mafioso
+Propagandist -> Insurgent
 Voting command prompts
-fix detective feedback
-Update veteran to use diff command
+fix Inquisitor feedback
+Update Knight to use diff command
 check for winning condition
 user can write notes/murder message
-Janitor
+Warden
 Better post-game info
 Scoreboard
 If jester doesnt pick some, it becomes random. Jester can kill abstainers
 exclude Byron main acc (on toggle)
 dont send decision info to the accuseds
-Survivor
-jailed mafia cant use mafia chat
+Wanderer
+jailed Uprising cant use Uprising chat
 Serial killer bloody will
 run time progressino more auto
 add defence time
@@ -43,3 +44,4 @@ Info pages
 delete timers after 0
 check that people cant target jailed guy
 simplify commands
+Lookout

@@ -3,12 +3,12 @@ from gamestate import GameState
 from player import Player
 
 async def onExecute(game: GameState, player: Player):
-    if player is None or player.roundInput is None: return "You are not part of the game or you have no target."
-    if player.role != 'Jailor': return "Nice Try bozo"
-    if game.is_day or not player.alive: return '2 late mate'
+    if player is None or player.roundInput is None: return "You are not part of the game or you have no target.", None
+    if player.role != 'Jailor': return "Nice Try bozo", None
+    if game.is_day or not player.alive: return '2 late mate', None
 
     target = game.players.get(player.roundInput)
-    if target is None or not target.alive: return "Your jailed target is no longer valid."
+    if target is None or not target.alive: return "Your jailed target is no longer valid.", None
 
     player.willExecute = not player.willExecute
 
@@ -39,7 +39,7 @@ class ExecuteView(discord.ui.View):
         await interaction.response.send_message(message, ephemeral=True)
 
         guild = interaction.guild
-        if guild is None: return
+        if guild is None or target_message is None: return
         channel = guild.get_channel(game.player_channels.get(player.roundInput))
         if isinstance(channel, discord.TextChannel) or isinstance(channel, discord.Thread):
             await channel.send(target_message)

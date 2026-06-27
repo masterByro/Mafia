@@ -4,7 +4,7 @@ from player import Player
 
 async def onAlert(game: GameState, player: Player):
     if player is None: return "You are not part of the game."
-    if player.role not in ['Veteran', 'Survivor']: return "Nice Try bozo"
+    if player.role not in ['Knight', 'Wanderer']: return "Nice Try bozo"
     if player.onAlert: return "You already have selected to be on alert"
     if player.alerts == 0: return "You have already been on alert 3 times"
     if not player.alive: return "You are dead. Too late mate. So sad"

@@ -4,7 +4,7 @@ from typing import Tuple
 
 def reveal_mayor(game, player) -> Tuple[bool, str]:
     if player is None: return False, "You are not part of the game."
-    if player.role != "Mayor": return False, "Nice Try bozo"
+    if player.role != "Chancellor": return False, "Nice Try bozo"
     if player.revealed: return False, "You have already revealed your role"
     if not player.alive: return False, "You are dead. Too late mate. So sad"
     if not game.is_day: return False, "You can only reveal your role during the day"
@@ -35,7 +35,7 @@ class MayorRevealView(discord.ui.View):
 
         channel = guild.get_channel(game.town_channel_id)
         if isinstance(channel, discord.TextChannel) or isinstance(channel, discord.Thread):
-            await channel.send(f"📢 {player.name} has revealed themselves as the Mayor!")
+            await channel.send(f"📢 {player.name} has revealed themselves as the Chancellor!")
 
         await interaction.response.send_message(message, ephemeral=True)
 

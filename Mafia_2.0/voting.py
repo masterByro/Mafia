@@ -4,6 +4,7 @@ from gamestate import GameState
 from utils import getByRole, isGameOver, kill
 from timing import countdown
 from UI.JudgeViewer import JudgeView
+from dayNight import passTime
 
 async def on_vote(guild, game: GameState):
     votedOutPlayer = tally_votes(game)
@@ -14,7 +15,7 @@ async def on_vote(guild, game: GameState):
         if channel:
             await channel.send(f"The castlefolk have voted against {votedOutPlayer.name}!")
             await channel.send(f"{votedOutPlayer.name}, state your defence!")
-            await countdown(channel, 2, prefix="Defence statement")
+            await countdown(channel, 15, prefix="Defence statement")
             await decidePhase(guild, game)
 
 def tally_votes(game: GameState):
@@ -25,7 +26,7 @@ def tally_votes(game: GameState):
         if voter.vote is None: continue
 
         weight = 1
-        if voter.role == "Mayor" and voter.revealed: weight = 3
+        if voter.role == "Chancellor" and voter.revealed: weight = 3
         vote_count[voter.vote] = vote_count.get(voter.vote, 0) + weight
 
     # number of alive players
@@ -44,80 +45,105 @@ def tally_votes(game: GameState):
 
     return None
 
-async def castDecision(game: GameState, ctx, choice):
-    player = game.players.get(ctx.author.id)
-    if game.canDecide == False: return "You cannot cast a decision right now."
-    if player is None: return "You are not part of the game."
-    if not player.alive: return "Dead players cannot vote."
-    if player.votedFor: return "You cannot vote on yourself."
-
-    if choice not in ["guilty", "innocent"]: return "Invalid vote."
-
-    player.decision = choice
-    channel = ctx.guild.get_channel(game.town_channel_id)
-    if channel:
-        await channel.send(f"🗳️ {player.name} has voted")
-
-    return f"You voted {choice.upper()}."
-
-async def decideEnd(guild, game: GameState):
-    game.canDecide = False
+async def display_trial_results(guild, game: GameState):
+    """Display trial voting results and return vote counts."""
+    lines = ["**🧾 Trial Results**\n"]
     guilty = 0
     innocent = 0
-    lines = ["**🧾 Trial Results**\n"]
 
     channel = guild.get_channel(game.town_channel_id)
     ordered = sorted(game.players.values(), key=lambda p: p.number)
-
     accused = getVotedForPlayer(game)
+
     for p in ordered:
         if accused and p.id == accused.id: continue
+        if not p.alive: continue
 
-        # abstained (never voted or cleared vote)
         if p.decision is None:
             lines.append(f"⚪ {p.name} abstained")
         else:
             weight = 1
-            if p.role == "Mayor" and p.revealed: weight = 3
+            if p.role == "Chancellor" and p.revealed: 
+                weight = 3
+            
             if p.decision == "guilty":
                 lines.append(f"🟥 {p.name} voted GUILTY")
                 guilty += weight
-                
             elif p.decision == "innocent":
                 lines.append(f"🟩 {p.name} voted INNOCENT")
                 innocent += weight
 
     await channel.send("\n".join(lines))
+    return guilty, innocent
 
-    if accused is None: 
-        await channel.send("Game is cooked. Should be an accused player at this point.")
-        return
+async def handle_guilty_verdict(guild, game: GameState, accused):
+    """Handle verdict when player is lynched."""
+    channel = guild.get_channel(game.town_channel_id)
+    ordered = sorted(game.players.values(), key=lambda p: p.number)
 
-    if guilty > innocent:
-        if accused.role == "Jester":
-            guilty_voters = [p.id for p in ordered if p.alive and p.decision != "innocent" and (not accused or p.id != accused.id)]
-            accused.guiltyVoters = guilty_voters
-            accused.win = True
-            await channel.send(f"You FOOLS! {accused.name} is the Jester! He will seek revenge...")
-        else:
-            await channel.send(f"⚖️ The castlefolk have voted to lynch {accused.name}.\n"f"Any last words?")
-            await countdown(channel, 12, prefix="Last words")
-
-        executioner = getByRole(game.players, 'Executioner')
-        if executioner and executioner.executioner_target == accused.id:
-            executioner.win = True
-            await channel.send(f"🎯 The Executioner has succeeded! " f"{accused.name} was their target.")
-        await kill(guild, game, accused, f"{accused.name} was lynched.", None)
-        await isGameOver(guild, game)
+    if accused.role == "Jester":
+        guilty_voters = [p.id for p in ordered if p.alive and p.decision != "innocent" and p.id != accused.id]
+        accused.guiltyVoters = guilty_voters
+        accused.win = True
+        await channel.send(f"You FOOLS! {accused.name} is the Jester! He will seek revenge...")
     else:
-        game.can_vote = True 
-        await channel.send(f"{accused.name} has been spared")
+        await channel.send(f"⚖️ The castlefolk have voted to lynch {accused.name}.\n"f"Any last words?")
+        await countdown(channel, 12, prefix="Last words")
 
-    #Reset voting
+    executioner = getByRole(game.players, 'Executioner')
+    if executioner and executioner.executioner_target == accused.id:
+        executioner.win = True
+        await channel.send(f"🎯 The Executioner has succeeded! " f"{accused.name} was their target.")
+    
+    await kill(guild, game, accused, f"{accused.name} was lynched.", None)
+    await isGameOver(guild, game)
+    await passTime(guild, game)
+
+async def handle_innocent_verdict(guild, game: GameState, accused):
+    """Handle verdict when player is spared."""
+    channel = guild.get_channel(game.town_channel_id)
+    
+    game.voteAttempts -= 1
+    await channel.send(f"{accused.name} has been spared")
+    
+    if game.voteAttempts > 0:
+        await channel.send(f"Vote attempts remaining: {game.voteAttempts}")
+        from channelStuff import sendVoteDropdown
+        await sendVoteDropdown(guild, game)
+        game.can_vote = True
+    else:
+        await channel.send("No more voting attempts. Moving to night...")
+        await passTime(guild, game)
+
+def reset_voting(game: GameState):
+    """Reset all voting state for next round."""
     for p in game.players.values():
         p.vote = None
         p.decision = None
         p.votedFor = False
+
+async def decideEnd(guild, game: GameState):
+    """Main trial verdict orchestrator."""
+    game.canDecide = False
+    channel = guild.get_channel(game.town_channel_id)
+    accused = getVotedForPlayer(game)
+
+    # Display votes and get counts
+    guilty, innocent = await display_trial_results(guild, game)
+
+    # Validate accused exists
+    if accused is None: 
+        await channel.send("Game is cooked. Should be an accused player at this point.")
+        return
+
+    # Determine verdict
+    if guilty > innocent:
+        await handle_guilty_verdict(guild, game, accused)
+    else:
+        await handle_innocent_verdict(guild, game, accused)
+
+    # Reset voting
+    reset_voting(game)
 
 async def decidePhase(guild, game):
     accused = getVotedForPlayer(game)

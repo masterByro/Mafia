@@ -1,9 +1,10 @@
 from gamestate import GameState
 from player import Player
-from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, kill, sendDetectiveInfo, update_dead_chat_visibility, update_mafia_chat_visibility
+from utils import checkExecutionerTargetDeaths, getByRole, isGameOver, get_target, getPlayerList, kill, sendDetectiveInfo, update_dead_chat_visibility, update_mafia_chat_visibility, sendWatchmanInfo
 from roleDescriptions import sendNightInfo, sendDayActions
 from timing import countdown
 from channelStuff import sendVoteDropdown
+from debug import save_night_debug_start, save_night_debug_end
 
 async def passTime(guild, game):
     if not game.is_day: game.day_number += 1
@@ -14,13 +15,14 @@ async def passTime(guild, game):
 
 async def day(guild, game: GameState):
     channel = guild.get_channel(game.town_channel_id)
-    await channel.send("\n===================================================================\n")
+    await channel.send("\n==============================\n")
 
     await channel.send("The town awakens on Day " + str(game.day_number))
     
     if game.day_number > 1:
         deaths = await calculateResults(guild, game)
         await sendDetectiveInfo(guild, game)
+        await sendWatchmanInfo(guild, game)
         await update_dead_chat_visibility(guild, game)
         await update_mafia_chat_visibility(guild, game)
    
@@ -47,15 +49,17 @@ async def day(guild, game: GameState):
         await sendVoteDropdown(guild, game)
 
 async def night(guild, game: GameState):
+    game.can_vote = False
+    game.canDecide = False
     await update_dead_chat_visibility(guild, game)
     await update_mafia_chat_visibility(guild, game)
     channel = guild.get_channel(game.town_channel_id)
-    await channel.send("\n===================================================================\n")
+    await channel.send("\n==============================\n")
     await channel.send(getPlayerList(game))
     await channel.send("The town descends into darkness on Night " + str(game.day_number))
     await channel.send("You can now perform your night action")
     await sendNightInfo(guild, game)
-    await countdown(channel, 90, prefix="Night")
+    await countdown(channel, 70, prefix="Night")
     #await passTime(guild, game)
 
 
@@ -67,20 +71,26 @@ async def calculateResults(guild, game: GameState):
     veteranGuard = False
     deathByVeteran = " was shot in the chest last night!"
 
-    #Jester, Jailor, veteran, escort, doctor, mafioso, serial killer, framer, detective, janitor
+    # DEBUG: Save starting state
+    save_night_debug_start(game)
+
+    #Jester, Jailor, Knight, escort, Healer, Insurgent, serial killer, Propagandist, Inquisitor, Warden, Watchman
+    def addVisit(visitor, target): 
+        if visitor.id != target.id: target.visits.append(f"{target.name} was visited by {visitor.name}")
 
     def isDead(player: Player): return any(v_id == player.id for v_id, _, _ in deaths)
     def isBlocked(player: Player): return player.id in blocked
     def isAttacked(player: Player): return any(v_id == player.id for v_id, _, _ in attacked)
     def isDeadOrBlocked(player: Player): return isDead(player) or isBlocked(player) or isAttacked(player)
     def visitVet(visitor: Player, target: Player):
-        if target.role == 'Veteran' and veteranGuard: 
+        if target.role == 'Knight' and veteranGuard: 
             attacked.append((visitor.id, deathByVeteran, target.murderNote))
             return True
         return False
 
     jester, target = get_target(game, 'Jester')
     if jester and target:
+        addVisit(jester, target)
         deaths.append((target.id," is dead! The Jester gets their revenge from the grave!", jester.murderNote))
 
     #Jailor
@@ -92,11 +102,12 @@ async def calculateResults(guild, game: GameState):
     def visitorCheck(player, target):
         if isDead(player) or isBlocked(player) or isAttacked(player): return False
         if jailorTarget and target.id == jailorTarget.id: return False
+        addVisit(player, target)
         return not visitVet(player, target)
  
 
-    veteran = getByRole(game.players, 'Veteran')
-    if veteran and veteran.onAlert and not isDeadOrBlocked(veteran):
+    Knight = getByRole(game.players, 'Knight')
+    if Knight and Knight.onAlert and not isDeadOrBlocked(Knight):
         veteranGuard = True
 
     escort, target = get_target(game, 'Escort')
@@ -112,47 +123,55 @@ async def calculateResults(guild, game: GameState):
                     await will_channel.purge(limit=100)
                     await will_channel.send("🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸🩸")
 
-    doctor, target = get_target(game, 'Doctor')
-    if doctor and target and visitorCheck(doctor, target):
+    Healer, target = get_target(game, 'Healer')
+    if Healer and target and visitorCheck(Healer, target):
         healed.add(target.id)
 
-    survivor = getByRole(game.players, 'Survivor')
-    if survivor and not isDeadOrBlocked(survivor) and survivor.onAlert:
-        healed.add(survivor.id)
+    Wanderer = getByRole(game.players, 'Wanderer')
+    if Wanderer and not isDeadOrBlocked(Wanderer) and Wanderer.onAlert:
+        healed.add(Wanderer.id)
 
-    mafioso, target = get_target(game, 'Mafioso')
-    if (mafioso and target and visitorCheck(mafioso, target)):
-        attacked.append((target.id, " was murdered last night!",  mafioso.murderNote))
+    Insurgent, target = get_target(game, 'Insurgent')
+    if (Insurgent and target and visitorCheck(Insurgent, target)):
+        attacked.append((target.id, " was murdered last night!",  Insurgent.murderNote))
 
     sk, target = get_target(game, 'Serial Killer')
     if (sk and target and visitorCheck(sk, target)):
         attacked.append((target.id," was murdered last night!", sk.murderNote))
 
-    framer, target = get_target(game, 'Framer')
-    if (framer and target and visitorCheck(framer, target)): 
+    Propagandist, target = get_target(game, 'Propagandist')
+    if (Propagandist and target and visitorCheck(Propagandist, target)): 
         target.framed = True
 
-    detective, target = get_target(game, 'Detective')
-    if detective:
-        if target is None or isDeadOrBlocked(detective):
-            detective.targetInfo = ("You either did not select anyone to investigate last night, or were blocked")
+    Inquisitor, target = get_target(game, 'Inquisitor')
+    if Inquisitor:
+        if target is None or isDeadOrBlocked(Inquisitor):
+            Inquisitor.targetInfo = ("You either did not select anyone to investigate last night, or were blocked")
         elif jailorTarget and target.id == jailorTarget.id: 
-            detective.targetInfo = ("Your target was in jail last night, you were unable to investigate them")
+            Inquisitor.targetInfo = ("Your target was in jail last night, you were unable to investigate them")
         else:
-            if not visitVet(detective, target):
-                bloody = target.role in ['Doctor', 'Mafioso', 'Serial Killer'] or target.framed or isAttacked(target) or isDead(target)
+            if not visitVet(Inquisitor, target):
+                bloody = target.role in ['Healer', 'Insurgent', 'Serial Killer'] or target.framed or isAttacked(target) or isDead(target)
                 
                 if bloody:
-                    detective.targetInfo = (f"Your target, {target.name}, had blood on them last night.")
+                    Inquisitor.targetInfo = (f"Your target, {target.name}, had blood on them last night.")
                     target.framed = False
                 else:
-                    detective.targetInfo = (f"Your target, {target.name}, did NOT have blood on them last night.")
+                    Inquisitor.targetInfo = (f"Your target, {target.name}, did NOT have blood on them last night.")
 
     canJanitorClean = False
-    janitor, janitorTarget = get_target(game, 'Janitor')
-    if janitor and janitorTarget:
-        canJanitorClean = visitorCheck(janitor, janitorTarget)
+    Warden, janitorTarget = get_target(game, 'Warden')
+    if Warden and janitorTarget:
+        canJanitorClean = visitorCheck(Warden, janitorTarget)
         
+    watchMan, target = get_target(game, 'Watchman')
+    if (watchMan and target): 
+        if isDeadOrBlocked(watchMan) or visitVet(watchMan, target): pass
+        else:
+            if jailorTarget and target.id == jailorTarget.id: watchMan.visits = ['Your target was hauled off to Jail last night']
+            else: 
+                watchMan.visits = target.visits
+
     for victim_id, msg, note in attacked:
         if victim_id not in healed:
             deaths.append((victim_id, msg, note))
@@ -162,6 +181,9 @@ async def calculateResults(guild, game: GameState):
             if janitorTarget.id in dead_ids:
                 janitorTarget.cleaned = True
                 janitorTarget.role = 'CLEANED'
+
+    # DEBUG: Save results
+    save_night_debug_end(game, deaths, blocked, healed, attacked)
 
     return deaths
 

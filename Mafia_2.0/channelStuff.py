@@ -4,8 +4,8 @@ from gamestate import GameState
 from scoring import loadWins
 from UI.VoteSelecter import VoteView
 
-async def setup_channels(guild, game: GameState, BYRO_ID):
-    byron = guild.get_member(BYRO_ID)
+async def setup_channels(guild, game: GameState, ADMIN_ID):
+    admin = guild.get_member(ADMIN_ID)
 
     # Courtyard
     town_channel = await guild.create_text_channel(
@@ -18,13 +18,12 @@ async def setup_channels(guild, game: GameState, BYRO_ID):
     game.town_channel_id = town_channel.id
 
     ## Individual channels
-    category = await guild.create_category("Mafia Players")
+    category = await guild.create_category("Players")
     for player in game.players.values():
         channel_name = player.name.lower().replace(" ", "-")
 
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(view_channel=False),
-            byron: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
         }
 
         # nofriends Mode 
@@ -53,7 +52,7 @@ async def setup_channels(guild, game: GameState, BYRO_ID):
     game.dead_channel_id = dead_channel.id
 
     mafia_channel = await guild.create_text_channel(
-        name="mafia-chat",
+        name="Uprising-chat",
         overwrites={guild.default_role: discord.PermissionOverwrite( view_channel=False),
             guild.me: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
         }
@@ -73,7 +72,7 @@ async def endChannels(ctx, game: GameState):
         if channel: await channel.delete()
 
     # Delete category
-    category = discord.utils.get(guild.categories, name="Mafia Players")
+    category = discord.utils.get(guild.categories, name="Players")
     if category:
         await category.delete()
 
