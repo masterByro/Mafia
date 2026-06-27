@@ -12,8 +12,8 @@ async def setup_no_friends(guild, game: GameState, ADMIN_ID):
         SimpleNamespace(id=1, name="Thomas", display_name="Thomas", bot=False),
         SimpleNamespace(id=2, name="John", display_name="John", bot=False),
         SimpleNamespace(id=3, name="Philip", display_name="Philip", bot=False),
-        # SimpleNamespace(id=4, name="Taylor", display_name="Taylor", bot=False),
-        # SimpleNamespace(id=5, name="SillyWilly", display_name="SillyWilly", bot=False),
+        SimpleNamespace(id=4, name="Taylor", display_name="Taylor", bot=False),
+        SimpleNamespace(id=5, name="SillyWilly", display_name="SillyWilly", bot=False),
 
     ])  
 
