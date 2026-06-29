@@ -37,9 +37,8 @@ async def on_ready():
     print(f'Players: {player_count}\n Ready to rumble!')
 
 @bot.command()
+@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
 async def start(ctx):
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
-
     guild = ctx.guild
     game.nofriends = False
     setup_players(guild, game, ADMIN_ID)
@@ -50,9 +49,9 @@ async def start(ctx):
     await day(guild, game)
 
 @bot.command()
+@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
 async def end(ctx):
     global game
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     
     await endChannels(ctx, game)
     dead_role = discord.utils.get(ctx.guild.roles, name="Dead")
@@ -66,19 +65,19 @@ async def end(ctx):
     await ctx.send("Game ended! State reset.")
 
 @bot.command()
+@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
 async def n(ctx): 
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     await passTime(ctx.guild, game)
 
 @bot.command() #Depreacted
+@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
 async def decide(ctx):
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     feedback = await decidePhase(ctx.guild, game)
     await ctx.send(feedback)
 
 @bot.command() #Depreacted
+@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
 async def decideend(ctx):
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     await decideEnd(ctx.guild, game)
     
 @bot.command()
@@ -88,8 +87,8 @@ async def list(ctx): await ctx.send(getPlayerList(game))
 async def m(ctx, *, message: str): await ctx.send(await setMurderNote(game, ctx, message))
 
 @bot.command()
+@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
 async def debugplayers(ctx):
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     message = await debugPlayers(game)
     await ctx.send(message)
 
