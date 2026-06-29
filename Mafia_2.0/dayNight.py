@@ -24,8 +24,7 @@ async def day(guild, game: GameState):
         await sendDetectiveInfo(guild, game)
         await sendWatchmanInfo(guild, game)
 
-        # nofriends Mode
-        # Prevent updating visibility in nofriends mode
+        # nofriends Mode - don't touch real discord perms
         if not game.nofriends:
             await update_dead_chat_visibility(guild, game)
             await update_mafia_chat_visibility(guild, game)
@@ -56,8 +55,7 @@ async def night(guild, game: GameState):
     game.can_vote = False
     game.canDecide = False
 
-    # nofriends Mode
-    # Prevent updating visibility in nofriends mode
+    # nofriends Mode - don't touch real discord perms
     if not game.nofriends:
         await update_dead_chat_visibility(guild, game)
         await update_mafia_chat_visibility(guild, game)
@@ -67,7 +65,8 @@ async def night(guild, game: GameState):
     await channel.send("The town descends into darkness on Night " + str(game.day_number))
     await channel.send("You can now perform your night action")
     await sendNightInfo(guild, game)
-    await countdown(channel, 70, prefix="Night")
+    # nofriends Mode - disable countdown
+    if not game.nofriends: await countdown(channel, 70, prefix="Night")
     #await passTime(guild, game)
 
 

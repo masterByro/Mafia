@@ -26,9 +26,8 @@ class GameState:
 
         self.nofriends = False
 
-    # nofriends Mode 
-    # player is chosen from channel name, rather than user id    
     def get_player_from_interaction(self, interaction):
+        # nofriends Mode - player is chosen from channel name, not user id    
         if self.nofriends:
             voter_name = interaction.channel.name
 

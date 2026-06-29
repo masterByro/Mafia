@@ -98,8 +98,7 @@ async def kill(guild, game: GameState, player: Player, reason, note):
     await handleMafiosoDeathTransfer(guild, game, player)
     
     will_channel = guild.get_channel(game.player_will_channels.get(player.id))
-    # nofriends mode
-    # don't update permissions here 
+    # nofriends mode - don't touch real discord perms
     if will_channel and not game.nofriends:
         
         if player.cleaned and Warden:
