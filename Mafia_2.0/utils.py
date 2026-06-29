@@ -86,6 +86,7 @@ def checkWin(game):
 async def kill(guild, game: GameState, player: Player, reason, note):
     player.alive = False
 
+    # nofriends Mode - don't touch real discord perms
     if not game.nofriends:
         dead_role = guild.get_role(game.dead_role_id)
         if dead_role: await player.member.add_roles(dead_role)

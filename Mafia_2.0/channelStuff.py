@@ -24,6 +24,7 @@ async def setup_channels(guild, game: GameState, ADMIN_ID):
 
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(view_channel=False),
+            admin: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
         }
 
         # nofriends Mode - player.member isn't a valid discord user. 

@@ -1,4 +1,3 @@
-from math import nan
 import discord
 from discord.ext import commands
 import logging
@@ -43,13 +42,10 @@ async def start(ctx):
 
     guild = ctx.guild
     game.nofriends = False
-
     setup_players(guild, game, ADMIN_ID)
     await setup_channels(guild, game, ADMIN_ID)
     await sendStarterInfo(guild, game)
-
     game.running = True
-
     await ctx.send("Game started!")
     await day(guild, game)
 
