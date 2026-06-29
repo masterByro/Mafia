@@ -1,3 +1,4 @@
+from math import nan
 import discord
 from discord.ext import commands
 import logging
@@ -23,7 +24,7 @@ intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-ADMIN_ID = 963737040183246879
+ADMIN_ID = 1518055811278967005
 BYRO_ID = 430972166364725249
 global game
 game = GameState()
@@ -37,23 +38,19 @@ async def on_ready():
     print(f'Players: {player_count}\n Ready to rumble!')
 
 @bot.command()
-async def start(ctx, mode: str = "normal"):
+async def start(ctx):
     if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
 
     guild = ctx.guild
-    game.nofriends = (mode.lower() == "nf")
+    game.nofriends = False
 
-    if game.nofriends:
-        await setup_no_friends(guild, game, ADMIN_ID)
-    else:
-        setup_players(guild, game, ADMIN_ID)
-        await setup_channels(guild, game, ADMIN_ID)
-        await sendStarterInfo(guild, game)
+    setup_players(guild, game, ADMIN_ID)
+    await setup_channels(guild, game, ADMIN_ID)
+    await sendStarterInfo(guild, game)
 
     game.running = True
 
-    await ctx.send(f"Game started! Mode: {mode}")
-
+    await ctx.send("Game started!")
     await day(guild, game)
 
 @bot.command()
@@ -102,6 +99,22 @@ async def debugplayers(ctx):
 
 @bot.command() #Leaderboard
 async def wins(ctx): await ctx.send(buildWinsLeaderboard(ctx))
+
+@bot.command()
+@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
+async def test(ctx, seed: str = "mafia"):
+    guild = ctx.guild
+
+    print(f"Using seed: {seed}")
+
+    game.nofriends = True
+
+    await setup_no_friends(guild, game, ADMIN_ID)
+
+    game.running = True
+
+    await ctx.send(f"Test game started (seed={seed})")
+    await day(guild, game)
 
 player_count = 0
 bot.run(token,log_handler=handler, log_level=logging.DEBUG) # type: ignore
