@@ -3,36 +3,48 @@
         "id": 1001,
         "name": "Gayoon",
         "display_name": "Gayoon",
-        "role": "Inquisitor"
+        "role": "Insurgent"
     },
     {
         "id": 1,
         "name": "Thomas",
         "display_name": "Thomas",
-        "role": "Insurgent"
+        "role": "Inquisitor"
     },
     {
         "id": 2,
         "name": "John",
         "display_name": "John",
-        "role": "Peasant"
+        "role": "Watchman"
     },
     {
         "id": 3,
         "name": "Philip",
         "display_name": "Philip",
-        "role": "Propagandist"
+        "role": "Healer"
     },
     {
         "id": 4,
         "name": "Taylor",
         "display_name": "Taylor",
-        "role": "Medium"
+        "role": "Escort"
     },
     {
         "id": 5,
         "name": "SillyWilly",
         "display_name": "SillyWilly",
-        "role": "Healer"
+        "role": "Knight"
+    },
+    {
+        "id": 6,
+        "name": "Alex",
+        "display_name": "Alex",
+        "role": "Medium"
+    },
+    {
+        "id": 7,
+        "name": "Morgan",
+        "display_name": "Morgan",
+        "role": "Peasant"
     }
 ]

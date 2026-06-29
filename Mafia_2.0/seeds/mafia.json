@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1001,
+        "name": "Gayoon",
+        "display_name": "Gayoon",
+        "role": "Peasant"
+    },
+    {
+        "id": 1,
+        "name": "Thomas",
+        "display_name": "Thomas",
+        "role": "Insurgent"
+    },
+    {
+        "id": 2,
+        "name": "John",
+        "display_name": "John",
+        "role": "Insurgent"
+    },
+    {
+        "id": 3,
+        "name": "Philip",
+        "display_name": "Philip",
+        "role": "Propagandist"
+    },
+    {
+        "id": 4,
+        "name": "Taylor",
+        "display_name": "Taylor",
+        "role": "Warden"
+    },
+    {
+        "id": 5,
+        "name": "SillyWilly",
+        "display_name": "SillyWilly",
+        "role": "Peasant"
+    },
+    {
+        "id": 6,
+        "name": "Alex",
+        "display_name": "Alex",
+        "role": "Peasant"
+    }
+]
