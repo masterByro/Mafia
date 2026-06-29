@@ -102,7 +102,7 @@ async def test(ctx, seed: str = None):
     game.nofriends = True
     await setup_no_friends(guild, game, ADMIN_ID, seed.lower())
     game.running = True
-    await ctx.send(f"{seed.capitalize} game started with no friends.")
+    await ctx.send(f"{seed.capitalize()} game started with no friends.")
     await day(guild, game)
 
 player_count = 0
