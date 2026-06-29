@@ -102,14 +102,14 @@ async def wins(ctx): await ctx.send(buildWinsLeaderboard(ctx))
 
 @bot.command()
 @commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
-async def test(ctx, seed: str = "mafia"):
+async def test(ctx, seed: str = "base"):
     guild = ctx.guild
 
     print(f"Using seed: {seed}")
 
     game.nofriends = True
 
-    await setup_no_friends(guild, game, ADMIN_ID)
+    await setup_no_friends(guild, game, ADMIN_ID, seed)
 
     game.running = True
 
