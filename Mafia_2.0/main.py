@@ -28,6 +28,11 @@ BYRO_ID = int(os.getenv("BYRO_ID", "240752638273126400"))
 global game
 game = GameState()
 
+def admin_only():
+    async def predicate(ctx):
+        return ctx.author.id in (ADMIN_ID, BYRO_ID)
+    return commands.check(predicate)
+
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
@@ -37,7 +42,7 @@ async def on_ready():
     print(f'Players: {player_count}\n Ready to rumble!')
 
 @bot.command()
-@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
+@admin_only()
 async def start(ctx):
     guild = ctx.guild
     game.nofriends = False
@@ -49,7 +54,7 @@ async def start(ctx):
     await day(guild, game)
 
 @bot.command()
-@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
+@admin_only()
 async def end(ctx):
     global game
     
@@ -65,18 +70,18 @@ async def end(ctx):
     await ctx.send("Game ended! State reset.")
 
 @bot.command()
-@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
+@admin_only()
 async def n(ctx): 
     await passTime(ctx.guild, game)
 
 @bot.command() #Depreacted
-@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
+@admin_only()
 async def decide(ctx):
     feedback = await decidePhase(ctx.guild, game)
     await ctx.send(feedback)
 
 @bot.command() #Depreacted
-@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
+@admin_only()
 async def decideend(ctx):
     await decideEnd(ctx.guild, game)
     
@@ -87,7 +92,7 @@ async def list(ctx): await ctx.send(getPlayerList(game))
 async def m(ctx, *, message: str): await ctx.send(await setMurderNote(game, ctx, message))
 
 @bot.command()
-@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
+@admin_only()
 async def debugplayers(ctx):
     message = await debugPlayers(game)
     await ctx.send(message)
@@ -96,7 +101,7 @@ async def debugplayers(ctx):
 async def wins(ctx): await ctx.send(buildWinsLeaderboard(ctx))
 
 @bot.command()
-@commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
+@admin_only()
 async def test(ctx, seed: str = None):
     guild = ctx.guild
     game.nofriends = True
