@@ -12,6 +12,7 @@ from debug import debugPlayers, clear_debug
 from utils import getPlayerList, setMurderNote
 from voting import decideEnd, decidePhase
 from scoring import initWinsFile
+from noFriends import setup_no_friends
 
 load_dotenv()
 
@@ -22,10 +23,15 @@ intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-ADMIN_ID = 963737040183246879
-BYRO_ID = 240752638273126400
+ADMIN_ID = int(os.getenv("ADMIN_ID", "963737040183246879"))
+BYRO_ID = int(os.getenv("BYRO_ID", "240752638273126400"))
 global game
 game = GameState()
+
+def admin_only():
+    async def predicate(ctx):
+        return ctx.author.id in (ADMIN_ID, BYRO_ID)
+    return commands.check(predicate)
 
 @bot.event
 async def on_ready():
@@ -36,10 +42,10 @@ async def on_ready():
     print(f'Players: {player_count}\n Ready to rumble!')
 
 @bot.command()
+@admin_only()
 async def start(ctx):
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
-
     guild = ctx.guild
+    game.nofriends = False
     setup_players(guild, game, ADMIN_ID)
     await setup_channels(guild, game, ADMIN_ID)
     await sendStarterInfo(guild, game)
@@ -48,9 +54,9 @@ async def start(ctx):
     await day(guild, game)
 
 @bot.command()
+@admin_only()
 async def end(ctx):
     global game
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     
     await endChannels(ctx, game)
     dead_role = discord.utils.get(ctx.guild.roles, name="Dead")
@@ -64,19 +70,19 @@ async def end(ctx):
     await ctx.send("Game ended! State reset.")
 
 @bot.command()
+@admin_only()
 async def n(ctx): 
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     await passTime(ctx.guild, game)
 
 @bot.command() #Depreacted
+@admin_only()
 async def decide(ctx):
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     feedback = await decidePhase(ctx.guild, game)
     await ctx.send(feedback)
 
 @bot.command() #Depreacted
+@admin_only()
 async def decideend(ctx):
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     await decideEnd(ctx.guild, game)
     
 @bot.command()
@@ -86,13 +92,23 @@ async def list(ctx): await ctx.send(getPlayerList(game))
 async def m(ctx, *, message: str): await ctx.send(await setMurderNote(game, ctx, message))
 
 @bot.command()
+@admin_only()
 async def debugplayers(ctx):
-    if ctx.author.id != ADMIN_ID and ctx.author.id != BYRO_ID: return
     message = await debugPlayers(game)
     await ctx.send(message)
 
 @bot.command() #Leaderboard
 async def wins(ctx): await ctx.send(buildWinsLeaderboard(ctx))
+
+@bot.command()
+@admin_only()
+async def test(ctx, seed: str = None):
+    guild = ctx.guild
+    game.nofriends = True
+    await setup_no_friends(guild, game, ADMIN_ID, seed.lower())
+    game.running = True
+    await ctx.send(f"{seed.capitalize()} game started with no friends.")
+    await day(guild, game)
 
 player_count = 0
 bot.run(token,log_handler=handler, log_level=logging.DEBUG) # type: ignore

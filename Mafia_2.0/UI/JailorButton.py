@@ -33,7 +33,7 @@ class ExecuteView(discord.ui.View):
     )
     async def execute(self, interaction: discord.Interaction, button: discord.ui.Button):
         game = self.game
-        player = game.players.get(interaction.user.id)
+        player = game.get_player_from_interaction(interaction)
 
         message, target_message = await onExecute(game, player)
         await interaction.response.send_message(message, ephemeral=True)

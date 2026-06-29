@@ -24,7 +24,7 @@ class TargetSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         game = self.game
-        player = game.players.get(interaction.user.id)
+        player = game.get_player_from_interaction(interaction)
         possibleOptions = getPossibleOptions(game, player)
 
         target_id = int(self.values[0])

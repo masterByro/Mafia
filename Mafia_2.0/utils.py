@@ -86,8 +86,10 @@ def checkWin(game):
 async def kill(guild, game: GameState, player: Player, reason, note):
     player.alive = False
 
-    dead_role = guild.get_role(game.dead_role_id)
-    if dead_role: await player.member.add_roles(dead_role)
+    # nofriends Mode - don't touch real discord perms
+    if not game.nofriends:
+        dead_role = guild.get_role(game.dead_role_id)
+        if dead_role: await player.member.add_roles(dead_role)
 
     channel = guild.get_channel(game.town_channel_id)
     Warden = getByRole(game.players, "Warden")
@@ -97,7 +99,8 @@ async def kill(guild, game: GameState, player: Player, reason, note):
     await handleMafiosoDeathTransfer(guild, game, player)
     
     will_channel = guild.get_channel(game.player_will_channels.get(player.id))
-    if will_channel:
+    # nofriends mode - don't touch real discord perms
+    if will_channel and not game.nofriends:
         
         if player.cleaned and Warden:
             await will_channel.set_permissions(Warden.member, view_channel=True, send_messages=False, read_message_history=True)

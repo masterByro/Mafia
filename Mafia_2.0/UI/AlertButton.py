@@ -26,7 +26,7 @@ class AlertView(discord.ui.View):
     )
     async def alert(self, interaction: discord.Interaction, button: discord.ui.Button):
         game = self.game
-        player = game.players.get(interaction.user.id)
+        player = game.get_player_from_interaction(interaction)
 
         message = await onAlert(game, player)
         await interaction.response.send_message(message, ephemeral=True)

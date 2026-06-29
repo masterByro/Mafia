@@ -179,6 +179,33 @@ Win counts are persisted in `wins.json` at the repo root (created automatically 
 
 ---
 
+## Testing / No-Friends Mode
+
+In this mode:
+
+- Players are loaded from predefined JSON seed files (instead of Discord members)
+- Each player is represented as a simulated entity with a name, ID, and optional role overrides
+- All game phases (day/night, voting, abilities, deaths) still run normally
+- UI interactions behave as if real users are playing, but are resolved internally
+- Countdowns and Discord role updates are disabled
+
+### Seeded scenarios
+
+You can launch different predefined setups:
+
+| Seed     | Description                  |
+|----------|------------------------------|
+| base     | Minimal default player set   |
+| simple   | Small 4-player test game     |
+| town     | Town-heavy role distribution |
+| mafia    | Mafia-leaning setup          |
+| chaos    | Highly unbalanced setup      |
+
+Seed files are located in:
+`Mafia_2.0/seeds/`
+
+---
+
 ## Role reference
 
 Full role descriptions and action priority order are in `[Mafia_2.0/info.txt](Mafia_2.0/info.txt)`.

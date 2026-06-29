@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Debug Mafia Bot",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/Mafia_2.0/.venv/Scripts/python.exe",
+            "program": "${workspaceFolder}/Mafia_2.0/main.py",
+            "cwd": "${workspaceFolder}/Mafia_2.0",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "envFile": "${workspaceFolder}/Mafia_2.0/.env"
+        }
+    ]
+}

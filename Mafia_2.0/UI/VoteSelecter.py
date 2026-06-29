@@ -21,7 +21,7 @@ class VoteSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         game = self.game
 
-        voter = game.players.get(interaction.user.id)
+        voter = game.get_player_from_interaction(interaction)
 
         if game.can_vote == False:
             return await interaction.response.send_message("You cannot vote right now.", ephemeral=True)

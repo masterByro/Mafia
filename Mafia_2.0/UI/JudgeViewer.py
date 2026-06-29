@@ -7,7 +7,7 @@ class JudgeView(discord.ui.View):
         self.voter_id = voter_id
 
     async def register_vote(self, interaction, choice):
-        player = self.game.players.get(interaction.user.id)
+        player = self.game.get_player_from_interaction(interaction)
 
         if not self.game.canDecide:
             return await interaction.response.send_message("You cannot cast a decision right now.", ephemeral=True)
