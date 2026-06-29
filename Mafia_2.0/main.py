@@ -99,16 +99,10 @@ async def wins(ctx): await ctx.send(buildWinsLeaderboard(ctx))
 @commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
 async def test(ctx, seed: str = None):
     guild = ctx.guild
-
-    print(f"Using seed: {seed}")
-
     game.nofriends = True
-
-    await setup_no_friends(guild, game, ADMIN_ID, seed)
-
+    await setup_no_friends(guild, game, ADMIN_ID, seed.lower())
     game.running = True
-
-    await ctx.send(f"Test game started (seed={seed})")
+    await ctx.send(f"{seed.capitalize} game started with no friends.")
     await day(guild, game)
 
 player_count = 0
