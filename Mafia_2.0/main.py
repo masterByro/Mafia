@@ -102,7 +102,7 @@ async def wins(ctx): await ctx.send(buildWinsLeaderboard(ctx))
 
 @bot.command()
 @commands.check(lambda ctx: ctx.author.id in (ADMIN_ID, BYRO_ID))
-async def test(ctx, seed: str = "base"):
+async def test(ctx, seed: str = None):
     guild = ctx.guild
 
     print(f"Using seed: {seed}")

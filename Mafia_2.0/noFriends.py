@@ -7,8 +7,8 @@ from types import SimpleNamespace
 from pathlib import Path
 
 async def setup_no_friends(guild, game: GameState, ADMIN_ID, seed):
-    members = list(guild.members)
-
+    members = []
+    seed = seed if seed else "base"
     # Load fake users from seed file
     seed_path = Path(f"seeds/{seed}.json")
     if seed_path.exists():
@@ -32,5 +32,22 @@ async def setup_no_friends(guild, game: GameState, ADMIN_ID, seed):
     )
 
     setup_players(fake_guild, game, ADMIN_ID)
+    apply_overrides(game, fake_users)
     await setup_channels(guild, game, ADMIN_ID)
     await sendStarterInfo(guild, game)
+
+
+def apply_overrides(game, overrides):
+    players = game.players
+
+    for entry in overrides:
+        try:
+            player = players[entry["id"]]
+        except (KeyError, TypeError):
+            continue
+
+        for key, value in entry.items():
+            if key == "id":
+                continue
+
+            setattr(player, key, value)
