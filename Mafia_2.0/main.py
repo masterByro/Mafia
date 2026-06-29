@@ -23,8 +23,8 @@ intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-ADMIN_ID = 1518055811278967005
-BYRO_ID = 430972166364725249
+ADMIN_ID = 963737040183246879
+BYRO_ID = 240752638273126400
 global game
 game = GameState()
 
